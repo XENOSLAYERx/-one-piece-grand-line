@@ -1,9 +1,6 @@
 package com.nerodev.grandline.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.permission.PermissionTier;
@@ -12,7 +9,6 @@ import com.nerodev.grandline.registry.DefinitionType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.minecraft.ChatFormatting;
@@ -41,15 +37,13 @@ final class DebugCommand {
         help.add(new HelpEntry("/onepiece debug", "Mod, registry and permission overview", PermissionTier.MODERATOR));
         help.add(new HelpEntry("/onepiece debug permissions [players]", "Show permission tiers", PermissionTier.MODERATOR));
         help.add(new HelpEntry("/onepiece debug config", "Show the active server config", PermissionTier.ADMIN));
+        help.add(new HelpEntry("/onepiece debug player [player]", "Dump a player's saved Grand Line data", PermissionTier.MODERATOR));
         for (DefinitionType<?> type : DefinitionType.ALL) {
             help.add(new HelpEntry("/onepiece debug " + type.commandName() + " [id]",
                     "List or inspect " + type.commandName() + " definitions", PermissionTier.MODERATOR));
         }
         HELP = List.copyOf(help);
     }
-
-    private static final Dynamic2CommandExceptionType UNKNOWN_DEFINITION = new Dynamic2CommandExceptionType(
-            (type, id) -> Component.literal("Unknown " + type + ": " + id));
 
     private DebugCommand() {}
 
@@ -66,6 +60,11 @@ final class DebugCommand {
                 .executes(ctx -> permissionsOfSource(ctx.getSource()))
                 .then(Commands.argument("players", EntityArgument.players())
                         .executes(ctx -> permissionsOfPlayers(ctx.getSource(), EntityArgument.getPlayers(ctx, "players")))));
+
+        debug.then(Commands.literal("player")
+                .executes(ctx -> ProfileCommand.sendDetailed(ctx.getSource(), ctx.getSource().getPlayerOrException()))
+                .then(Commands.argument("player", EntityArgument.player())
+                        .executes(ctx -> ProfileCommand.sendDetailed(ctx.getSource(), EntityArgument.getPlayer(ctx, "player")))));
 
         for (DefinitionType<?> type : DefinitionType.ALL) {
             debug.then(definitionNode(type));
@@ -166,24 +165,8 @@ final class DebugCommand {
         return Commands.literal(type.commandName())
                 .executes(ctx -> listDefinitions(ctx.getSource(), type))
                 .then(Commands.argument("id", ResourceLocationArgument.id())
-                        .suggests(definitionIds(type))
-                        .executes(ctx -> inspectDefinition(ctx.getSource(), type, ResourceLocationArgument.getId(ctx, "id"))));
-    }
-
-    /**
-     * Suggests registry ids. Matches the typed text against the full id or just the path, so typing {@code gum}
-     * suggests {@code grandline:gum_gum}. Runs on the server, so it always reflects the server's datapacks.
-     */
-    static <T> SuggestionProvider<CommandSourceStack> definitionIds(DefinitionType<T> type) {
-        return (ctx, builder) -> {
-            String typed = builder.getRemaining().toLowerCase(Locale.ROOT);
-            for (ResourceLocation id : type.sortedIds(ctx.getSource().registryAccess())) {
-                if (id.toString().startsWith(typed) || id.getPath().startsWith(typed)) {
-                    builder.suggest(id.toString());
-                }
-            }
-            return builder.buildFuture();
-        };
+                        .suggests(RegistryArguments.suggest(type))
+                        .executes(ctx -> inspectDefinition(ctx.getSource(), type, RegistryArguments.get(ctx, "id", type))));
     }
 
     private static <T> int listDefinitions(CommandSourceStack source, DefinitionType<T> type) {
@@ -201,10 +184,8 @@ final class DebugCommand {
         return ids.size();
     }
 
-    private static <T> int inspectDefinition(CommandSourceStack source, DefinitionType<T> type, ResourceLocation id)
-            throws CommandSyntaxException {
-        Map.Entry<ResourceLocation, T> entry = type.find(source.registryAccess(), id)
-                .orElseThrow(() -> UNKNOWN_DEFINITION.create(type.commandName(), id));
+    private static <T> int inspectDefinition(CommandSourceStack source, DefinitionType<T> type,
+            Map.Entry<ResourceLocation, T> entry) {
         T definition = entry.getValue();
 
         Text.send(source, Text.header(type.name().apply(definition)));

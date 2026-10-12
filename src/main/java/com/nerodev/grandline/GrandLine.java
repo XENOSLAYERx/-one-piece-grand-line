@@ -3,6 +3,8 @@ package com.nerodev.grandline;
 import com.mojang.logging.LogUtils;
 import com.nerodev.grandline.command.OnePieceCommand;
 import com.nerodev.grandline.config.GLServerConfig;
+import com.nerodev.grandline.data.DeathModeHandler;
+import com.nerodev.grandline.data.GLAttachments;
 import com.nerodev.grandline.registry.GLRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -32,6 +34,10 @@ public final class GrandLine {
 
         // Data-driven registries (JSON under data/<namespace>/grandline/<registry>/).
         modBus.addListener(GLRegistries::onNewDataPackRegistries);
+
+        // Player data (attachments) and death handling.
+        GLAttachments.register(modBus);
+        DeathModeHandler.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);

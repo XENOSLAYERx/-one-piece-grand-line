@@ -36,6 +36,8 @@ public final class OnePieceCommand {
                 .then(Commands.argument("page", IntegerArgumentType.integer(1))
                         .executes(ctx -> sendHelp(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "page")))));
 
+        ProfileCommand.register(root);
+        IdentityCommands.register(root);
         DebugCommand.register(root);
 
         event.getDispatcher().register(root);
@@ -44,6 +46,8 @@ public final class OnePieceCommand {
     /** Every help entry, in display order. New command classes append their entries here. */
     static List<HelpEntry> allHelpEntries() {
         List<HelpEntry> entries = new ArrayList<>(HELP);
+        entries.addAll(ProfileCommand.HELP);
+        entries.addAll(IdentityCommands.HELP);
         entries.addAll(DebugCommand.HELP);
         return entries;
     }

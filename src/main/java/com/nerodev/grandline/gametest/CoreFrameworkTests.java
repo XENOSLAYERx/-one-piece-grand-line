@@ -70,9 +70,12 @@ public final class CoreFrameworkTests {
         CommandSourceStack source = out.source(server, 4);
 
         run(helper, server, source, "onepiece");
-        run(helper, server, source, "onepiece help");
         run(helper, server, source, "onepiece help 99");
+        for (int page = 1; page <= 5; page++) {
+            run(helper, server, source, "onepiece help " + page);
+        }
         helper.assertTrue(out.contains("/onepiece debug config"), "Creator help should list debug config");
+        helper.assertTrue(out.contains("/onepiece race set"), "Creator help should list race set");
 
         out.clear();
         run(helper, server, source, "onepiece debug");
