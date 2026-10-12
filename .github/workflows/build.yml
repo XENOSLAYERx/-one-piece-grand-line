@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: ./gradlew build --stacktrace
+
+      # Boots a headless NeoForge server with the mod and runs every grandline GameTest.
+      - name: Run GameTests
+        run: |
+          set -o pipefail
+          ./gradlew runGameTestServer --stacktrace 2>&1 | tee gametest.log
+          grep -q "required tests passed" gametest.log
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: grandline-jar
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Upload GameTest log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gametest-log
+          path: gametest.log
+          if-no-files-found: ignore
