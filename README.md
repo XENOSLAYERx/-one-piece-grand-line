@@ -1,1 +1,3 @@
-# -one-piece-grand-line
+# One Piece: Grand Line
+
+NeoForge mod — rebuilt from scratch. See milestones.
