@@ -29,8 +29,12 @@ jobs:
       - name: Run GameTests
         run: |
           set -o pipefail
-          ./gradlew runGameTestServer --stacktrace 2>&1 | tee gametest.log
+          ./gradlew runGameTestServer 2>&1 | tee gametest.log
           grep -q "required tests passed" gametest.log
+
+      - name: GameTest summary
+        if: always()
+        run: grep -E "GameTestServer|LogTestReporter|ERROR|Exception|Caused by" gametest.log | grep -v "^\s*at " | head -60 || true
 
       - name: Upload mod jar
         uses: actions/upload-artifact@v4

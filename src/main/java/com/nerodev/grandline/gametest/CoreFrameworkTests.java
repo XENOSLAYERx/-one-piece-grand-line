@@ -135,9 +135,14 @@ public final class CoreFrameworkTests {
 
         List<String> root = suggestions(server, creator, "onepiece ");
         helper.assertTrue(root.contains("help") && root.contains("debug"), "Root suggestions: " + root);
-        List<String> playerRoot = suggestions(server, player, "onepiece ");
-        helper.assertTrue(playerRoot.contains("help") && !playerRoot.contains("debug"),
-                "Player root suggestions: " + playerRoot);
+
+        // Clients only receive the nodes they can use (Commands#sendCommands filters with canUse), so that is what
+        // decides whether a player ever sees "debug" in tab-complete.
+        var onepiece = dispatcher(server).getRoot().getChild("onepiece");
+        helper.assertTrue(onepiece.canUse(player), "Players should be able to see /onepiece");
+        helper.assertTrue(onepiece.getChild("help").canUse(player), "Players should see help");
+        helper.assertFalse(onepiece.getChild("debug").canUse(player), "Players must not receive the debug node");
+        helper.assertTrue(onepiece.getChild("debug").canUse(creator), "Creators must receive the debug node");
 
         List<String> debug = suggestions(server, creator, "onepiece debug ");
         for (String expected : List.of("config", "permissions", "fruit", "race", "faction")) {
