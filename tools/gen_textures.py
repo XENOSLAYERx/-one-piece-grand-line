@@ -269,12 +269,117 @@ def glyph_star(d):
     d.polygon(pts, fill=W)
 
 
+def glyph_snowflake(d):
+    for k in range(3):
+        a = math.pi / 3 * k
+        dx, dy = math.cos(a) * 28, math.sin(a) * 28
+        d.line([(32 - dx, 32 - dy), (32 + dx, 32 + dy)], fill=W, width=6)
+        for sgn in (-1, 1):
+            bx, by = 32 + sgn * dx * 0.6, 32 + sgn * dy * 0.6
+            for t in (-0.5, 0.5):
+                b = a + math.pi / 2 * t * 1.2
+                d.line([(bx, by), (bx + math.cos(b + (0 if sgn > 0 else math.pi)) * 10,
+                                   by + math.sin(b + (0 if sgn > 0 else math.pi)) * 10)], fill=W, width=4)
+
+
+def glyph_leaf(d):
+    d.polygon([(10, 54), (14, 28), (30, 12), (54, 8), (50, 32), (36, 50)], fill=W)
+    d.line([(10, 54), (46, 16)], fill=(0, 0, 0, 0), width=3)
+
+
+def glyph_hand(d):
+    d.rounded_rectangle([18, 30, 48, 58], radius=8, fill=W)
+    for i, h in enumerate((16, 8, 6, 12)):
+        x = 18 + i * 8
+        d.rounded_rectangle([x, h, x + 6, 36], radius=3, fill=W)
+    d.rounded_rectangle([46, 32, 58, 40], radius=3, fill=W)
+
+
+def glyph_wall(d):
+    for row in range(4):
+        y = 10 + row * 12
+        off = 0 if row % 2 == 0 else 10
+        for col in range(-1, 4):
+            x = 8 + off + col * 20
+            x0, x1 = max(8, x), min(56, x + 17)
+            if x1 > x0:
+                d.rectangle([x0, y, x1, y + 9], fill=W)
+
+
+def glyph_spear(d):
+    d.line([(10, 54), (46, 18)], fill=W, width=6)
+    d.polygon([(40, 12), (56, 8), (52, 24)], fill=W)
+
+
+def glyph_vortex(d):
+    for i in range(3):
+        r = 26 - i * 8
+        d.arc([32 - r, 32 - r, 32 + r, 32 + r], 30 + i * 70, 300 + i * 70, fill=W, width=5)
+    d.ellipse([28, 28, 36, 36], fill=W)
+
+
+def glyph_sun(d):
+    d.ellipse([20, 20, 44, 44], fill=W)
+    for k in range(8):
+        a = math.pi / 4 * k
+        d.line([(32 + math.cos(a) * 16, 32 + math.sin(a) * 16), (32 + math.cos(a) * 28, 32 + math.sin(a) * 28)],
+               fill=W, width=5)
+
+
+def glyph_skull(d):
+    d.ellipse([12, 8, 52, 44], fill=W)
+    d.rectangle([20, 38, 44, 54], fill=W)
+    clear = (0, 0, 0, 0)
+    d.ellipse([18, 22, 30, 34], fill=clear)
+    d.ellipse([34, 22, 46, 34], fill=clear)
+    for x in (24, 31, 38):
+        d.line([(x, 46), (x, 54)], fill=clear, width=3)
+
+
+def glyph_heart(d):
+    d.ellipse([8, 12, 34, 38], fill=W)
+    d.ellipse([30, 12, 56, 38], fill=W)
+    d.polygon([(10, 30), (54, 30), (32, 56)], fill=W)
+
+
+def glyph_cage(d):
+    d.rectangle([10, 8, 54, 14], fill=W)
+    d.rectangle([10, 50, 54, 56], fill=W)
+    for x in range(12, 56, 10):
+        d.rectangle([x, 12, x + 4, 52], fill=W)
+
+
+def glyph_tornado(d):
+    for i, (w, y) in enumerate(((26, 10), (21, 20), (16, 30), (11, 40), (7, 50))):
+        cx = 32 + (i % 2) * 3
+        d.rounded_rectangle([cx - w, y, cx + w, y + 6], radius=3, fill=W)
+
+
+def glyph_moon(d):
+    d.ellipse([10, 8, 54, 52], fill=W)
+    d.ellipse([22, 2, 62, 44], fill=(0, 0, 0, 0))
+
+
+def glyph_meteor(d):
+    d.ellipse([30, 30, 54, 54], fill=W)
+    for k, off in enumerate((0, 8, -8)):
+        d.line([(34 + off * 0.3, 34 - off), (10 + off, 10 - off * 0.2)], fill=W, width=5 - k)
+
+
+def glyph_sword(d):
+    d.polygon([(30, 4), (34, 4), (36, 40), (28, 40)], fill=W)
+    d.rectangle([18, 40, 46, 45], fill=W)
+    d.rectangle([29, 45, 35, 58], fill=W)
+
+
 GLYPHS = {
     "fist": glyph_fist, "kick": glyph_kick, "dash": glyph_dash, "jump": glyph_jump, "shield": glyph_shield,
     "beam": glyph_beam, "burst": glyph_burst, "wave": glyph_wave, "claw": glyph_claw, "flame": glyph_flame,
     "swirl": glyph_swirl, "blade": glyph_blade, "eye": glyph_eye, "crown": glyph_crown, "grab": glyph_grab,
     "orb": glyph_orb, "transform": glyph_transform, "bolt": glyph_bolt, "drop": glyph_drop, "cloud": glyph_cloud,
-    "star": glyph_star,
+    "star": glyph_star, "snowflake": glyph_snowflake, "leaf": glyph_leaf, "hand": glyph_hand, "wall": glyph_wall,
+    "spear": glyph_spear, "vortex": glyph_vortex, "sun": glyph_sun, "skull": glyph_skull, "heart": glyph_heart,
+    "cage": glyph_cage, "tornado": glyph_tornado, "moon": glyph_moon, "meteor": glyph_meteor, "sword": glyph_sword,
 }
 
 

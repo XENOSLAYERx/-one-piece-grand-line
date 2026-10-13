@@ -115,13 +115,20 @@ public final class AllFruitsTests {
 
     @GameTest(template = TEMPLATE, timeoutTicks = 60)
     public static void temporaryBlocksRevert(GameTestHelper helper) {
-        BlockPos pos = helper.absolutePos(new BlockPos(1, 2, 1));
-        helper.assertTrue(TempBlocks.place(helper.getLevel(), pos, Blocks.ICE.defaultBlockState(), 10), "Placed");
-        helper.assertTrue(helper.getLevel().getBlockState(pos).is(Blocks.ICE), "Ice is there");
-        helper.assertTrue(TempBlocks.isTemporary(helper.getLevel(), pos), "Tracked");
+        // Find open air above the (tiny) test structure.
+        BlockPos pos = helper.absolutePos(new BlockPos(0, 2, 0));
+        for (int i = 0; i < 12 && !helper.getLevel().getBlockState(pos).isAir(); i++) {
+            pos = pos.above();
+        }
+        BlockPos at = pos;
+        String found = helper.getLevel().getBlockState(at).toString();
+        helper.assertTrue(TempBlocks.place(helper.getLevel(), at, Blocks.ICE.defaultBlockState(), 10),
+                "Placed (found " + found + " at " + at.toShortString() + ")");
+        helper.assertTrue(helper.getLevel().getBlockState(at).is(Blocks.ICE), "Ice is there");
+        helper.assertTrue(TempBlocks.isTemporary(helper.getLevel(), at), "Tracked");
         helper.runAfterDelay(20, () -> {
-            helper.assertTrue(helper.getLevel().getBlockState(pos).isAir(), "Ice reverted to air");
-            helper.assertFalse(TempBlocks.isTemporary(helper.getLevel(), pos), "No longer tracked");
+            helper.assertTrue(helper.getLevel().getBlockState(at).isAir(), "Ice reverted to air");
+            helper.assertFalse(TempBlocks.isTemporary(helper.getLevel(), at), "No longer tracked");
             helper.succeed();
         });
     }

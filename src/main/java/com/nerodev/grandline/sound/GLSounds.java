@@ -53,6 +53,28 @@ public final class GLSounds {
     public static final Supplier<SoundEvent> HAKI_CLASH = register("haki.clash");
     public static final Supplier<SoundEvent> HAKI_CRACKLE = register("haki.crackle");
     public static final Supplier<SoundEvent> KNOCKOUT = register("haki.knockout");
+    // Logia elements
+    public static final Supplier<SoundEvent> SMOKE_WHOOSH = register("smoke.whoosh");
+    public static final Supplier<SoundEvent> SMOKE_BIND = register("smoke.bind");
+    public static final Supplier<SoundEvent> SAND_STORM = register("sand.storm");
+    public static final Supplier<SoundEvent> SAND_SLASH = register("sand.slash");
+    public static final Supplier<SoundEvent> SAND_DRAIN = register("sand.drain");
+    public static final Supplier<SoundEvent> RUMBLE_THUNDER = register("rumble.thunder");
+    public static final Supplier<SoundEvent> RUMBLE_ZAP = register("rumble.zap");
+    public static final Supplier<SoundEvent> ICE_FREEZE = register("ice.freeze");
+    public static final Supplier<SoundEvent> ICE_SHATTER = register("ice.shatter");
+    public static final Supplier<SoundEvent> DARK_VORTEX = register("dark.vortex");
+    public static final Supplier<SoundEvent> DARK_PULSE = register("dark.pulse");
+    public static final Supplier<SoundEvent> GLINT_LASER = register("glint.laser");
+    public static final Supplier<SoundEvent> GLINT_FLASH = register("glint.flash");
+    public static final Supplier<SoundEvent> MAGMA_ERUPTION = register("magma.eruption");
+    public static final Supplier<SoundEvent> MAGMA_SIZZLE = register("magma.sizzle");
+    public static final Supplier<SoundEvent> SWAMP_GULP = register("swamp.gulp");
+    public static final Supplier<SoundEvent> GAS_HISS = register("gas.hiss");
+    public static final Supplier<SoundEvent> GAS_BOOM = register("gas.boom");
+    public static final Supplier<SoundEvent> SNOW_GUST = register("snow.gust");
+    public static final Supplier<SoundEvent> FOREST_ROOTS = register("forest.roots");
+    public static final Supplier<SoundEvent> FOREST_CREAK = register("forest.creak");
 
     private GLSounds() {}
 

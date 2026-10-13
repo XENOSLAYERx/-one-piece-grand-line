@@ -5,6 +5,18 @@
       "grandline:combat/evade"
     ]
   },
+  "dark.pulse": {
+    "subtitle": "subtitles.grandline.dark.pulse",
+    "sounds": [
+      "grandline:dark/pulse"
+    ]
+  },
+  "dark.vortex": {
+    "subtitle": "subtitles.grandline.dark.vortex",
+    "sounds": [
+      "grandline:dark/vortex"
+    ]
+  },
   "flame.charge": {
     "subtitle": "subtitles.grandline.flame.charge",
     "sounds": [
@@ -51,6 +63,42 @@
     "subtitle": "subtitles.grandline.flame.wall",
     "sounds": [
       "grandline:flame/wall"
+    ]
+  },
+  "forest.creak": {
+    "subtitle": "subtitles.grandline.forest.creak",
+    "sounds": [
+      "grandline:forest/creak"
+    ]
+  },
+  "forest.roots": {
+    "subtitle": "subtitles.grandline.forest.roots",
+    "sounds": [
+      "grandline:forest/roots"
+    ]
+  },
+  "gas.boom": {
+    "subtitle": "subtitles.grandline.gas.boom",
+    "sounds": [
+      "grandline:gas/boom"
+    ]
+  },
+  "gas.hiss": {
+    "subtitle": "subtitles.grandline.gas.hiss",
+    "sounds": [
+      "grandline:gas/hiss"
+    ]
+  },
+  "glint.flash": {
+    "subtitle": "subtitles.grandline.glint.flash",
+    "sounds": [
+      "grandline:glint/flash"
+    ]
+  },
+  "glint.laser": {
+    "subtitle": "subtitles.grandline.glint.laser",
+    "sounds": [
+      "grandline:glint/laser"
     ]
   },
   "gum.bounce": {
@@ -161,6 +209,18 @@
       "grandline:haki/sense"
     ]
   },
+  "ice.freeze": {
+    "subtitle": "subtitles.grandline.ice.freeze",
+    "sounds": [
+      "grandline:ice/freeze"
+    ]
+  },
+  "ice.shatter": {
+    "subtitle": "subtitles.grandline.ice.shatter",
+    "sounds": [
+      "grandline:ice/shatter"
+    ]
+  },
   "leopard.claw": {
     "subtitle": "subtitles.grandline.leopard.claw",
     "sounds": [
@@ -177,6 +237,18 @@
     "subtitle": "subtitles.grandline.leopard.roar",
     "sounds": [
       "grandline:leopard/roar"
+    ]
+  },
+  "magma.eruption": {
+    "subtitle": "subtitles.grandline.magma.eruption",
+    "sounds": [
+      "grandline:magma/eruption"
+    ]
+  },
+  "magma.sizzle": {
+    "subtitle": "subtitles.grandline.magma.sizzle",
+    "sounds": [
+      "grandline:magma/sizzle"
     ]
   },
   "rokushiki.geppo": {
@@ -201,6 +273,60 @@
     "subtitle": "subtitles.grandline.rokushiki.tekkai_on",
     "sounds": [
       "grandline:rokushiki/tekkai_on"
+    ]
+  },
+  "rumble.thunder": {
+    "subtitle": "subtitles.grandline.rumble.thunder",
+    "sounds": [
+      "grandline:rumble/thunder"
+    ]
+  },
+  "rumble.zap": {
+    "subtitle": "subtitles.grandline.rumble.zap",
+    "sounds": [
+      "grandline:rumble/zap"
+    ]
+  },
+  "sand.drain": {
+    "subtitle": "subtitles.grandline.sand.drain",
+    "sounds": [
+      "grandline:sand/drain"
+    ]
+  },
+  "sand.slash": {
+    "subtitle": "subtitles.grandline.sand.slash",
+    "sounds": [
+      "grandline:sand/slash"
+    ]
+  },
+  "sand.storm": {
+    "subtitle": "subtitles.grandline.sand.storm",
+    "sounds": [
+      "grandline:sand/storm"
+    ]
+  },
+  "smoke.bind": {
+    "subtitle": "subtitles.grandline.smoke.bind",
+    "sounds": [
+      "grandline:smoke/bind"
+    ]
+  },
+  "smoke.whoosh": {
+    "subtitle": "subtitles.grandline.smoke.whoosh",
+    "sounds": [
+      "grandline:smoke/whoosh"
+    ]
+  },
+  "snow.gust": {
+    "subtitle": "subtitles.grandline.snow.gust",
+    "sounds": [
+      "grandline:snow/gust"
+    ]
+  },
+  "swamp.gulp": {
+    "subtitle": "subtitles.grandline.swamp.gulp",
+    "sounds": [
+      "grandline:swamp/gulp"
     ]
   }
 }

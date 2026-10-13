@@ -242,6 +242,43 @@ def sounds():
     write("haki/crackle", mix(crackle(0.35, 600) * envelope(int(0.35 * RATE), 0.002, 1.0, curve=2.5),
                               0.5 * thump(0.2, 180, 70, 3.0)))
     # Knock-out: a dull body drop.
+    # ---- Logia elements
+    write("smoke/whoosh", mix(env(lowpass_sweep(noise(0.7), 600, 2200), 0.12, 1.4), 0.3 * env(highpass(noise(0.7), 2500), 0.2, 1.4)))
+    write("smoke/bind", mix(env(lowpass_sweep(noise(0.5), 1800, 500), 0.04, 2.0), 0.4 * thump(0.3, 120, 60, 3.0)))
+    write("sand/storm", env(lowpass_sweep(noise(1.4), 900, 3200), 0.3, 1.0) * (0.8 + 0.2 * np.sin(2 * np.pi * 7 * t_axis(1.4))))
+    write("sand/slash", mix(env(highpass(lowpass_sweep(noise(0.5), 6000, 1200), 500), 0.01, 2.2),
+                            0.5 * crackle(0.5, 300) * envelope(int(0.5 * RATE), 0.01, 1.0, curve=2.0)))
+    write("sand/drain", mix(env(lowpass_sweep(noise(1.0), 3000, 300), 0.1, 1.2), 0.4 * crackle(1.0, 120)))
+    thunder = mix(env(highpass(noise(0.15), 2500), 0.001, 4), thump(1.6, 70, 25, 1.4),
+                  env(lowpass_sweep(noise(1.6), 2000, 120), 0.01, 1.6), 0.6 * crackle(1.0, 300))
+    write("rumble/thunder", thunder)
+    write("rumble/zap", mix(crackle(0.4, 900) * envelope(int(0.4 * RATE), 0.002, 1.0, curve=2.0),
+                            0.4 * env(tone(0.4, 900, 300, (1.0, 0.6, 0.3)), 0.002, 3.0)))
+    ice = metal(0.8, [1180, 1765, 2610, 3920, 5200], [0.35, 0.28, 0.2, 0.12, 0.08], [1, 0.8, 0.6, 0.45, 0.3])
+    write("ice/freeze", mix(ice * envelope(len(ice), 0.02, 1.0, curve=1.8), 0.5 * env(highpass(noise(0.8), 3000), 0.1, 1.5),
+                            0.4 * crackle(0.8, 160)))
+    write("ice/shatter", mix(metal(0.6, [2200, 3100, 4700, 6100], [0.15, 0.1, 0.08, 0.05], [1, 0.8, 0.6, 0.4]),
+                             0.9 * env(highpass(noise(0.3), 2500), 0.001, 3.5), 0.6 * crackle(0.5, 500)))
+    dark = tone(1.6, 60, 38, (1.0, 0.7, 0.5)) * (0.7 + 0.3 * np.sin(2 * np.pi * 3 * t_axis(1.6)))
+    write("dark/vortex", mix(env(dark, 0.3, 1.0), 0.5 * env(lowpass_sweep(noise(1.6), 300, 900), 0.4, 1.0)))
+    write("dark/pulse", mix(thump(0.9, 55, 22, 2.0), 0.5 * env(lowpass_sweep(noise(0.9), 600, 80), 0.01, 2.0)))
+    write("glint/laser", mix(env(tone(0.5, 2600, 1800, (1.0, 0.5, 0.3), vibrato=0.01, vib_rate=60), 0.005, 2.0),
+                             0.4 * env(highpass(noise(0.5), 5000), 0.005, 2.5)))
+    write("glint/flash", mix(env(tone(0.9, 1400, 4200, (1.0, 0.6, 0.4, 0.2)), 0.003, 2.0),
+                             0.5 * env(highpass(noise(0.9), 4000), 0.002, 2.4)))
+    write("magma/eruption", mix(thump(1.6, 50, 20, 1.6), env(lowpass_sweep(noise(1.6), 900, 140), 0.02, 1.6),
+                                0.7 * crackle(1.6, 90)))
+    write("magma/sizzle", mix(env(highpass(noise(1.0), 3500), 0.05, 1.3), 0.6 * crackle(1.0, 400)))
+    write("swamp/gulp", mix(env(tone(0.6, 160, 60, (1.0, 0.6), vibrato=0.08, vib_rate=11), 0.02, 2.0),
+                            0.5 * env(lowpass_sweep(noise(0.6), 700, 150), 0.02, 2.2)))
+    write("gas/hiss", env(highpass(lowpass_sweep(noise(1.2), 7000, 4000), 1500), 0.15, 1.2))
+    write("gas/boom", mix(thump(1.0, 80, 30, 2.2), env(lowpass_sweep(noise(1.0), 3000, 200), 0.004, 2.4),
+                          0.4 * env(highpass(noise(0.6), 3000), 0.3, 1.5)))
+    write("snow/gust", env(lowpass_sweep(noise(1.2), 1200, 5000), 0.25, 1.2) * (0.75 + 0.25 * np.sin(2 * np.pi * 4 * t_axis(1.2))))
+    write("forest/roots", mix(env(lowpass_sweep(noise(0.8), 500, 200), 0.05, 1.6), 0.6 * crackle(0.8, 70),
+                              0.5 * thump(0.5, 90, 45, 2.5)))
+    write("forest/creak", mix(env(tone(1.0, 110, 80, (1.0, 0.8, 0.6, 0.4), vibrato=0.06, vib_rate=7), 0.1, 1.4),
+                              0.4 * crackle(1.0, 60)))
     write("haki/knockout", mix(thump(0.5, 95, 40, 2.8), 0.4 * env(lowpass_sweep(noise(0.3), 900, 200), 0.004, 3)))
 
 
