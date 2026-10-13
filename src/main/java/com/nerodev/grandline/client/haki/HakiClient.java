@@ -56,6 +56,7 @@ public final class HakiClient {
     private static final Map<Integer, long[]> KNOCKED_OUT = new HashMap<>();
     private static float pressure;
     private static float flash;
+    private static boolean drawingArm;
 
     private HakiClient() {}
 
@@ -268,6 +269,11 @@ public final class HakiClient {
 
     /** Hardened arms in first person: draw the normal hand, then the coating over it. */
     private static void onRenderArm(RenderArmEvent event) {
+        // NeoForge fires this event from inside PlayerRenderer.renderRightHand/renderLeftHand, which we call
+        // below to draw the bare hand first: ignore that nested firing or it recurses forever.
+        if (drawingArm) {
+            return;
+        }
         AbstractClientPlayer player = event.getPlayer();
         int bits = HakiLayer.bits(player);
         if ((bits & (PublicState.HAKI_ARM | PublicState.HAKI_FULL_BODY | PublicState.HAKI_INFUSION)) == 0) {
@@ -278,10 +284,15 @@ public final class HakiClient {
         }
         event.setCanceled(true);
         boolean right = event.getArm() == HumanoidArm.RIGHT;
-        if (right) {
-            renderer.renderRightHand(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), player);
-        } else {
-            renderer.renderLeftHand(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), player);
+        drawingArm = true;
+        try {
+            if (right) {
+                renderer.renderRightHand(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), player);
+            } else {
+                renderer.renderLeftHand(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), player);
+            }
+        } finally {
+            drawingArm = false;
         }
         PlayerModel<AbstractClientPlayer> model = renderer.getModel();
         ModelPart sleeve = right ? model.rightSleeve : model.leftSleeve;
