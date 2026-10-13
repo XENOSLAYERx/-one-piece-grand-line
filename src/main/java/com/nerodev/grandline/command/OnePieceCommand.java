@@ -38,6 +38,7 @@ public final class OnePieceCommand {
 
         ProfileCommand.register(root);
         IdentityCommands.register(root);
+        AbilityCommands.register(root);
         DebugCommand.register(root);
 
         event.getDispatcher().register(root);
@@ -48,6 +49,7 @@ public final class OnePieceCommand {
         List<HelpEntry> entries = new ArrayList<>(HELP);
         entries.addAll(ProfileCommand.HELP);
         entries.addAll(IdentityCommands.HELP);
+        entries.addAll(AbilityCommands.HELP);
         entries.addAll(DebugCommand.HELP);
         return entries;
     }

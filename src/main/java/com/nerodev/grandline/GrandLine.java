@@ -1,11 +1,16 @@
 package com.nerodev.grandline;
 
 import com.mojang.logging.LogUtils;
+import com.nerodev.grandline.ability.AbilityManager;
+import com.nerodev.grandline.ability.GLAbilities;
 import com.nerodev.grandline.command.OnePieceCommand;
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.DeathModeHandler;
 import com.nerodev.grandline.data.GLAttachments;
+import com.nerodev.grandline.fx.GLParticles;
+import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.registry.GLRegistries;
+import com.nerodev.grandline.sound.GLSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -38,6 +43,13 @@ public final class GrandLine {
         // Player data (attachments) and death handling.
         GLAttachments.register(modBus);
         DeathModeHandler.register();
+
+        // Abilities, effects and networking.
+        GLAbilities.register(modBus);
+        GLParticles.register(modBus);
+        GLSounds.register(modBus);
+        AbilityManager.register();
+        modBus.addListener(GLNetwork::onRegisterPayloads);
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);

@@ -1,0 +1,7 @@
+{
+  "rokushiki.soru": { "subtitle": "subtitles.grandline.rokushiki.soru", "sounds": ["grandline:rokushiki/soru"] },
+  "rokushiki.geppo": { "subtitle": "subtitles.grandline.rokushiki.geppo", "sounds": ["grandline:rokushiki/geppo"] },
+  "rokushiki.tekkai_on": { "subtitle": "subtitles.grandline.rokushiki.tekkai_on", "sounds": ["grandline:rokushiki/tekkai_on"] },
+  "rokushiki.tekkai_block": { "subtitle": "subtitles.grandline.rokushiki.tekkai_block", "sounds": ["grandline:rokushiki/tekkai_block"] },
+  "combat.evade": { "subtitle": "subtitles.grandline.combat.evade", "sounds": ["grandline:combat/evade"] }
+}

@@ -1,0 +1,27 @@
+{
+  "key.categories.grandline": "One Piece: Grand Line",
+  "key.grandline.ability_1": "Ability slot 1",
+  "key.grandline.ability_2": "Ability slot 2",
+  "key.grandline.ability_3": "Ability slot 3",
+  "key.grandline.ability_4": "Ability slot 4",
+  "key.grandline.ability_5": "Ability slot 5",
+  "key.grandline.ability_menu": "Ability menu",
+
+  "screen.grandline.abilities": "Abilities",
+  "screen.grandline.abilities.hint": "Pick an ability, then click a slot. Right-click a slot to clear it.",
+  "screen.grandline.abilities.slots": "Slots",
+  "screen.grandline.abilities.none": "You have no abilities yet. Eat a Devil Fruit, train Haki or learn a fighting style. Creators can use /onepiece unlock all.",
+
+  "ability.grandline.soru": "Soru",
+  "ability.grandline.soru.desc": "Kick the ground dozens of times in an instant and vanish. Blink up to 8 blocks forward; attacks miss you for a moment.",
+  "ability.grandline.geppo": "Geppo",
+  "ability.grandline.geppo.desc": "Kick the air itself to jump again in mid-air. Up to 3 kicks before you must land. Cancels fall damage.",
+  "ability.grandline.tekkai": "Tekkai",
+  "ability.grandline.tekkai.desc": "Hold to harden your body like iron. Physical damage is cut to a quarter and knockback ignored, but you can barely move.",
+
+  "subtitles.grandline.rokushiki.soru": "Soru whooshes",
+  "subtitles.grandline.rokushiki.geppo": "Air kick",
+  "subtitles.grandline.rokushiki.tekkai_on": "Body hardens",
+  "subtitles.grandline.rokushiki.tekkai_block": "Iron body clangs",
+  "subtitles.grandline.combat.evade": "Attack evaded"
+}

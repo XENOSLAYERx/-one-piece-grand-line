@@ -1,6 +1,7 @@
 package com.nerodev.grandline.data;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.ability.AbilityState;
 import java.util.function.Supplier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
@@ -21,6 +22,14 @@ public final class GLAttachments {
                     .sync((holder, to) -> holder == to, PlayerData.STREAM_CODEC)
                     .build());
 
+    /** Slots, cooldowns, stamina, test flags. Saved, kept through death, synced to the owner only. */
+    public static final Supplier<AttachmentType<AbilityState>> ABILITY_STATE = ATTACHMENT_TYPES.register("ability_state",
+            () -> AttachmentType.builder(() -> new AbilityState())
+                    .serialize(AbilityState.CODEC)
+                    .copyOnDeath()
+                    .sync((holder, to) -> holder == to, AbilityState.STREAM_CODEC)
+                    .build());
+
     private GLAttachments() {}
 
     public static void register(IEventBus modBus) {
@@ -28,7 +37,7 @@ public final class GLAttachments {
     }
 
     /** True if the player has a real network connection (not a test or fake player without one). */
-    static boolean canSync(ServerPlayer player) {
+    public static boolean canSync(ServerPlayer player) {
         return player.connection != null;
     }
 }

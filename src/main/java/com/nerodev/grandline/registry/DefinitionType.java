@@ -1,5 +1,7 @@
 package com.nerodev.grandline.registry;
 
+import com.nerodev.grandline.ability.Ability;
+import com.nerodev.grandline.ability.GLAbilities;
 import com.nerodev.grandline.definition.DevilFruitDefinition;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
@@ -53,7 +55,20 @@ public record DefinitionType<T>(
                             .withStyle(s -> s.withColor(faction.color()))),
                     line("Description", faction.description())));
 
-    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION);
+    public static final DefinitionType<Ability> ABILITY = new DefinitionType<>(
+            "ability", GLAbilities.KEY, Ability::displayName,
+            ability -> {
+                Ability.Properties props = ability.properties();
+                return List.of(
+                        line("Activation", Component.literal(props.activation().name().toLowerCase(Locale.ROOT))),
+                        line("Category", Component.literal(props.category().name().toLowerCase(Locale.ROOT))),
+                        line("Cooldown", Component.literal(String.format(Locale.ROOT, "%.1fs", props.cooldownTicks() / 20f))),
+                        line("Stamina", Component.literal(String.format(Locale.ROOT, "%.0f (+%.1f/tick)",
+                                props.staminaCost(), props.staminaPerTick()))),
+                        line("Description", ability.description()));
+            });
+
+    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY);
 
     public Registry<T> registry(RegistryAccess access) {
         return access.registryOrThrow(key);
