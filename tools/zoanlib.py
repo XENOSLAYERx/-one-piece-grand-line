@@ -273,6 +273,17 @@ def paint_face(px, rect, face, mat, pal, pattern, rnd):
             apply_pattern(px, rect, pattern, pal, rnd)
     elif mat == "ice":
         fill(px, rect, lambda x, y, w, h: mix((200, 230, 255), (120, 180, 240), rnd.uniform(0, 0.4)) + (230,))
+    elif mat == "shell":
+        sc = pal.get("shell", accent)
+        seam = shade(sc, 0.55)
+
+        def fn(x, y, w, h):
+            # Hexagon-ish plates: staggered rows of five-pixel plates with dark seams.
+            row = y // 4
+            if y % 4 == 3 or (x + (row % 2) * 2) % 5 == 4:
+                return noisy(seam, rnd, 4)
+            return noisy(shade(sc, 1.08 if (x // 5 + row) % 2 else 0.95), rnd, 6)
+        fill(px, rect, fn)
     elif mat == "glow":
         gc = pal.get("glow", accent)
         fill(px, rect, lambda x, y, w, h: noisy(gc, rnd, 4))

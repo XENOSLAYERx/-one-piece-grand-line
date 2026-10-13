@@ -15,6 +15,7 @@ import com.nerodev.grandline.fruit.zoan.AlbatrossFruit;
 import com.nerodev.grandline.fruit.zoan.AxolotlFruit;
 import com.nerodev.grandline.fruit.zoan.AzureDragonFruit;
 import com.nerodev.grandline.fruit.zoan.BakotsuFruit;
+import com.nerodev.grandline.fruit.zoan.DachshundFruit;
 import com.nerodev.grandline.fruit.zoan.FalconFruit;
 import com.nerodev.grandline.fruit.zoan.GiraffeFruit;
 import com.nerodev.grandline.fruit.zoan.ItsumadeFruit;
@@ -64,5 +65,9 @@ public final class ZoanProjectileLooks {
         register(ItsumadeFruit.HELLFIRE, both(falling(Kind.FLAME, ItsumadeFruit.FIRE, 1.0f, 4, 8), zone(Kind.FLAME, 0.8f, 0.03f, true)));
         register(BakotsuFruit.CRESCENT, both(particles(0.6f, BakotsuFruit.FROST, Kind.SNOW, 0.8f, 3), sparse(Kind.STREAK, 0xFFFFFF, 0.6f, 2)));
         register(SandwormFruit.MAW, both(swirl(Kind.SHARD, 1.0f, 10, -1, SandwormFruit.SAND), zone(Kind.SMOKE, 1.2f, 0.02f, true)));
+
+        // Lassoo's sneezes: cannonballs trailing smoke.
+        register(DachshundFruit.CANNONBALL, both(particles(0.5f, DachshundFruit.BALL, Kind.GLOW, 0.3f, 1), sparse(Kind.SMOKE, 0xD8D0C8, 0.7f, 1)));
+        register(DachshundFruit.BIG_BALL, both(particles(1.2f, DachshundFruit.BALL, Kind.GLOW, 0.4f, 1), sparse(Kind.SMOKE, 0xD8D0C8, 1.2f, 1)));
     }
 }

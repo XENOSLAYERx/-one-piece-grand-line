@@ -484,6 +484,27 @@ def _(b, h):
     h_tusks(h)
 
 
+@species("turtle", pal(0x7A9A5A, 0x3A5A2A, 0xD8C890, shell=0x5A6A3A, eye=0x1A1A1A), overlay="scale", seed=36, gait=0.6)
+def _(b, h):
+    quadruped(b, leg=5, legw=4, body=(13, 6, 15), head=(5, 5, 6), snout=None, ears="none", tail=(2, 1, 3), body_mat="skin",
+              spread=1.5)
+    b.add("shell", "body", pivot=(0, -3, 0), cubes=[C(-8, -4, -9, 16, 5, 18, "shell"), C(-6, -6, -7, 12, 2, 14, "shell")])
+    b.add("plastron", "body", pivot=(0, 3, 0), cubes=[C(-6.5, 0, -7.5, 13, 1, 15, "belly")])
+    h.add("shell", anchor="BODY", pivot=(0, 0, 2), cubes=[C(-5, -0.5, 0, 10, 12, 3, "shell"), C(-4, 1, 3, 8, 9, 1, "shell")])
+    h.add("plastron", anchor="BODY", pivot=(0, 1, -2.2), cubes=[C(-3.5, 0, -0.5, 7, 9, 1, "belly")])
+
+
+@species("dachshund", pal(0xA86A3A, 0x3A2A1A, 0xC89A6A, eye=0x1A1A1A), seed=37, gait=1.4)
+def _(b, h):
+    quadruped(b, leg=4, legw=3, body=(7, 7, 20), head=(6, 6, 6), snout=(3, 3, 5), ears="none", tail=(2, 2, 6))
+    for side in (-1, 1):
+        b.add("ear_" + ("l" if side > 0 else "r"), "head", pivot=(side * 3, -3, -3), rot=(0, 0, side * 0.25), role="EAR", param=side,
+              cubes=[C(0 if side > 0 else -1, 0, -1.5, 1, 5, 3, "dark")])
+    h.add("ear_l", anchor="HEAD", pivot=(4, -7, 0), rot=(0, 0, 0.25), role="EAR", param=1, cubes=[C(0, 0, -1.5, 1, 5, 3, "dark")])
+    h.add("ear_r", anchor="HEAD", pivot=(-4, -7, 0), rot=(0, 0, -0.25), role="EAR", param=-1, cubes=[C(-1, 0, -1.5, 1, 5, 3, "dark")])
+    h_tail(h, w=2, n=3, l=4)
+
+
 # -- Ancient Zoans ----------------------------------------------------------------------------------------------
 
 @species("sabertooth", pal(0xE8A040, 0x3A2A1A, 0xF4DCA8, spot=0x5A3A1A, eye=0xE8D040), pattern="stripes", seed=16)

@@ -42,6 +42,8 @@ public final class ZoanBatch {
     public static final DeferredHolder<DevilFruit, AlbatrossFruit> ALBATROSS = GLFruits.register("albatross", AlbatrossFruit::new, Rarity.UNCOMMON);
     public static final DeferredHolder<DevilFruit, TanukiFruit> TANUKI = GLFruits.register("tanuki", TanukiFruit::new, Rarity.UNCOMMON);
     public static final DeferredHolder<DevilFruit, ElephantFruit> ELEPHANT = GLFruits.register("elephant", ElephantFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, TurtleFruit> TURTLE = GLFruits.register("turtle", TurtleFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, DachshundFruit> DACHSHUND = GLFruits.register("dachshund", DachshundFruit::new, Rarity.UNCOMMON);
 
     // Ancient Zoans
     public static final DeferredHolder<DevilFruit, SabertoothFruit> SABERTOOTH = GLFruits.register("sabertooth", SabertoothFruit::new, Rarity.RARE);
@@ -109,6 +111,8 @@ public final class ZoanBatch {
         AlbatrossFruit.init();
         TanukiFruit.init();
         ElephantFruit.init();
+        TurtleFruit.init();
+        DachshundFruit.init();
         SabertoothFruit.init();
         MammothFruit.init();
         AllosaurusFruit.init();
@@ -148,6 +152,8 @@ public final class ZoanBatch {
         AlbatrossFruit.behaviors();
         TanukiFruit.behaviors();
         ElephantFruit.behaviors();
+        TurtleFruit.behaviors();
+        DachshundFruit.behaviors();
         SabertoothFruit.behaviors();
         MammothFruit.behaviors();
         AllosaurusFruit.behaviors();

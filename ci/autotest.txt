@@ -1082,6 +1082,44 @@ wait 2
 shot 147_sandworm_beast
 cmd onepiece fruit remove
 wait 5
+look 270 5
+cmd onepiece fruit set grandline:turtle
+cmd onepiece ability equip 1 grandline:turtle_hybrid
+cmd onepiece ability equip 2 grandline:turtle_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 148_turtle_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 149_turtle_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:dachshund
+cmd onepiece ability equip 1 grandline:dachshund_hybrid
+cmd onepiece ability equip 2 grandline:dachshund_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 150_dachshund_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 151_dachshund_beast
+cmd onepiece fruit remove
+wait 5
 
 # ---- Menu
 camera first
