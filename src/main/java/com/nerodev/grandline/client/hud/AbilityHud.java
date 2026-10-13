@@ -125,8 +125,8 @@ public final class AbilityHud {
 
         // Key label, bottom-left, small.
         g.pose().pushPose();
-        g.pose().translate(x + 2, y + SLOT - 6, 200);
-        g.pose().scale(0.5f, 0.5f, 1f);
+        g.pose().translate(x + 2, y + SLOT - 7, 200);
+        g.pose().scale(0.66f, 0.66f, 1f);
         g.drawString(font, GLKeys.label(slot), 0, 0, ability == null ? 0xFF707888 : 0xFFE8ECF4, true);
         g.pose().popPose();
     }

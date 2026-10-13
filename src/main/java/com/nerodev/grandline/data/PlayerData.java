@@ -41,7 +41,9 @@ public final class PlayerData {
             Codec.unboundedMap(UnlockCategory.CODEC, ResourceLocation.CODEC.listOf())
                     .optionalFieldOf("unlocks", Map.of()).forGetter(PlayerData::unlocksForCodec),
             Codec.unboundedMap(Codec.STRING, Codec.DOUBLE)
-                    .optionalFieldOf("mastery", Map.of()).forGetter(d -> d.mastery)
+                    .optionalFieldOf("mastery", Map.of()).forGetter(d -> d.mastery),
+            ResourceLocation.CODEC.optionalFieldOf("fruit").forGetter(d -> d.fruit),
+            Codec.BOOL.optionalFieldOf("awakened", false).forGetter(d -> d.awakened)
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -54,13 +56,18 @@ public final class PlayerData {
     private DeathMode deathMode;
     private final EnumMap<UnlockCategory, Set<ResourceLocation>> unlocks = new EnumMap<>(UnlockCategory.class);
     private final Map<String, Double> mastery = new HashMap<>();
+    private Optional<ResourceLocation> fruit;
+    private boolean awakened;
 
     public PlayerData() {
-        this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of());
+        this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false);
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
-            Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery) {
+            Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
+            Optional<ResourceLocation> fruit, boolean awakened) {
+        this.fruit = fruit;
+        this.awakened = awakened;
         this.race = race;
         this.faction = faction;
         this.bounty = clampBounty(bounty);
@@ -109,6 +116,30 @@ public final class PlayerData {
 
     public void setDeathMode(DeathMode deathMode) {
         this.deathMode = deathMode;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Devil Fruit
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** The Devil Fruit this player has eaten, if any. Change through FruitManager, not directly. */
+    public Optional<ResourceLocation> fruit() {
+        return fruit;
+    }
+
+    public void setFruit(Optional<ResourceLocation> fruit) {
+        this.fruit = fruit;
+        if (fruit.isEmpty()) {
+            this.awakened = false;
+        }
+    }
+
+    public boolean isAwakened() {
+        return awakened;
+    }
+
+    public void setAwakened(boolean awakened) {
+        this.awakened = awakened && fruit.isPresent();
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -176,6 +207,8 @@ public final class PlayerData {
         other.unlocks.forEach((category, ids) -> this.unlocks.put(category, new LinkedHashSet<>(ids)));
         this.mastery.clear();
         this.mastery.putAll(other.mastery);
+        this.fruit = other.fruit;
+        this.awakened = other.awakened;
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {

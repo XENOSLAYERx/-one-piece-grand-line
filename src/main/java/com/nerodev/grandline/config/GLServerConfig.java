@@ -25,6 +25,14 @@ public final class GLServerConfig {
     public static final ModConfigSpec.ConfigValue<List<? extends String>> CREATOR_UUIDS;
     public static final ModConfigSpec.BooleanValue SINGLEPLAYER_OWNER_IS_CREATOR;
 
+    public static final ModConfigSpec.DoubleValue COOLDOWN_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue STAMINA_COST_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue ABILITY_DAMAGE_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue MASTERY_GAIN_MULTIPLIER;
+    public static final ModConfigSpec.BooleanValue ABILITY_PVP;
+    public static final ModConfigSpec.BooleanValue ABILITY_GRIEFING;
+    public static final ModConfigSpec.BooleanValue SECOND_FRUIT_KILLS;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -53,7 +61,65 @@ public final class GLServerConfig {
                 .define("singleplayerOwnerIsCreator", false);
 
         BUILDER.pop();
+
+        BUILDER.comment("Ability and Devil Fruit balance.").push("gameplay");
+        COOLDOWN_MULTIPLIER = BUILDER
+                .comment("Multiplies every ability cooldown. 0.5 = half as long.")
+                .defineInRange("cooldownMultiplier", 1.0, 0.0, 10.0);
+        STAMINA_COST_MULTIPLIER = BUILDER
+                .comment("Multiplies every ability stamina cost.")
+                .defineInRange("staminaCostMultiplier", 1.0, 0.0, 10.0);
+        ABILITY_DAMAGE_MULTIPLIER = BUILDER
+                .comment("Multiplies damage dealt by abilities.")
+                .defineInRange("abilityDamageMultiplier", 1.0, 0.0, 10.0);
+        MASTERY_GAIN_MULTIPLIER = BUILDER
+                .comment("Multiplies mastery gained from using abilities.")
+                .defineInRange("masteryGainMultiplier", 1.0, 0.0, 100.0);
+        ABILITY_PVP = BUILDER
+                .comment("If false, abilities never damage other players.")
+                .define("abilityPvp", true);
+        ABILITY_GRIEFING = BUILDER
+                .comment("If true, abilities may set blocks on fire or break weak blocks.")
+                .define("abilityGriefing", false);
+        SECOND_FRUIT_KILLS = BUILDER
+                .comment("If true, deliberately eating a second Devil Fruit (sneak + eat) kills you in normal death mode,",
+                        "as in the story. Creator death mode always swaps fruits instead.")
+                .define("secondFruitKills", true);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
+    }
+
+    private static <T> T value(ModConfigSpec.ConfigValue<T> value) {
+        return isLoaded() ? value.get() : value.getDefault();
+    }
+
+    public static double cooldownMultiplier() {
+        return value(COOLDOWN_MULTIPLIER);
+    }
+
+    public static double staminaCostMultiplier() {
+        return value(STAMINA_COST_MULTIPLIER);
+    }
+
+    public static double abilityDamageMultiplier() {
+        return value(ABILITY_DAMAGE_MULTIPLIER);
+    }
+
+    public static double masteryGainMultiplier() {
+        return value(MASTERY_GAIN_MULTIPLIER);
+    }
+
+    public static boolean abilityPvp() {
+        return value(ABILITY_PVP);
+    }
+
+    public static boolean abilityGriefing() {
+        return value(ABILITY_GRIEFING);
+    }
+
+    public static boolean secondFruitKills() {
+        return value(SECOND_FRUIT_KILLS);
     }
 
     /** Parsed copy of {@link #CREATOR_UUIDS}; rebuilt whenever the config (re)loads. */

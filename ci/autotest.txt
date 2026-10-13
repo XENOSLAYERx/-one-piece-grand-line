@@ -8,6 +8,9 @@ cmd gamemode survival
 cmd onepiece invincible on
 cmd onepiece unlock all
 cmd onepiece cooldown off
+cmd onepiece ability equip 1 grandline:soru
+cmd onepiece ability equip 2 grandline:geppo
+cmd onepiece ability equip 3 grandline:tekkai
 wait 20
 look 0 0
 shot 01_hud
@@ -18,7 +21,7 @@ look 0 10
 wait 5
 shot 02_idle_front
 press 3
-wait 8
+wait 4
 shot 03_tekkai
 wait 12
 shot 04_tekkai_hold
@@ -31,7 +34,7 @@ look 90 15
 wait 5
 press 1
 release 1
-wait 1
+wait 2
 shot 05_soru_a
 wait 2
 shot 06_soru_b

@@ -206,8 +206,11 @@ final class AbilityCommands {
 
     /** Unlocks every registered ability. Fruits, styles and weapons join this as their systems arrive. */
     private static int unlockAll(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets) {
+        // Registry iteration follows registration order, so slots fill predictably.
         Map<ResourceLocation, Ability> all = new java.util.LinkedHashMap<>();
-        GLAbilities.REGISTRY.entrySet().forEach(entry -> all.put(entry.getKey().location(), entry.getValue()));
+        for (Ability ability : GLAbilities.REGISTRY) {
+            all.put(ability.id(), ability);
+        }
         for (ServerPlayer player : targets) {
             GLPlayer.edit(player, data -> all.keySet().forEach(id -> data.unlock(UnlockCategory.ABILITY, id)));
             AbilityState state = AbilityState.of(player);
