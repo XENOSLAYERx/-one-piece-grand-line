@@ -43,7 +43,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * Melee combat on top of vanilla's: combos, heavy, air, dash and counter attacks, dodging and guarding.
+ * Melee combat on top of vanilla's: combos, heavy, air, dash and counter attacks, dodging and guarding. Only the blow
+ * a player actually swings at its target is graded (not sweep damage to bystanders).
  * <p>
  * Everything is decided on the server. The client only reports "dodge pressed (with this movement input)" and
  * "guard key down/up"; attacks are ordinary vanilla attacks that this class grades as they land:
@@ -112,6 +113,7 @@ public final class CombatManager {
         long counterUntil;
         float pendingStrength = 1f;
         long pendingTick = Long.MIN_VALUE / 2;
+        int pendingTarget = -1;
     }
 
     public static void register() {
@@ -171,6 +173,7 @@ public final class CombatManager {
         }
         s.pendingStrength = player.getAttackStrengthScale(0.5f);
         s.pendingTick = AbilityManager.now(player);
+        s.pendingTarget = event.getTarget().getId();
     }
 
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
@@ -184,7 +187,12 @@ public final class CombatManager {
         }
         if (source.getEntity() instanceof ServerPlayer attacker && attacker != target && source.getDirectEntity() == attacker
                 && source.is(DamageTypes.PLAYER_ATTACK)) {
-            event.setAmount(strike(attacker, target, event.getAmount()));
+            // Only the blow the player actually swung at is graded, once: sweep damage to bystanders is not.
+            State s = state(attacker);
+            if (s.pendingTarget == target.getId() && AbilityManager.now(attacker) - s.pendingTick <= 1) {
+                s.pendingTarget = -1;
+                event.setAmount(strike(attacker, target, event.getAmount()));
+            }
         }
     }
 

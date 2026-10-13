@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fills in missing ability names and descriptions in en_us.json.
 
-Scans the fruit sources for ``ability("id", Move::new)`` registrations and takes:
+Scans the fruit and fighting-style sources for ``ability("id", Move::new)`` registrations and takes:
   - the display name from an ``@name Display Name`` line in the move's javadoc, else NAMES, else the id title-cased
-    (for Paramecia and Zoan moves, whose ids start with "<fruit id>_", that prefix is left out of the name);
+    (for Paramecia, Zoan and style moves, whose ids start with "<fruit or style id>_", that prefix is left out);
   - the description from the rest of the javadoc above ``class Move``.
 Existing keys are never touched, so hand-written text always wins.
 """
@@ -13,7 +13,8 @@ import re
 import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
-SOURCES = os.path.join(ROOT, "src", "main", "java", "com", "nerodev", "grandline", "fruit")
+PACKAGE = os.path.join(ROOT, "src", "main", "java", "com", "nerodev", "grandline")
+SOURCES = [os.path.join(PACKAGE, "fruit"), os.path.join(PACKAGE, "style")]
 LANG = os.path.join(ROOT, "src", "main", "resources", "assets", "grandline", "lang", "en_us.json")
 
 SMALL = {"no", "of", "the", "de", "a", "el", "la", "del"}
@@ -61,13 +62,14 @@ def main():
         lang = json.load(f)
     added = 0
     missing_docs = []
-    for folder, _, files in os.walk(SOURCES):
+    walked = [entry for source_dir in SOURCES for entry in os.walk(source_dir)]
+    for folder, _, files in walked:
         for name in sorted(files):
             if not name.endswith(".java"):
                 continue
             source = open(os.path.join(folder, name), encoding="utf-8").read()
-            prefixed = os.sep + "paramecia" in folder or os.sep + "zoan" in folder
-            fruit = re.search(r'"fruit/grandline:([a-z0-9_]+)"', source)
+            prefixed = os.sep + "paramecia" in folder or os.sep + "zoan" in folder or os.sep + "style" in folder
+            fruit = re.search(r'"(?:fruit|style)/grandline:([a-z0-9_]+)"', source)
             fruit_id = fruit.group(1) if fruit and prefixed else None
             for doc, fruit_form in FORMS.findall(source):
                 for body in ("hybrid", "beast"):
