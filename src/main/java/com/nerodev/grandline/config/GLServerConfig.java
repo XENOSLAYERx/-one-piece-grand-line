@@ -38,6 +38,13 @@ public final class GLServerConfig {
     public static final ModConfigSpec.IntValue OBSERVATION_TRAINING_HITS;
     public static final ModConfigSpec.DoubleValue CONQUERORS_CHANCE;
 
+    public static final ModConfigSpec.IntValue COMBO_WINDOW_TICKS;
+    public static final ModConfigSpec.IntValue PARRY_WINDOW_TICKS;
+    public static final ModConfigSpec.DoubleValue GUARD_REDUCTION;
+    public static final ModConfigSpec.DoubleValue DODGE_STAMINA;
+    public static final ModConfigSpec.IntValue DODGE_COOLDOWN_TICKS;
+    public static final ModConfigSpec.DoubleValue HEAVY_ATTACK_STAMINA;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -107,11 +114,56 @@ public final class GLServerConfig {
                 .defineInRange("conquerorsChance", 0.05, 0.0, 1.0);
         BUILDER.pop();
 
+        BUILDER.comment("Combat: combos, dodging and guarding.").push("combat");
+        COMBO_WINDOW_TICKS = BUILDER
+                .comment("Ticks a player has to land the next blow before their combo drops.")
+                .defineInRange("comboWindowTicks", 30, 5, 200);
+        PARRY_WINDOW_TICKS = BUILDER
+                .comment("Ticks after raising a guard during which a blow is parried outright (and can be countered).")
+                .defineInRange("parryWindowTicks", 6, 0, 40);
+        GUARD_REDUCTION = BUILDER
+                .comment("Share (0-1) of a blow from the front that a guard stops. The guard pays for it in stamina.")
+                .defineInRange("guardReduction", 0.6, 0.0, 1.0);
+        DODGE_STAMINA = BUILDER
+                .comment("Stamina a dodge costs.")
+                .defineInRange("dodgeStamina", 12.0, 0.0, 100.0);
+        DODGE_COOLDOWN_TICKS = BUILDER
+                .comment("Ticks between two dodges.")
+                .defineInRange("dodgeCooldownTicks", 18, 0, 200);
+        HEAVY_ATTACK_STAMINA = BUILDER
+                .comment("Stamina a heavy attack (attacking while sneaking) costs.")
+                .defineInRange("heavyAttackStamina", 6.0, 0.0, 100.0);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 
     private static <T> T value(ModConfigSpec.ConfigValue<T> value) {
         return isLoaded() ? value.get() : value.getDefault();
+    }
+
+    public static int comboWindowTicks() {
+        return value(COMBO_WINDOW_TICKS);
+    }
+
+    public static int parryWindowTicks() {
+        return value(PARRY_WINDOW_TICKS);
+    }
+
+    public static float guardReduction() {
+        return value(GUARD_REDUCTION).floatValue();
+    }
+
+    public static float dodgeStamina() {
+        return value(DODGE_STAMINA).floatValue();
+    }
+
+    public static int dodgeCooldownTicks() {
+        return value(DODGE_COOLDOWN_TICKS);
+    }
+
+    public static float heavyAttackStamina() {
+        return value(HEAVY_ATTACK_STAMINA).floatValue();
     }
 
     public static double cooldownMultiplier() {

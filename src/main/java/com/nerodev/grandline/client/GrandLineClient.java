@@ -3,6 +3,8 @@ package com.nerodev.grandline.client;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.client.anim.AnimationLoader;
 import com.nerodev.grandline.client.anim.PlayerAnimator;
+import com.nerodev.grandline.client.combat.ClientCombat;
+import com.nerodev.grandline.client.combat.CombatHud;
 import com.nerodev.grandline.client.dev.ClientAutoTest;
 import com.nerodev.grandline.client.fruit.LogiaLooks;
 import com.nerodev.grandline.client.fruit.ParameciaLooksA;
@@ -50,6 +52,7 @@ public final class GrandLineClient {
     public GrandLineClient(IEventBus modBus, ModContainer container) {
         modBus.addListener(GLKeys::register);
         modBus.addListener(AbilityHud::register);
+        modBus.addListener(CombatHud::register);
         modBus.addListener(HakiClient::registerOverlay);
         modBus.addListener(GLParticleProviders::register);
         modBus.addListener(RegisterClientReloadListenersEvent.class,
@@ -97,6 +100,7 @@ public final class GrandLineClient {
             ClientVisuals.clear();
             HakiClient.clear();
             StatusVisuals.clear();
+            ClientCombat.reset();
         });
     }
 

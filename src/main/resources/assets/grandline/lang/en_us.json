@@ -2633,5 +2633,7 @@
   "ability.grandline.ton_hammer_fall": "Hundred-Ton Hammer",
   "ability.grandline.ton_hammer_fall.desc": "Leap and come down on the spot you point at as a hundred-ton hammer: a crater, and everything there knocked flat.",
   "ability.grandline.ton_thousand_ton_meteor": "Thousand-Ton Meteor",
-  "ability.grandline.ton_thousand_ton_meteor.desc": "Launch yourself high, then turn to a thousand tons: wherever you land is crushed for nine blocks around."
+  "ability.grandline.ton_thousand_ton_meteor.desc": "Launch yourself high, then turn to a thousand tons: wherever you land is crushed for nine blocks around.",
+  "key.grandline.dodge": "Dodge",
+  "key.grandline.guard": "Guard (hold)"
 }

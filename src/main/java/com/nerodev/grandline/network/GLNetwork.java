@@ -6,6 +6,7 @@ import com.nerodev.grandline.ability.AbilityManager;
 import com.nerodev.grandline.ability.AbilityState;
 import com.nerodev.grandline.ability.GLAbilities;
 import com.nerodev.grandline.client.ClientPayloads;
+import com.nerodev.grandline.combat.CombatManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -25,10 +26,22 @@ public final class GLNetwork {
 
         registrar.playToServer(AbilityKeyPayload.TYPE, AbilityKeyPayload.STREAM_CODEC, GLNetwork::onAbilityKey);
         registrar.playToServer(SetSlotPayload.TYPE, SetSlotPayload.STREAM_CODEC, GLNetwork::onSetSlot);
+        registrar.playToServer(DodgePayload.TYPE, DodgePayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) {
+                CombatManager.dodge(player, payload.forward(), payload.left());
+            }
+        });
+        registrar.playToServer(GuardPayload.TYPE, GuardPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) {
+                CombatManager.setGuard(player, payload.down());
+            }
+        });
 
         registrar.playToClient(FxPayload.TYPE, FxPayload.STREAM_CODEC, (payload, context) -> ClientPayloads.onFx(payload));
         registrar.playToClient(AnimationPayload.TYPE, AnimationPayload.STREAM_CODEC,
                 (payload, context) -> ClientPayloads.onAnimation(payload));
+        registrar.playToClient(CombatSyncPayload.TYPE, CombatSyncPayload.STREAM_CODEC,
+                (payload, context) -> ClientPayloads.onCombatSync(payload));
     }
 
     private static void onAbilityKey(AbilityKeyPayload payload, IPayloadContext context) {

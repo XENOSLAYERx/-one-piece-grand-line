@@ -3,6 +3,8 @@ package com.nerodev.grandline.client.dev;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.client.screen.AbilityScreen;
 import com.nerodev.grandline.network.AbilityKeyPayload;
+import com.nerodev.grandline.network.DodgePayload;
+import com.nerodev.grandline.network.GuardPayload;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +34,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * press 1 / release 1        # ability slot key (1-5), same packet as the real key
  * look 90 10                 # yaw pitch
  * body 40                    # turn the body this many degrees from the head (three-quarter views)
+ * guard on|off               # raise or lower the guard (same packet as the real key)
+ * dodge                      # dodge left (same packet as the real key)
  * camera front|back|first
  * jump
  * attack                     # left-click whatever is under the crosshair
@@ -135,6 +139,8 @@ public final class ClientAutoTest {
                 mc.player.yBodyRot = mc.player.getYRot() + Float.parseFloat(arg);
                 mc.player.yBodyRotO = mc.player.yBodyRot;
             }
+            case "guard" -> PacketDistributor.sendToServer(new GuardPayload("on".equals(arg)));
+            case "dodge" -> PacketDistributor.sendToServer(new DodgePayload((byte) 0, (byte) 1));
             case "camera" -> mc.options.setCameraType(switch (arg) {
                 case "front" -> CameraType.THIRD_PERSON_FRONT;
                 case "back" -> CameraType.THIRD_PERSON_BACK;

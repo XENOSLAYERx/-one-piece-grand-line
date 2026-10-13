@@ -3,6 +3,7 @@ package com.nerodev.grandline;
 import com.mojang.logging.LogUtils;
 import com.nerodev.grandline.ability.AbilityManager;
 import com.nerodev.grandline.ability.GLAbilities;
+import com.nerodev.grandline.combat.CombatManager;
 import com.nerodev.grandline.command.OnePieceCommand;
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.DeathModeHandler;
@@ -82,6 +83,7 @@ public final class GrandLine {
         // Haki.
         HakiAbilities.register(modBus);
         HakiManager.register();
+        CombatManager.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);

@@ -104,6 +104,9 @@ public final class GLEffects {
     public static final ResourceLocation ANIM_CONQUEROR_RELEASE = GrandLine.id("conqueror_release");
     public static final ResourceLocation ANIM_SIDESTEP = GrandLine.id("sidestep");
     public static final ResourceLocation ANIM_FOCUS = GrandLine.id("focus");
+    public static final ResourceLocation ANIM_GUARD = GrandLine.id("guard");
+    public static final ResourceLocation ANIM_PARRY = GrandLine.id("parry");
+    public static final ResourceLocation ANIM_UPPERCUT = GrandLine.id("uppercut");
     public static final ResourceLocation ANIM_STOP = GrandLine.id("stop");
 
     private GLEffects() {}

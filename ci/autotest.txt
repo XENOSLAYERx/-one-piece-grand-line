@@ -432,6 +432,22 @@ cmd kill @e[type=!minecraft:player]
 cmd onepiece fruit remove
 wait 10
 
+# ---- Combat: the guard pose and a dodge
+cmd kill @e[type=!minecraft:player]
+camera front
+look 270 5
+guard on
+wait 12
+body 30
+wait 2
+shot 76_guard
+guard off
+wait 10
+dodge
+wait 2
+shot 77_dodge
+wait 20
+
 # ---- Zoans: each body at a three-quarter angle once the transformation smoke has cleared (hybrid, then full beast)
 camera front
 cmd kill @e[type=!minecraft:player]

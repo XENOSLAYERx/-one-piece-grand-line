@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.nerodev.grandline.ability.AbilityState;
 import com.nerodev.grandline.client.screen.AbilityScreen;
 import com.nerodev.grandline.network.AbilityKeyPayload;
+import com.nerodev.grandline.network.DodgePayload;
+import com.nerodev.grandline.network.GuardPayload;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -12,7 +14,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Ability keys. Defaults Z X C V G for the five slots and R for the ability menu; all remappable in Controls.
+ * Ability and combat keys. Defaults Z X C V G for the five slots, R for the ability menu, Left Alt to dodge and B to
+ * guard; all remappable in Controls.
  * The client only reports key edges (down/up). The server decides what happens.
  */
 public final class GLKeys {
@@ -23,6 +26,10 @@ public final class GLKeys {
     public static final KeyMapping[] SLOTS = new KeyMapping[AbilityState.SLOT_COUNT];
     public static final KeyMapping ABILITY_MENU = new KeyMapping("key.grandline.ability_menu", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, CATEGORY);
+    public static final KeyMapping DODGE = new KeyMapping("key.grandline.dodge", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT, CATEGORY);
+    public static final KeyMapping GUARD = new KeyMapping("key.grandline.guard", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, CATEGORY);
 
     static {
         for (int i = 0; i < SLOTS.length; i++) {
@@ -32,6 +39,7 @@ public final class GLKeys {
     }
 
     private static final boolean[] wasDown = new boolean[AbilityState.SLOT_COUNT];
+    private static boolean guardWasDown;
 
     private GLKeys() {}
 
@@ -40,6 +48,8 @@ public final class GLKeys {
             event.register(key);
         }
         event.register(ABILITY_MENU);
+        event.register(DODGE);
+        event.register(GUARD);
     }
 
     /** Sends a payload whenever a slot key changes state. Opening any screen counts as releasing every key. */
@@ -54,6 +64,21 @@ public final class GLKeys {
                 if (inGame) {
                     PacketDistributor.sendToServer(new AbilityKeyPayload(i, down));
                 }
+            }
+        }
+        boolean guard = listening && GUARD.isDown();
+        if (guard != guardWasDown) {
+            guardWasDown = guard;
+            if (inGame) {
+                PacketDistributor.sendToServer(new GuardPayload(guard));
+            }
+        }
+        while (DODGE.consumeClick()) {
+            if (listening) {
+                // The server decides the direction from the movement keys held right now.
+                float forward = mc.player.input.forwardImpulse;
+                float left = mc.player.input.leftImpulse;
+                PacketDistributor.sendToServer(new DodgePayload((byte) Math.signum(forward), (byte) Math.signum(left)));
             }
         }
         while (ABILITY_MENU.consumeClick()) {
