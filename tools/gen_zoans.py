@@ -554,7 +554,7 @@ def _(b, h):
     h_tail(h, w=6, n=4, l=6, mat="scale", pitch=-0.5)
 
 
-@species("pteranodon", pal(0x3A3A4A, 0xE84A2A, 0x6A6A7A, beak=0xC8B890, membrane=0x8A5A4A, eye=0xF0D040), overlay="skin", eyes="side", seed=20)
+@species("pteranodon", pal(0x3A3A4A, 0xE84A2A, 0x6A6A7A, beak=0xC8B890, membrane=0x8A5A4A, eye=0xF0D040), overlay="skin", eyes="side", seed=20, scale=1.4)
 def _(b, h):
     bird(b, body=(6, 6, 11), leg=5, head=(4, 4, 5), beak=(2, 2, 9), wing=(13, 10), tip=(15, 7), tail=None, crest=(1, 7, 2), body_mat="skin")
     for side in (-1, 1):
@@ -607,7 +607,7 @@ def _(b, h):
 # -- Mythical Zoans ---------------------------------------------------------------------------------------------
 
 @species("phoenix", pal(0x3A8AE8, 0xF0E040, 0x6AB8F8, flame_lo=0x2A6AE8, flame_hi=0xF0F080, beak=0xF0E040, eye=0xF0F0F0),
-         overlay="flame", eyes="side", seed=25)
+         overlay="flame", eyes="side", seed=25, scale=1.8)
 def _(b, h):
     bird(b, body=(7, 7, 12), leg=6, head=(5, 5, 5), beak=(2, 2, 2), wing=(12, 10), tip=(13, 8), tail=None)
     for n in ("wing_l", "wing_r", "tip_l", "tip_r"):
@@ -719,7 +719,7 @@ def _(b, h):
 
 
 @species("itsumade", pal(0x4A2A2A, 0xE84A2A, 0x6A3A3A, beak=0x2A1A1A, eye=0xF0D040, flame_lo=0xE84A2A, flame_hi=0xF0D040),
-         overlay="feather", eyes="side", seed=32)
+         overlay="feather", eyes="side", seed=32, scale=2.0)
 def _(b, h):
     bird(b, body=(8, 8, 13), leg=6, head=(5, 5, 6), beak=(2, 2, 4), wing=(13, 11), tip=(14, 8), tail=None)
     for i, yaw in enumerate((-0.15, 0.15)):

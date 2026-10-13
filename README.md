@@ -11,7 +11,7 @@ styles, ships, islands, factions, bosses and crews. Built for both RPG players (
 | 1. Core framework: registries, config, permission tiers, `/onepiece help` and `debug` | Done |
 | 2. Player data: attachments, sync, persistence through death/relog/restart | Done |
 | 3. Ability framework: keybinds, cooldowns, stamina, HUD, ability menu, body animations | Done |
-| 4. Devil Fruits: Flame (Logia), Gum (Paramecia), Leopard (Zoan) with mastery and awakening | Done |
+| 4. Devil Fruits: all 139 canon fruits (12 Logia, 90 Paramecia, 17 Zoan, 9 Ancient Zoan, 11 Mythical Zoan) with mastery and awakening | Done |
 | 5. Haki: Observation, Armament, Conqueror's | Done |
 | 6+. Combat, weapons and Seastone, races, creator menu, ships, islands, NPCs, bounty, bosses, quests | Planned |
 
@@ -26,6 +26,11 @@ All keys can be rebound under Controls > One Piece: Grand Line.
 
 **Devil Fruits** are eaten (one per body; a second one kills). Using a fruit trains its mastery (0-100), which
 unlocks stronger techniques; at 100 the fruit awakens. Any water drains fruit powers.
+
+Every fruit has five techniques and two awakened ones, designed from what it does in canon. Logia users turn
+intangible (Armament Haki and Seastone still hit them). Zoan users switch between their human, hybrid and full beast
+bodies, each with its own model, movement and stats; Mythical Zoans carry their legend's power (the Phoenix's
+regeneration, Yamata no Orochi's eight lives, the Nine-Tailed Fox's perfect disguises).
 
 **Haki** awakens through fighting: land enough blows and Armament awakens, take enough and Observation does.
 Conqueror's Haki is something you are born with (a small chance per player, set in the config). Using Haki raises

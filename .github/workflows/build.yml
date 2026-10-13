@@ -106,6 +106,7 @@ jobs:
 
       - name: Publish screenshots and logs
         if: always()
+        timeout-minutes: 10
         run: |
           mkdir -p publish
           cp -r run-autotest/screenshots/. publish/ 2>/dev/null || true
