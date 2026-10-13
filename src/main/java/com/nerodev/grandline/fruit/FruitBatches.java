@@ -1,5 +1,8 @@
 package com.nerodev.grandline.fruit;
 
+import com.nerodev.grandline.fruit.logia.LogiaBatch;
+import net.neoforged.bus.api.IEventBus;
+
 /**
  * Loads every fruit batch class so their fruits and abilities are registered before the registries are handed to
  * the mod bus. A batch is a class whose static fields register fruits through {@link GLFruits#register} and
@@ -9,6 +12,10 @@ final class FruitBatches {
     private FruitBatches() {}
 
     static void load() {
-        // Batches are added here as they are written.
+        LogiaBatch.load();
+    }
+
+    static void register(IEventBus modBus) {
+        LogiaBatch.register(modBus);
     }
 }

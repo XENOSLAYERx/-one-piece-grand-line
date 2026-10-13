@@ -113,9 +113,12 @@ public final class LightningVisual implements ClientVisuals.Visual {
         float fade = Math.min(1f, life * 2.5f);
         Matrix4f matrix = pose.last().pose();
         VertexConsumer glowBuffer = buffers.getBuffer(RenderType.lightning());
-        ribbon(glowBuffer, matrix, camera, path, width * 3f, glow, 0.55f * fade);
+        // Two additive layers fake a soft falloff: a wide faint halo and a tighter, brighter edge.
+        ribbon(glowBuffer, matrix, camera, path, width * 4.2f, glow, 0.18f * fade);
+        ribbon(glowBuffer, matrix, camera, path, width * 2.2f, glow, 0.38f * fade);
         if (fork != null) {
-            ribbon(glowBuffer, matrix, camera, fork, width * 2f, glow, 0.4f * fade);
+            ribbon(glowBuffer, matrix, camera, fork, width * 3f, glow, 0.15f * fade);
+            ribbon(glowBuffer, matrix, camera, fork, width * 1.6f, glow, 0.32f * fade);
         }
         VertexConsumer coreBuffer = buffers.getBuffer(RenderType.debugQuads());
         ribbon(coreBuffer, matrix, camera, path, width, core, 0.95f * fade);

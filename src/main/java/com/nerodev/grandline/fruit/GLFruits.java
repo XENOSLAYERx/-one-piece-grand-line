@@ -56,5 +56,6 @@ public final class GLFruits {
         GumAbilities.register(modBus);
         LeopardAbilities.register(modBus);
         FlameAbilities.register(modBus);
+        FruitBatches.register(modBus);
     }
 }

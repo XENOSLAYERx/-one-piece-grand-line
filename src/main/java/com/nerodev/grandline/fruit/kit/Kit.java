@@ -287,6 +287,14 @@ public final class Kit {
                 .withPower(ctx.power());
     }
 
+    /** Removes the owner's projectiles/zones of {@code kind} (when the toggle that made them ends). */
+    public static void discard(ServerPlayer owner, ResourceLocation kind) {
+        for (AbilityProjectile p : owner.level().getEntitiesOfClass(AbilityProjectile.class,
+                owner.getBoundingBox().inflate(96), p -> p.getOwner() == owner && kind.equals(p.kind()))) {
+            p.discard();
+        }
+    }
+
     /** Points spread evenly on a horizontal circle (for volleys and rings of spikes). */
     public static List<Vec3> circle(Vec3 center, double radius, int count, double phase) {
         List<Vec3> out = new ArrayList<>(count);

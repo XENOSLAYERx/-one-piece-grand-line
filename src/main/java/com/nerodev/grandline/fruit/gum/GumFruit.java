@@ -11,9 +11,9 @@ import com.nerodev.grandline.fx.GLEffects;
 import com.nerodev.grandline.sound.GLSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +38,7 @@ public class GumFruit extends DevilFruit {
     @Override
     public void onIncomingDamage(ServerPlayer user, LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
-        if (source.is(DamageTypes.LIGHTNING_BOLT)) {
+        if (source.is(DamageTypeTags.IS_LIGHTNING)) {
             event.setCanceled(true);
             return;
         }
