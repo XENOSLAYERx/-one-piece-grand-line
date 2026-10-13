@@ -12,10 +12,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.PistonEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -40,6 +42,7 @@ public final class TempBlocks {
         // Explosions leave temporary blocks alone, so they can never be blown into item drops.
         NeoForge.EVENT_BUS.addListener(ExplosionEvent.Detonate.class,
                 e -> e.getAffectedBlocks().removeIf(pos -> isTemporary(e.getLevel(), pos)));
+        NeoForge.EVENT_BUS.addListener(PistonEvent.Pre.class, TempBlocks::onPiston);
     }
 
     /** True if {@code state} may be replaced by a temporary block. */
@@ -181,6 +184,33 @@ public final class TempBlocks {
             event.setCanceled(true);
             level.setBlock(event.getPos(), entry.original(), Block.UPDATE_ALL);
             level.levelEvent(2001, event.getPos(), Block.getId(entry.placed()));
+        }
+    }
+
+    /** Pistons can't push, pull or crush temporary blocks, so they can never be carried off and kept. */
+    private static void onPiston(PistonEvent.Pre event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+        Map<BlockPos, Entry> placed = PLACED.get(level.dimension());
+        if (placed == null || placed.isEmpty()) {
+            return;
+        }
+        PistonStructureResolver resolver = event.getStructureHelper();
+        if (resolver == null || !resolver.resolve()) {
+            return;
+        }
+        for (BlockPos pos : resolver.getToPush()) {
+            if (placed.containsKey(pos)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+        for (BlockPos pos : resolver.getToDestroy()) {
+            if (placed.containsKey(pos)) {
+                event.setCanceled(true);
+                return;
+            }
         }
     }
 }
