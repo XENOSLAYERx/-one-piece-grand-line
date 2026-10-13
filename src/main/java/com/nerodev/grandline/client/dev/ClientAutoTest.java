@@ -31,6 +31,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * cmd onepiece unlock all    # server command as the player, op level 4
  * press 1 / release 1        # ability slot key (1-5), same packet as the real key
  * look 90 10                 # yaw pitch
+ * body 40                    # turn the body this many degrees from the head (three-quarter views)
  * camera front|back|first
  * jump
  * attack                     # left-click whatever is under the crosshair
@@ -128,6 +129,11 @@ public final class ClientAutoTest {
                 mc.player.setXRot(Float.parseFloat(angles[1]));
                 mc.player.yHeadRot = mc.player.getYRot();
                 mc.player.yBodyRot = mc.player.getYRot();
+            }
+            case "body" -> {
+                // Standing still, the body keeps whatever yaw it has as long as it stays within 75 degrees of the head.
+                mc.player.yBodyRot = mc.player.getYRot() + Float.parseFloat(arg);
+                mc.player.yBodyRotO = mc.player.yBodyRot;
             }
             case "camera" -> mc.options.setCameraType(switch (arg) {
                 case "front" -> CameraType.THIRD_PERSON_FRONT;

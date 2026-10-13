@@ -15,6 +15,8 @@ import com.nerodev.grandline.fruit.zoan.AxolotlFruit;
 import com.nerodev.grandline.fruit.zoan.FalconFruit;
 import com.nerodev.grandline.fruit.zoan.GiraffeFruit;
 import com.nerodev.grandline.fruit.zoan.KingCobraFruit;
+import com.nerodev.grandline.fruit.zoan.PteranodonFruit;
+import com.nerodev.grandline.fruit.zoan.SpiderFruit;
 import com.nerodev.grandline.fruit.zoan.TanukiFruit;
 import com.nerodev.grandline.fruit.zoan.WolfFruit;
 import com.nerodev.grandline.fx.GLParticles.Kind;
@@ -41,5 +43,11 @@ public final class ZoanProjectileLooks {
         register(AxolotlFruit.CLOUD, both(zone(Kind.SMOKE, 2.2f, 0.03f, false), rising(Kind.BUBBLE, AxolotlFruit.COLOR, 0.5f, 0.02f)));
 
         register(TanukiFruit.LEAF_KIND, particles(0.3f, TanukiFruit.LEAF, Kind.LEAF, 0.7f, 1));
+
+        // Ancient Zoans.
+        register(PteranodonFruit.WHIRL, tornado(Kind.STREAK, 1.4f, 14, Kind.SMOKE));
+        register(SpiderFruit.WEB, both(particles(0.35f, SpiderFruit.SILK, Kind.STREAK, 0.5f, 2), sparse(Kind.STAR, 0xFFFFFF, 0.3f, 3)));
+        register(SpiderFruit.TRAP, both(zone(Kind.STREAK, 0.5f, 0.02f, true), sparse(Kind.STAR, SpiderFruit.SILK, 0.3f, 4)));
+        register(SpiderFruit.NEST, both(zone(Kind.STREAK, 0.6f, 0.025f, true), rising(Kind.DROP, SpiderFruit.VENOM, 0.4f, 0.01f)));
     }
 }

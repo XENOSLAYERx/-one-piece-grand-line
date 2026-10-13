@@ -43,6 +43,17 @@ public final class ZoanBatch {
     public static final DeferredHolder<DevilFruit, TanukiFruit> TANUKI = GLFruits.register("tanuki", TanukiFruit::new, Rarity.UNCOMMON);
     public static final DeferredHolder<DevilFruit, ElephantFruit> ELEPHANT = GLFruits.register("elephant", ElephantFruit::new, Rarity.UNCOMMON);
 
+    // Ancient Zoans
+    public static final DeferredHolder<DevilFruit, SabertoothFruit> SABERTOOTH = GLFruits.register("sabertooth", SabertoothFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, MammothFruit> MAMMOTH = GLFruits.register("mammoth", MammothFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, AllosaurusFruit> ALLOSAURUS = GLFruits.register("allosaurus", AllosaurusFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, SpinosaurusFruit> SPINOSAURUS = GLFruits.register("spinosaurus", SpinosaurusFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, PteranodonFruit> PTERANODON = GLFruits.register("pteranodon", PteranodonFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, BrachiosaurusFruit> BRACHIOSAURUS = GLFruits.register("brachiosaurus", BrachiosaurusFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, TriceratopsFruit> TRICERATOPS = GLFruits.register("triceratops", TriceratopsFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, PachycephalosaurusFruit> PACHYCEPHALOSAURUS = GLFruits.register("pachycephalosaurus", PachycephalosaurusFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, SpiderFruit> SPIDER = GLFruits.register("spider", SpiderFruit::new, Rarity.RARE);
+
     private ZoanBatch() {}
 
     static <T extends Ability> DeferredHolder<Ability, T> ability(String name, Supplier<T> factory) {
@@ -85,6 +96,15 @@ public final class ZoanBatch {
         AlbatrossFruit.init();
         TanukiFruit.init();
         ElephantFruit.init();
+        SabertoothFruit.init();
+        MammothFruit.init();
+        AllosaurusFruit.init();
+        SpinosaurusFruit.init();
+        PteranodonFruit.init();
+        BrachiosaurusFruit.init();
+        TriceratopsFruit.init();
+        PachycephalosaurusFruit.init();
+        SpiderFruit.init();
     }
 
     public static void register(IEventBus modBus) {
@@ -104,5 +124,14 @@ public final class ZoanBatch {
         AlbatrossFruit.behaviors();
         TanukiFruit.behaviors();
         ElephantFruit.behaviors();
+        SabertoothFruit.behaviors();
+        MammothFruit.behaviors();
+        AllosaurusFruit.behaviors();
+        SpinosaurusFruit.behaviors();
+        PteranodonFruit.behaviors();
+        BrachiosaurusFruit.behaviors();
+        TriceratopsFruit.behaviors();
+        PachycephalosaurusFruit.behaviors();
+        SpiderFruit.behaviors();
     }
 }
