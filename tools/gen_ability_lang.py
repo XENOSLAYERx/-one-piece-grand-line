@@ -73,8 +73,9 @@ def main():
                     lang[key] = display_name(ability_id, fruit_id, match.group(1) if match else None)
                     added += 1
                 if key + ".desc" not in lang:
-                    if match:
-                        lang[key + ".desc"] = clean_doc(match.group(1))
+                    desc = clean_doc(match.group(1)) if match else ""
+                    if desc:
+                        lang[key + ".desc"] = desc
                         added += 1
                     else:
                         missing_docs.append(f"{name}:{cls}")

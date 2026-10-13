@@ -142,7 +142,11 @@ public class SpikeFruit extends DevilFruit {
         }
     }
 
-    /** @name Sea Urchin — Bristle all over with spikes: anything close is pricked, and hitting you hurts twice as much. */
+    /**
+     * Bristle all over with spikes: anything close is pricked, and hitting you hurts twice as much.
+     *
+     * @name Sea Urchin
+     */
     public static final class Urchin extends Buffs.Toggle {
         Urchin() {
             super(props(ActivationType.TOGGLE, AbilityIcon.STAR, COLOR).cooldown(200).stamina(12).staminaPerTick(0.15f)
