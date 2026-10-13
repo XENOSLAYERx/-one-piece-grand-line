@@ -44,6 +44,30 @@ public final class GLEffects {
     public static final ResourceLocation POUNCE = GrandLine.id("pounce");
     public static final ResourceLocation ROAR = GrandLine.id("roar");
 
+    // Haki
+    /** Black coating spreading over the body. Variant 0 = arms, 1 = full body, 2 = coating fades. */
+    public static final ResourceLocation HAKI_COAT = GrandLine.id("haki_coat");
+    /** A hardened blow landing: black-violet burst and a ring. */
+    public static final ResourceLocation HAKI_IMPACT = GrandLine.id("haki_impact");
+    /** Emission: the shock passes through the target and bursts out of its back. dir = blow direction. */
+    public static final ResourceLocation HAKI_EMISSION = GrandLine.id("haki_emission");
+    /** Observation switched on: a sensing ripple. */
+    public static final ResourceLocation OBSERVATION_PULSE = GrandLine.id("observation_pulse");
+    /** Future Sight switched on: a flash of the coming moment. */
+    public static final ResourceLocation FUTURE_SIGHT = GrandLine.id("future_sight");
+    /** An attack read in advance and avoided: afterimage where the user stood. dir = step direction. */
+    public static final ResourceLocation FORESEEN_DODGE = GrandLine.id("foreseen_dodge");
+    /** Conqueror's Haki gathering (sent every few ticks while charging). scale = charge 0-1. */
+    public static final ResourceLocation CONQUEROR_CHARGE = GrandLine.id("conqueror_charge");
+    /** Conqueror's Haki released. scale = radius. */
+    public static final ResourceLocation CONQUEROR_WAVE = GrandLine.id("conqueror_wave");
+    /** Two Conqueror's users collide. pos = first, dir = offset to the second. */
+    public static final ResourceLocation CONQUEROR_CLASH = GrandLine.id("conqueror_clash");
+    /** A Conqueror-infused strike landing. */
+    public static final ResourceLocation CONQUEROR_STRIKE = GrandLine.id("conqueror_strike");
+    /** The source entity was knocked out. variant = duration in ticks. */
+    public static final ResourceLocation KNOCKOUT = GrandLine.id("knockout");
+
     // Animations
     public static final ResourceLocation ANIM_SORU = GrandLine.id("soru");
     public static final ResourceLocation ANIM_GEPPO = GrandLine.id("geppo");
@@ -63,6 +87,11 @@ public final class GLEffects {
     public static final ResourceLocation ANIM_POUNCE = GrandLine.id("pounce");
     public static final ResourceLocation ANIM_FRENZY = GrandLine.id("frenzy");
     public static final ResourceLocation ANIM_ROAR = GrandLine.id("roar");
+    public static final ResourceLocation ANIM_HAKI_COAT = GrandLine.id("haki_coat");
+    public static final ResourceLocation ANIM_CONQUEROR = GrandLine.id("conqueror");
+    public static final ResourceLocation ANIM_CONQUEROR_RELEASE = GrandLine.id("conqueror_release");
+    public static final ResourceLocation ANIM_SIDESTEP = GrandLine.id("sidestep");
+    public static final ResourceLocation ANIM_FOCUS = GrandLine.id("focus");
     public static final ResourceLocation ANIM_STOP = GrandLine.id("stop");
 
     private GLEffects() {}

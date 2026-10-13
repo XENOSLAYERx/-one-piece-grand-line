@@ -42,6 +42,18 @@ public final class GLSounds {
     public static final Supplier<SoundEvent> LEOPARD_ROAR = register("leopard.roar");
     public static final Supplier<SoundEvent> CLAW = register("leopard.claw");
 
+    // Haki
+    public static final Supplier<SoundEvent> HAKI_HARDEN = register("haki.harden");
+    public static final Supplier<SoundEvent> HAKI_IMPACT = register("haki.impact");
+    public static final Supplier<SoundEvent> HAKI_EMISSION = register("haki.emission");
+    public static final Supplier<SoundEvent> HAKI_SENSE = register("haki.sense");
+    public static final Supplier<SoundEvent> FUTURE_SIGHT = register("haki.future_sight");
+    public static final Supplier<SoundEvent> CONQUEROR_CHARGE = register("haki.conqueror_charge");
+    public static final Supplier<SoundEvent> CONQUEROR_WAVE = register("haki.conqueror_wave");
+    public static final Supplier<SoundEvent> HAKI_CLASH = register("haki.clash");
+    public static final Supplier<SoundEvent> HAKI_CRACKLE = register("haki.crackle");
+    public static final Supplier<SoundEvent> KNOCKOUT = register("haki.knockout");
+
     private GLSounds() {}
 
     private static Supplier<SoundEvent> register(String name) {

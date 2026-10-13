@@ -102,8 +102,13 @@ def normalise(signal, peak=0.9):
     return signal
 
 
+FORCE = "--force" in sys.argv
+
+
 def write(name, signal):
     path = os.path.join(ROOT, name + ".ogg")
+    if os.path.exists(path) and not FORCE:
+        return  # Ogg streams get random serial numbers; keep existing files stable unless forced.
     os.makedirs(os.path.dirname(path), exist_ok=True)
     data = (normalise(signal) * 32767).astype(np.int16)
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
@@ -206,6 +211,38 @@ def sounds():
     write("leopard/roar", mix(env(roar, 0.08, 1.4), 0.8 * env(lowpass_sweep(noise(1.5), 2500, 700), 0.05, 1.4)))
     swipes = [delayed(env(highpass(lowpass_sweep(noise(0.14), 7000, 1500), 600), 0.01, 2.5), i * 0.07) for i in range(3)]
     write("leopard/claw", mix(*swipes))
+
+    # ---- Haki
+    # Hardening: a deep metallic swell, darker than Tekkai, with a low push.
+    dark = metal(1.0, [156, 401, 655, 1012, 1530], [0.6, 0.45, 0.3, 0.2, 0.12], [1, 0.8, 0.55, 0.35, 0.2])
+    write("haki/harden", mix(dark * envelope(len(dark), 0.06, 1.0, curve=1.4), 0.7 * thump(0.4, 90, 40, 2.5),
+                             0.25 * env(lowpass_sweep(noise(0.5), 600, 2400), 0.15, 1.5)))
+    # Armament hit: heavy thud, a hard crack and a short dark ring.
+    write("haki/impact", mix(thump(0.45, 110, 38, 2.5), 0.9 * env(highpass(noise(0.05), 1800), 0.001, 5),
+                             0.5 * metal(0.5, [233, 587, 941], [0.25, 0.15, 0.1], [1, 0.6, 0.4])))
+    # Emission: a blow, then the shock arriving inside a beat later.
+    write("haki/emission", mix(thump(0.3, 140, 50, 3.0), delayed(mix(thump(0.9, 70, 26, 2.0),
+                               env(lowpass_sweep(noise(0.9), 3000, 200), 0.004, 2.2)), 0.12)))
+    # Observation: a soft, ringing swell, like hearing everything at once.
+    halo = mix(tone(1.2, 660, 660, (1.0, 0.3), vibrato=0.004), 0.6 * tone(1.2, 990, 990, (1.0,), vibrato=0.006))
+    write("haki/sense", mix(env(halo, 0.35, 1.2), 0.3 * env(lowpass_sweep(noise(1.2), 500, 3000), 0.5, 1.0)))
+    # Future Sight: a reversed rush ending in a bright chime.
+    rush = env(lowpass_sweep(noise(0.6), 300, 6000), 0.55, 0.3)
+    write("haki/future_sight", mix(rush, delayed(env(tone(0.7, 1760, 1760, (1.0, 0.4, 0.2)), 0.004, 2.5), 0.55)))
+    # Conqueror's charge: rising rumble with electric crackle.
+    rise = tone(1.5, 35, 70, (1.0, 0.6, 0.3)) * envelope(int(1.5 * RATE), 1.0, 1.0, curve=0.6)
+    write("haki/conqueror_charge", mix(rise, 0.6 * crackle(1.5, 140), 0.3 * env(highpass(noise(1.5), 3000), 0.8, 0.8)))
+    # Conqueror's release: a pressure wave that rolls out, full of static.
+    wave_ = mix(thump(2.0, 55, 20, 1.6), env(lowpass_sweep(noise(2.0), 2200, 90), 0.01, 2.0))
+    write("haki/conqueror_wave", mix(wave_, 0.7 * crackle(1.6, 220), 0.4 * env(highpass(noise(0.4), 4000), 0.002, 3)))
+    # Clash: two wills colliding, a double boom and a storm of sparks.
+    write("haki/clash", mix(thump(1.4, 65, 24, 1.8), delayed(thump(1.2, 80, 28, 1.8), 0.09), crackle(1.4, 400),
+                            0.5 * env(lowpass_sweep(noise(1.4), 5000, 300), 0.005, 1.6)))
+    # Infused strike: a sharp electric snap.
+    write("haki/crackle", mix(crackle(0.35, 600) * envelope(int(0.35 * RATE), 0.002, 1.0, curve=2.5),
+                              0.5 * thump(0.2, 180, 70, 3.0)))
+    # Knock-out: a dull body drop.
+    write("haki/knockout", mix(thump(0.5, 95, 40, 2.8), 0.4 * env(lowpass_sweep(noise(0.3), 900, 200), 0.004, 3)))
 
 
 def sounds_json():

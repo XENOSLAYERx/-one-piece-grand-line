@@ -2,7 +2,6 @@ package com.nerodev.grandline.ability;
 
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.GLAttachments;
-import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fx.Fx;
 import com.nerodev.grandline.fx.FxParams;
 import com.nerodev.grandline.fx.GLEffects;
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -45,7 +45,19 @@ public final class AbilityManager {
         DEAD
     }
 
+    /** Called after an ability starts successfully (mastery training, statistics...). */
+    @FunctionalInterface
+    public interface UseListener {
+        void onUsed(ServerPlayer player, Ability ability);
+    }
+
+    private static final List<UseListener> USE_LISTENERS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
     private AbilityManager() {}
+
+    public static void addUseListener(UseListener listener) {
+        USE_LISTENERS.add(listener);
+    }
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Post.class, AbilityManager::onPlayerTick);
@@ -146,7 +158,7 @@ public final class AbilityManager {
             return Result.ON_COOLDOWN;
         }
         Ability.Properties props = ability.properties();
-        float cost = staminaCost(ability);
+        float cost = staminaCost(player, ability);
         if (!state.hasStamina(cost, now)) {
             return Result.NO_STAMINA;
         }
@@ -164,7 +176,9 @@ public final class AbilityManager {
             state.markActive(id, now);
             ability.onActivate(context(player, ability, 0));
         }
-        FruitManager.onAbilityUsed(player, ability);
+        for (UseListener listener : USE_LISTENERS) {
+            listener.onUsed(player, ability);
+        }
         sync(player);
         return Result.STARTED;
     }
@@ -210,6 +224,24 @@ public final class AbilityManager {
         sync(player);
     }
 
+    /**
+     * Puts {@code ability} (or nothing) in a slot. Only the abilities this touches are stopped: the one being
+     * replaced, and the incoming one if it is running from another slot (its key would change mid-use). Everything
+     * else keeps running, so re-arranging slots never cancels a transformation.
+     */
+    public static void setSlot(ServerPlayer player, int slot, @Nullable ResourceLocation ability) {
+        AbilityState state = AbilityState.of(player);
+        ResourceLocation previous = state.slot(slot);
+        for (ResourceLocation id : new ResourceLocation[] {previous, ability}) {
+            Ability running = id == null ? null : GLAbilities.REGISTRY.get(id);
+            if (running != null && state.isActive(id) && !(id.equals(ability) && id.equals(previous))) {
+                end(player, running, Ability.EndReason.INTERRUPTED);
+            }
+        }
+        state.setSlot(slot, ability);
+        sync(player);
+    }
+
     // ---------------------------------------------------------------------------------------------------------
     // Events
     // ---------------------------------------------------------------------------------------------------------
@@ -240,7 +272,7 @@ public final class AbilityManager {
             }
             Ability.Properties props = ability.properties();
             int ticks = activeTicks(player, state, ability);
-            if (props.staminaPerTick() > 0) {
+            if (props.staminaPerTick() > 0 && !freeHaki(state, ability)) {
                 draining = true;
                 float drain = (float) (props.staminaPerTick() * GLServerConfig.staminaCostMultiplier());
                 if (!state.spendStamina(drain, now)) {
@@ -257,9 +289,12 @@ public final class AbilityManager {
             }
             if (ticks >= props.maxActiveTicks()) {
                 if (props.activation() == ActivationType.HOLD || props.activation() == ActivationType.CHARGE) {
+                    // Fully charged / held to the limit: it fires exactly as if the key had been let go.
                     ability.onRelease(context(player, ability, ticks));
+                    end(player, ability, Ability.EndReason.RELEASED);
+                } else {
+                    end(player, ability, Ability.EndReason.TIMED_OUT);
                 }
-                end(player, ability, Ability.EndReason.TIMED_OUT);
             }
         }
         if (draining && now % ACTIVE_SYNC_INTERVAL == 0) {
@@ -325,12 +360,23 @@ public final class AbilityManager {
 
     /** Cooldown after server balance multipliers. */
     public static int cooldownTicks(ServerPlayer player, Ability ability) {
+        if (freeHaki(AbilityState.of(player), ability)) {
+            return 0;
+        }
         return (int) Math.round(ability.cooldownFor(player) * GLServerConfig.cooldownMultiplier());
     }
 
     /** Stamina cost after server balance multipliers. */
-    public static float staminaCost(Ability ability) {
+    public static float staminaCost(ServerPlayer player, Ability ability) {
+        if (freeHaki(AbilityState.of(player), ability)) {
+            return 0f;
+        }
         return (float) (ability.properties().staminaCost() * GLServerConfig.staminaCostMultiplier());
+    }
+
+    /** The {@code haki infinite} test flag: Haki costs nothing and has no cooldown. */
+    private static boolean freeHaki(AbilityState state, Ability ability) {
+        return ability.properties().category() == AbilityCategory.HAKI && state.hasFlag(TestFlag.INFINITE_HAKI);
     }
 
     public static long now(ServerPlayer player) {

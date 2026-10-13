@@ -33,6 +33,11 @@ public final class GLServerConfig {
     public static final ModConfigSpec.BooleanValue ABILITY_GRIEFING;
     public static final ModConfigSpec.BooleanValue SECOND_FRUIT_KILLS;
 
+    public static final ModConfigSpec.BooleanValue HAKI_TRAINING;
+    public static final ModConfigSpec.IntValue ARMAMENT_TRAINING_HITS;
+    public static final ModConfigSpec.IntValue OBSERVATION_TRAINING_HITS;
+    public static final ModConfigSpec.DoubleValue CONQUERORS_CHANCE;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -87,6 +92,21 @@ public final class GLServerConfig {
                 .define("secondFruitKills", true);
         BUILDER.pop();
 
+        BUILDER.comment("Haki: how players earn it without commands.").push("haki");
+        HAKI_TRAINING = BUILDER
+                .comment("If true, Armament and Observation Haki awaken through fighting (see the hit counts below).")
+                .define("hakiTraining", true);
+        ARMAMENT_TRAINING_HITS = BUILDER
+                .comment("Unarmed or melee hits a player must land before Armament Haki awakens.")
+                .defineInRange("armamentTrainingHits", 150, 1, 100000);
+        OBSERVATION_TRAINING_HITS = BUILDER
+                .comment("Hits a player must take from living attackers before Observation Haki awakens.")
+                .defineInRange("observationTrainingHits", 100, 1, 100000);
+        CONQUERORS_CHANCE = BUILDER
+                .comment("Chance (0-1) that a new player is born with Conqueror's Haki. Rolled once per player.")
+                .defineInRange("conquerorsChance", 0.05, 0.0, 1.0);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 
@@ -120,6 +140,22 @@ public final class GLServerConfig {
 
     public static boolean secondFruitKills() {
         return value(SECOND_FRUIT_KILLS);
+    }
+
+    public static boolean hakiTraining() {
+        return value(HAKI_TRAINING);
+    }
+
+    public static int armamentTrainingHits() {
+        return value(ARMAMENT_TRAINING_HITS);
+    }
+
+    public static int observationTrainingHits() {
+        return value(OBSERVATION_TRAINING_HITS);
+    }
+
+    public static double conquerorsChance() {
+        return value(CONQUERORS_CHANCE);
     }
 
     /** Parsed copy of {@link #CREATOR_UUIDS}; rebuilt whenever the config (re)loads. */

@@ -119,7 +119,7 @@ public final class FruitEffects {
     private static void fireExplosion(ClientLevel level, @Nullable Entity source, FxParams p) {
         float s = p.scale();
         Vec3 c = p.pos();
-        FxKit.burst(level, GLParticles.FLAME, p.color(), 1.6f + s * 0.4f, c, (int) (24 + 16 * s), 0.25 + 0.12 * s);
+        FxKit.burst(level, GLParticles.FLAME, p.color(), Math.min(2.6f, 1.6f + s * 0.4f), c, (int) (24 + 16 * s), 0.25 + 0.12 * s);
         FxKit.burst(level, GLParticles.SMOKE, 0x2E2626, 1.6f + s * 0.5f, c, (int) (10 + 6 * s), 0.12);
         FxKit.burst(level, GLParticles.SPARK, 0xFFD27A, 1.2f, c, (int) (16 + 8 * s), 0.6 + 0.2 * s);
         FxKit.particle(level, GLParticles.GLOW, 0xFFE8A0, 3f + s * 2f, c, Vec3.ZERO);
@@ -146,9 +146,10 @@ public final class FruitEffects {
         float s = p.scale();
         RandomSource r = level.random;
         FxKit.particle(level, GLParticles.GLOW, 0xFFD27A, s * 1.2f, p.pos(), Vec3.ZERO);
-        for (int i = 0; i < 8 + s * 4; i++) {
+        for (int i = 0; i < 8 + s * 5; i++) {
             Vec3 dir = FxKit.randomUnit(r);
-            FxKit.particle(level, GLParticles.FLAME, p.color(), 1.0f + s * 0.4f, p.pos().add(dir.scale(s * 0.5)), dir.scale(0.04));
+            FxKit.particle(level, GLParticles.FLAME, p.color(), Math.min(2.4f, 1.0f + s * 0.25f),
+                    p.pos().add(dir.scale(s * 0.5 * Math.cbrt(r.nextDouble()))), dir.scale(0.04));
         }
         // flames drawn up from the ground into the sun
         if (source != null) {

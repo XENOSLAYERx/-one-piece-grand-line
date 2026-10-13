@@ -43,7 +43,8 @@ public final class PlayerData {
             Codec.unboundedMap(Codec.STRING, Codec.DOUBLE)
                     .optionalFieldOf("mastery", Map.of()).forGetter(d -> d.mastery),
             ResourceLocation.CODEC.optionalFieldOf("fruit").forGetter(d -> d.fruit),
-            Codec.BOOL.optionalFieldOf("awakened", false).forGetter(d -> d.awakened)
+            Codec.BOOL.optionalFieldOf("awakened", false).forGetter(d -> d.awakened),
+            Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("counters", Map.of()).forGetter(d -> d.counters)
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -58,16 +59,18 @@ public final class PlayerData {
     private final Map<String, Double> mastery = new HashMap<>();
     private Optional<ResourceLocation> fruit;
     private boolean awakened;
+    private final Map<String, Integer> counters = new HashMap<>();
 
     public PlayerData() {
-        this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false);
+        this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false, Map.of());
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
             Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
-            Optional<ResourceLocation> fruit, boolean awakened) {
+            Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters) {
         this.fruit = fruit;
         this.awakened = awakened;
+        this.counters.putAll(counters);
         this.race = race;
         this.faction = faction;
         this.bounty = clampBounty(bounty);
@@ -143,6 +146,23 @@ public final class PlayerData {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    // Training counters (hits landed, hits taken... used to earn Haki and similar)
+    // ---------------------------------------------------------------------------------------------------------
+
+    public int counter(String key) {
+        return counters.getOrDefault(key, 0);
+    }
+
+    /** @return the new value */
+    public int increment(String key) {
+        return counters.merge(key, 1, Integer::sum);
+    }
+
+    public void setCounter(String key, int value) {
+        counters.put(key, value);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
     // Unlocks
     // ---------------------------------------------------------------------------------------------------------
 
@@ -209,6 +229,8 @@ public final class PlayerData {
         this.mastery.putAll(other.mastery);
         this.fruit = other.fruit;
         this.awakened = other.awakened;
+        this.counters.clear();
+        this.counters.putAll(other.counters);
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {

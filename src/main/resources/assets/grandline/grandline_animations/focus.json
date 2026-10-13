@@ -1,0 +1,13 @@
+{
+  "length": 16,
+  "loop": false,
+  "mode": "replace",
+  "fade_in": 3,
+  "fade_out": 5,
+  "bones": {
+    "head":      { "ease": "inout", "rotation": { "0": [0, 0, 0], "5": [10, 0, 0], "16": [4, 0, 0] } },
+    "body":      { "ease": "inout", "rotation": { "0": [0, 0, 0], "5": [4, 0, 0], "16": [2, 0, 0] } },
+    "right_arm": { "ease": "inout", "rotation": { "0": [0, 0, 0], "5": [-112, -38, 0], "16": [-104, -34, 0] } },
+    "left_arm":  { "ease": "inout", "rotation": { "0": [0, 0, 0], "5": [-12, 0, -10], "16": [-8, 0, -8] } }
+  }
+}

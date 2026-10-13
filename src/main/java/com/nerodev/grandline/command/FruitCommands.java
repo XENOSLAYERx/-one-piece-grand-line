@@ -40,10 +40,12 @@ final class FruitCommands {
             new HelpEntry("/onepiece fruit remove [players]", "Remove a fruit's power", PermissionTier.CREATOR),
             new HelpEntry("/onepiece fruit awaken [players]", "Awaken the current fruit", PermissionTier.CREATOR),
             new HelpEntry("/onepiece mastery set fruit <0-100> [players]", "Set current fruit mastery", PermissionTier.CREATOR),
-            new HelpEntry("/onepiece mastery max [players]", "Max mastery (awakens the fruit)", PermissionTier.CREATOR));
+            new HelpEntry("/onepiece mastery max [players]", "Max fruit and Haki mastery (awakens the fruit)", PermissionTier.CREATOR));
 
     private static final SimpleCommandExceptionType NO_FRUIT = new SimpleCommandExceptionType(
             Component.literal("That player has no Devil Fruit"));
+    private static final SimpleCommandExceptionType NOTHING_TO_MAX = new SimpleCommandExceptionType(
+            Component.literal("That player has no Devil Fruit or Haki to master"));
 
     @FunctionalInterface
     private interface TargetedCommand {
@@ -69,7 +71,7 @@ final class FruitCommands {
                 .then(Commands.literal("set").then(Commands.literal("fruit")
                         .then(withTargets(Commands.argument("level", DoubleArgumentType.doubleArg(0, PlayerData.MAX_MASTERY)),
                                 (ctx, targets) -> setMastery(ctx, targets, DoubleArgumentType.getDouble(ctx, "level"))))))
-                .then(withTargets(Commands.literal("max"), (ctx, targets) -> setMastery(ctx, targets, PlayerData.MAX_MASTERY))));
+                .then(withTargets(Commands.literal("max"), FruitCommands::maxMastery)));
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -209,6 +211,24 @@ final class FruitCommands {
         }
         feedback(ctx.getSource(), targets, name -> Component.literal(String.format(Locale.ROOT, "Fruit mastery of %s set to %.0f", name, level)));
         return targets.size();
+    }
+
+    /** Maxes the fruit (awakening it) and every Haki the player has. */
+    private static int maxMastery(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets) throws CommandSyntaxException {
+        int maxed = 0;
+        for (ServerPlayer player : targets) {
+            int before = maxed;
+            if (FruitManager.hasFruit(player)) {
+                FruitManager.setMastery(player, PlayerData.MAX_MASTERY);
+                maxed++;
+            }
+            maxed += HakiCommands.maxUnlockedHaki(player);
+            if (maxed == before && targets.size() == 1) {
+                throw NOTHING_TO_MAX.create();
+            }
+        }
+        feedback(ctx.getSource(), targets, name -> Component.literal("Maxed fruit and Haki mastery of " + name));
+        return maxed;
     }
 
     /** Unlocks every fruit for the player (used by /onepiece unlock all). */

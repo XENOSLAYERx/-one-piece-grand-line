@@ -85,7 +85,7 @@ jobs:
           ./gradlew runAutotestServer --no-daemon --quiet 2>&1 | tail -20
           mkdir -p run-autotest/saves
           cp -r run-autotest/world run-autotest/saves/autotest
-          printf 'onboardAccessibility:false\npauseOnLostFocus:false\nrenderDistance:6\nsimulationDistance:6\nguiScale:2\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nnarrator:0\nsoundCategory_master:0.0\n' > run-autotest/options.txt
+          printf 'onboardAccessibility:false\npauseOnLostFocus:false\nrenderDistance:6\nsimulationDistance:6\nguiScale:2\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nnarrator:0\nchatVisibility:2\nsoundCategory_master:0.0\n' > run-autotest/options.txt
 
       - name: Run client autotest
         run: |

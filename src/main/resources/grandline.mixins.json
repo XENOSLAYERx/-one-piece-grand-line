@@ -4,8 +4,10 @@
   "package": "com.nerodev.grandline.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "EntityMixin",
     "HumanoidModelMixin",
-    "LivingEntityRendererMixin"
+    "LivingEntityRendererMixin",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -6,10 +6,12 @@ import com.nerodev.grandline.client.anim.PlayerAnimator;
 import com.nerodev.grandline.client.dev.ClientAutoTest;
 import com.nerodev.grandline.client.fx.CameraShake;
 import com.nerodev.grandline.client.fx.FruitEffects;
+import com.nerodev.grandline.client.haki.HakiClient;
 import com.nerodev.grandline.client.hud.AbilityHud;
 import com.nerodev.grandline.client.model.TransformationModels;
 import com.nerodev.grandline.client.particle.GLParticleProviders;
 import com.nerodev.grandline.client.render.AbilityProjectileRenderer;
+import com.nerodev.grandline.client.render.HakiLayer;
 import com.nerodev.grandline.client.render.ProjectileVisuals;
 import com.nerodev.grandline.client.render.TransformationLayer;
 import com.nerodev.grandline.client.render.TransformationRenderer;
@@ -36,6 +38,7 @@ public final class GrandLineClient {
     public GrandLineClient(IEventBus modBus, ModContainer container) {
         modBus.addListener(GLKeys::register);
         modBus.addListener(AbilityHud::register);
+        modBus.addListener(HakiClient::registerOverlay);
         modBus.addListener(GLParticleProviders::register);
         modBus.addListener(RegisterClientReloadListenersEvent.class,
                 event -> event.registerReloadListener(AnimationLoader.INSTANCE));
@@ -45,6 +48,7 @@ public final class GrandLineClient {
         modBus.addListener(EntityRenderersEvent.AddLayers.class, GrandLineClient::addLayers);
 
         FruitEffects.register();
+        HakiClient.register();
         TransformationRenderer.register();
         AbilityProjectile.clientTick = ProjectileVisuals::tick;
 
@@ -55,6 +59,7 @@ public final class GrandLineClient {
             CameraShake.tick();
             ClientVisuals.tick();
             TransformationRenderer.tick();
+            HakiClient.tick();
             if (autotest) {
                 ClientAutoTest.tick();
             }
@@ -64,6 +69,7 @@ public final class GrandLineClient {
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
             PlayerAnimator.clear();
             ClientVisuals.clear();
+            HakiClient.clear();
         });
     }
 
@@ -71,6 +77,7 @@ public final class GrandLineClient {
         for (PlayerSkin.Model skin : event.getSkins()) {
             if (event.getSkin(skin) instanceof PlayerRenderer renderer) {
                 renderer.addLayer(new TransformationLayer(renderer, event.getEntityModels(), skin == PlayerSkin.Model.SLIM));
+                renderer.addLayer(new HakiLayer(renderer));
             }
         }
     }

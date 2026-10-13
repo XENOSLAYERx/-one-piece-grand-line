@@ -13,6 +13,8 @@ import com.nerodev.grandline.entity.GLEntities;
 import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.fx.GLParticles;
+import com.nerodev.grandline.haki.HakiAbilities;
+import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.registry.GLRegistries;
@@ -67,6 +69,10 @@ public final class GrandLine {
         GLItems.register(modBus);
         FruitManager.register();
         TransformationManager.register();
+
+        // Haki.
+        HakiAbilities.register(modBus);
+        HakiManager.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);

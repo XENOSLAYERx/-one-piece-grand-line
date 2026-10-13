@@ -22,9 +22,12 @@ import org.joml.Quaternionf;
 public final class LimbRenderer {
     private LimbRenderer() {}
 
-    /** Arm texture regions in the 64x64 skin layout: {sideU, sideV, endU, endV}. */
+    /**
+     * Arm texture regions in the 64x64 skin layout: {frontU, frontV, topU, topV}. The palm (bottom face) sits right
+     * after the top face, at topU + arm width.
+     */
     private static int[] uv(boolean right) {
-        return right ? new int[] {44, 20, 48, 16} : new int[] {36, 52, 40, 48};
+        return right ? new int[] {44, 20, 44, 16} : new int[] {36, 52, 36, 48};
     }
 
     /** World position of the shoulder for {@code player}. */
@@ -61,12 +64,14 @@ public final class LimbRenderer {
         VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(texture));
         int[] uv = uv(right);
         float h = width / 2;
+        int palmU = uv[2] + armPx;
         // Arm: side texture stretched along the whole length.
-        box(buffer, pose.last(), -h, -h, 0, h, h, length, uv[0], uv[1], armPx, 12, uv[2], uv[3], armPx, light);
-        // Fist: hand texture (lower arm) on the sides, palm on the end.
+        box(buffer, pose.last(), -h, -h, 0, h, h, length, uv[0], uv[1], armPx, 12, palmU, uv[3], armPx, light);
+        // Fist: hand texture (lower arm) on the sides, palm on both ends (never an empty part of the skin, or the
+        // fist looks hollow when seen end-on).
         float f = h * 1.3f * fistScale;
         box(buffer, pose.last(), -f, -f, length - f * 0.6f, f, f, length + f * 1.4f, uv[0], uv[1] + 8, armPx, 4,
-                uv[2] + armPx, uv[3], armPx, light);
+                palmU, uv[3], armPx, light);
         pose.popPose();
     }
 

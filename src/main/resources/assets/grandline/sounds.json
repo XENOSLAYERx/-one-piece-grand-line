@@ -101,6 +101,66 @@
       "grandline:gum/stretch"
     ]
   },
+  "haki.clash": {
+    "subtitle": "subtitles.grandline.haki.clash",
+    "sounds": [
+      "grandline:haki/clash"
+    ]
+  },
+  "haki.conqueror_charge": {
+    "subtitle": "subtitles.grandline.haki.conqueror_charge",
+    "sounds": [
+      "grandline:haki/conqueror_charge"
+    ]
+  },
+  "haki.conqueror_wave": {
+    "subtitle": "subtitles.grandline.haki.conqueror_wave",
+    "sounds": [
+      "grandline:haki/conqueror_wave"
+    ]
+  },
+  "haki.crackle": {
+    "subtitle": "subtitles.grandline.haki.crackle",
+    "sounds": [
+      "grandline:haki/crackle"
+    ]
+  },
+  "haki.emission": {
+    "subtitle": "subtitles.grandline.haki.emission",
+    "sounds": [
+      "grandline:haki/emission"
+    ]
+  },
+  "haki.future_sight": {
+    "subtitle": "subtitles.grandline.haki.future_sight",
+    "sounds": [
+      "grandline:haki/future_sight"
+    ]
+  },
+  "haki.harden": {
+    "subtitle": "subtitles.grandline.haki.harden",
+    "sounds": [
+      "grandline:haki/harden"
+    ]
+  },
+  "haki.impact": {
+    "subtitle": "subtitles.grandline.haki.impact",
+    "sounds": [
+      "grandline:haki/impact"
+    ]
+  },
+  "haki.knockout": {
+    "subtitle": "subtitles.grandline.haki.knockout",
+    "sounds": [
+      "grandline:haki/knockout"
+    ]
+  },
+  "haki.sense": {
+    "subtitle": "subtitles.grandline.haki.sense",
+    "sounds": [
+      "grandline:haki/sense"
+    ]
+  },
   "leopard.claw": {
     "subtitle": "subtitles.grandline.leopard.claw",
     "sounds": [

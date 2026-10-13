@@ -12,6 +12,7 @@ public enum UnlockCategory implements StringRepresentable {
     WEAPON,
     TRANSFORMATION,
     AWAKENING,
+    HAKI,
     TITLE;
 
     public static final Codec<UnlockCategory> CODEC = StringRepresentable.fromEnum(UnlockCategory::values);

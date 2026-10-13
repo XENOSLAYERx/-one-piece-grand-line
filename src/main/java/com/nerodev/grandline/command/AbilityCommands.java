@@ -151,9 +151,7 @@ final class AbilityCommands {
             }
         }
         for (ServerPlayer player : targets) {
-            AbilityManager.endAll(player, Ability.EndReason.INTERRUPTED, true);
-            AbilityState.of(player).setSlot(slot, ability.id());
-            AbilityManager.sync(player);
+            AbilityManager.setSlot(player, slot, ability.id());
         }
         feedback(ctx.getSource(), targets, name -> Component.literal("Equipped ").append(ability.displayName())
                 .append(" in slot " + (slot + 1) + " for " + name));
@@ -205,7 +203,7 @@ final class AbilityCommands {
         return started;
     }
 
-    /** Unlocks every registered ability and fruit. Styles and weapons join this as their systems arrive. */
+    /** Unlocks every registered ability, fruit and Haki. Styles and weapons join this as their systems arrive. */
     private static int unlockAll(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets) {
         // Registry iteration follows registration order, so slots fill predictably.
         Map<ResourceLocation, Ability> all = new java.util.LinkedHashMap<>();
@@ -221,6 +219,8 @@ final class AbilityCommands {
             AbilityState state = AbilityState.of(player);
             all.values().stream().filter(ability -> AbilityAccess.canUse(player, ability))
                     .forEach(ability -> state.equipInFreeSlot(ability.id()));
+            // After slots are filled in registry order, so Haki does not jump the queue.
+            HakiCommands.unlockAllHaki(player);
             AbilityManager.sync(player);
         }
         feedback(ctx.getSource(), targets, name -> Component.literal("Unlocked " + all.size() + " abilities for " + name));
@@ -255,6 +255,7 @@ final class AbilityCommands {
         toggleLine(source, "No cooldowns", state.hasFlag(TestFlag.NO_COOLDOWNS), "cooldown off", "cooldown on");
         toggleLine(source, "Infinite health", state.hasFlag(TestFlag.INFINITE_HEALTH), "health infinite", "health normal");
         toggleLine(source, "Invincible", state.hasFlag(TestFlag.INVINCIBLE), "invincible on", "invincible off");
+        toggleLine(source, "Infinite Haki", state.hasFlag(TestFlag.INFINITE_HAKI), "haki infinite on", "haki infinite off");
         Text.send(source, Component.literal("  ")
                 .append(Text.run("[Reset cooldowns]", "/onepiece cooldown reset", ChatFormatting.YELLOW))
                 .append(" ")

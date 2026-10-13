@@ -85,9 +85,12 @@ public final class ProjectileVisuals {
     private static void enteiTrail(ClientLevel level, AbilityProjectile p, RandomSource r) {
         Vec3 pos = p.position().add(0, p.getBbHeight() / 2, 0);
         float size = p.size();
-        for (int i = 0; i < 10; i++) {
+        // Many mid-sized flames read as one big fireball; a few huge sprites would look blocky.
+        int count = 8 + (int) (size * 2.5f);
+        for (int i = 0; i < count; i++) {
             Vec3 dir = FxKit.randomUnit(r);
-            FxKit.particle(level, GLParticles.FLAME, p.color(), 1.5f + size * 0.4f, pos.add(dir.scale(size * 0.5)),
+            FxKit.particle(level, GLParticles.FLAME, p.color(), Math.min(2.4f, 1.2f + size * 0.25f),
+                    pos.add(dir.scale(size * 0.5 * Math.cbrt(r.nextDouble()))),
                     dir.scale(0.06).add(p.getDeltaMovement().scale(-0.2)));
         }
         FxKit.particle(level, GLParticles.SMOKE, 0x2A2222, 1.5f + size * 0.6f, pos.add(FxKit.randomUnit(r).scale(size * 0.5)),

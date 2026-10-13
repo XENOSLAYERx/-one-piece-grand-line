@@ -9,7 +9,9 @@ public enum TestFlag implements StringRepresentable {
     INFINITE_STAMINA("stamina infinite"),
     NO_COOLDOWNS("cooldown off"),
     INFINITE_HEALTH("health infinite"),
-    INVINCIBLE("invincible");
+    INVINCIBLE("invincible"),
+    /** Haki abilities cost no stamina and have no cooldown. */
+    INFINITE_HAKI("haki infinite");
 
     public static final Codec<TestFlag> CODEC = StringRepresentable.fromEnum(TestFlag::values);
 

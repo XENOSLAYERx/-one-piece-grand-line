@@ -49,8 +49,6 @@ public final class GLNetwork {
                 return;
             }
         }
-        AbilityManager.endAll(player, Ability.EndReason.INTERRUPTED, true);
-        AbilityState.of(player).setSlot(payload.slot(), payload.ability().orElse(null));
-        AbilityManager.sync(player);
+        AbilityManager.setSlot(player, payload.slot(), payload.ability().orElse(null));
     }
 }

@@ -177,6 +177,88 @@ wait 5
 shot 35_leopard_beast_back
 wait 5
 
+# ---- Haki
+cmd onepiece fruit remove
+cmd onepiece haki set observation 100
+cmd onepiece haki set armament 100
+cmd onepiece haki set conquerors 100
+cmd onepiece ability equip 1 grandline:armament_haki
+cmd onepiece ability equip 2 grandline:full_body_hardening
+cmd onepiece ability equip 3 grandline:observation_haki
+cmd onepiece ability equip 4 grandline:conquerors_haki
+cmd onepiece ability equip 5 grandline:conquerors_infusion
+cmd summon minecraft:husk ~-5 ~ ~2 {NoAI:1b}
+cmd summon minecraft:husk ~-6 ~ ~-3 {NoAI:1b}
+cmd summon minecraft:pig ~-4 ~ ~-1
+cmd summon minecraft:sheep ~-8 ~ ~0
+wait 20
+camera front
+look 270 5
+press 1
+release 1
+wait 14
+shot 50_armament_arms
+press 2
+release 2
+wait 16
+shot 51_full_body
+press 2
+release 2
+press 1
+release 1
+wait 10
+camera back
+look 90 10
+press 3
+release 3
+wait 14
+shot 52_observation
+press 3
+release 3
+wait 5
+camera front
+look 270 5
+press 4
+wait 30
+shot 53_conqueror_charge
+wait 31
+release 4
+wait 2
+shot 54_conqueror_wave
+wait 16
+camera back
+look 90 10
+wait 2
+shot 55_knocked_out
+camera front
+look 270 5
+press 5
+release 5
+wait 12
+shot 56_infusion
+press 1
+release 1
+camera first
+look 90 10
+wait 12
+shot 57_first_person_haki
+cmd tp @e[type=minecraft:husk,limit=1,sort=nearest] ^ ^ ^2
+cmd onepiece ability equip 2 grandline:armament_emission
+wait 5
+press 2
+release 2
+wait 2
+attack
+wait 2
+shot 58_emission_impact
+wait 10
+press 5
+release 5
+press 1
+release 1
+cmd kill @e[type=!minecraft:player]
+wait 10
+
 # ---- Menu
 camera first
 menu

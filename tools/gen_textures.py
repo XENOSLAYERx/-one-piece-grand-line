@@ -46,39 +46,44 @@ def particles():
     rnd = random.Random(1337)
 
     save(radial(8, 1.6, core=0.18), PARTICLE_DIR, "spark")
-    save(radial(16, 2.2), PARTICLE_DIR, "glow")
+    save(radial(32, 2.2), PARTICLE_DIR, "glow")
 
-    # Flame: 4 animation frames of a flickering teardrop, hot (bright) at the bottom centre.
+    # Flame: 4 animation frames of a flickering tongue of fire, hot (bright) at the base. Drawn at 4x and
+    # downsampled so the sprite stays smooth when big effects scale it up.
     for f in range(4):
-        size = 16
-        img = Image.new("RGBA", (size, size))
+        size, ss = 32, 4
+        big = size * ss
+        img = Image.new("RGBA", (big, big))
         px = img.load()
-        for y in range(size):
-            for x in range(size):
-                ny = y / (size - 1)               # 0 top .. 1 bottom
-                width = 0.15 + 0.32 * (ny ** 0.8)  # narrow tip, wide base
-                wobble = 0.06 * math.sin((ny * 6 + f * 1.7)) * (1 - ny)
-                dx = abs((x - (size - 1) / 2) / (size - 1) - wobble)
-                if dx < width and ny > 0.08 + 0.05 * math.sin(f * 2.1):
+        for y in range(big):
+            for x in range(big):
+                ny = y / (big - 1)                    # 0 top .. 1 bottom
+                width = 0.06 + 0.36 * (ny ** 0.75)    # narrow tip, wide base
+                width *= 1 - 0.35 * max(0.0, ny - 0.82) / 0.18  # rounded bottom
+                wobble = 0.07 * math.sin(ny * 7 + f * 1.7) * (1 - ny) ** 1.2
+                dx = abs((x - (big - 1) / 2) / (big - 1) - wobble)
+                tip = 0.04 + 0.05 * math.sin(f * 2.1)
+                if dx < width and ny > tip:
                     edge = 1 - dx / width
-                    heat = min(1.0, edge * 0.8 + ny * 0.5)
-                    v = int(150 + 105 * heat)
-                    a = int(255 * min(1.0, edge * 1.6) * min(1.0, (ny - 0.05) * 3))
-                    px[x, y] = (v, v, v, a)
+                    heat = min(1.0, edge * 0.7 + ny * 0.55)
+                    v = int(140 + 115 * heat)
+                    a = min(1.0, edge * 1.8) * min(1.0, (ny - tip) * 4)
+                    px[x, y] = (v, v, v, int(255 * a))
+        img = img.resize((size, size), Image.LANCZOS).filter(ImageFilter.GaussianBlur(0.4))
         save(img, PARTICLE_DIR, "flame_%d" % f)
 
     # Smoke: 4 frames of a lumpy puff that gets thinner.
     for f in range(4):
-        size = 16
-        img = Image.new("RGBA", (size, size))
+        size, ss = 32, 4
+        img = Image.new("RGBA", (size * ss, size * ss))
         draw = ImageDraw.Draw(img)
-        for _ in range(7):
-            r = rnd.uniform(2.5, 5.0)
-            cx = rnd.uniform(5, 11)
-            cy = rnd.uniform(5, 11)
+        for _ in range(9):
+            r = rnd.uniform(5.0, 9.5) * ss
+            cx = rnd.uniform(10, 22) * ss
+            cy = rnd.uniform(10, 22) * ss
             shade = rnd.randint(170, 235)
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(shade, shade, shade, 200 - f * 40))
-        img = img.filter(ImageFilter.GaussianBlur(0.8))
+        img = img.filter(ImageFilter.GaussianBlur(2.5 * ss)).resize((size, size), Image.LANCZOS)
         save(img, PARTICLE_DIR, "smoke_%d" % f)
 
     # Ring: soft annulus, used flat on the ground or facing a direction for shockwaves.
@@ -409,8 +414,18 @@ def leopard_spots():
     save(img, ENTITY_DIR, "leopard_spots")
 
 
+def premultiplied(img):
+    """For additive render types (eyes, lightning), which ignore alpha: colour must fade to black instead."""
+    px = img.load()
+    for y in range(img.size[1]):
+        for x in range(img.size[0]):
+            r, g, b, a = px[x, y]
+            px[x, y] = (r * a // 255, g * a // 255, b * a // 255, a)
+    return img
+
+
 def glow_orb():
-    save(radial(32, 1.8, core=0.12), ENTITY_DIR, "glow_orb")
+    save(premultiplied(radial(64, 1.8, core=0.12)), ENTITY_DIR, "glow_orb")
 
 
 def bleeding_icon():
@@ -422,6 +437,52 @@ def bleeding_icon():
     save(img, EFFECT_DIR, "bleeding")
 
 
+def haki_armament():
+    """Armament coating: near-black with a cold violet sheen, so hardened limbs read as glossy, not flat."""
+    size = 64
+    rnd = random.Random(99)
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            # Diagonal bands of sheen plus fine grain; every UV region gets the same look.
+            band = 0.5 + 0.5 * math.sin((x * 0.9 + y * 1.3) * 0.35)
+            gloss = band ** 6
+            grain = rnd.uniform(-4, 4)
+            r = 16 + 30 * gloss + grain
+            g = 12 + 18 * gloss + grain
+            b = 26 + 52 * gloss + grain
+            px[x, y] = (int(r), int(g), int(b), 240)
+    save(img, ENTITY_DIR, "haki_armament")
+
+
+def haki_sheen():
+    """Scrolling highlight for the energy-swirl overlay (additive: black = invisible)."""
+    size = 64
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            d = ((x + y) % 32) / 32.0
+            streak = math.exp(-((d - 0.5) ** 2) / 0.004)
+            thin = math.exp(-((((x * 2 + y) % 21) / 21.0 - 0.5) ** 2) / 0.002) * 0.4
+            v = min(1.0, streak + thin)
+            c = int(255 * v)
+            px[x, y] = (c, c, c, c)
+    save(img, ENTITY_DIR, "haki_sheen")
+
+
+def knocked_out_icon():
+    img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    # A dizzy swirl with three little stars.
+    d.arc([2, 5, 16, 15], 200, 520, fill=(170, 150, 255, 255), width=2)
+    for cx, cy in ((4, 4), (14, 3), (9, 1)):
+        d.polygon([(cx, cy - 2), (cx + 1, cy), (cx, cy + 2), (cx - 1, cy)], fill=(255, 236, 140, 255))
+        d.polygon([(cx - 2, cy), (cx, cy - 1), (cx + 2, cy), (cx, cy + 1)], fill=(255, 236, 140, 255))
+    save(img, EFFECT_DIR, "knocked_out")
+
+
 if __name__ == "__main__":
     particles()
     icons()
@@ -429,4 +490,7 @@ if __name__ == "__main__":
     leopard_spots()
     glow_orb()
     bleeding_icon()
+    haki_armament()
+    haki_sheen()
+    knocked_out_icon()
     print("textures written to", os.path.normpath(ROOT), file=sys.stderr)

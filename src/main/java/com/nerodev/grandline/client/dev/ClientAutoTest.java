@@ -14,8 +14,11 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
@@ -30,12 +33,35 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * look 90 10                 # yaw pitch
  * camera front|back|first
  * jump
+ * attack                     # left-click whatever is under the crosshair
  * menu / close               # ability screen
  * shot name                  # screenshots/name.png
  * quit
  * </pre>
  */
 public final class ClientAutoTest {
+    private static final CommandSource LOG_SOURCE = new CommandSource() {
+        @Override
+        public void sendSystemMessage(Component message) {
+            GrandLine.LOGGER.info("[autotest] > {}", message.getString());
+        }
+
+        @Override
+        public boolean acceptsSuccess() {
+            return true;
+        }
+
+        @Override
+        public boolean acceptsFailure() {
+            return true;
+        }
+
+        @Override
+        public boolean shouldInformAdmins() {
+            return false;
+        }
+    };
+
     private static Deque<String> steps;
     private static int waitTicks = 60;
     private static boolean started;
@@ -109,6 +135,13 @@ public final class ClientAutoTest {
                 default -> CameraType.FIRST_PERSON;
             });
             case "jump" -> mc.player.jumpFromGround();
+            case "attack" -> {
+                // A real left click: the server sees an ordinary melee hit on whatever is under the crosshair.
+                if (mc.crosshairPickEntity != null && mc.gameMode != null) {
+                    mc.gameMode.attack(mc.player, mc.crosshairPickEntity);
+                }
+                mc.player.swing(InteractionHand.MAIN_HAND);
+            }
             case "menu" -> mc.setScreen(new AbilityScreen());
             case "close" -> mc.setScreen(null);
             case "shot" -> Screenshot.grab(mc.gameDirectory, arg + ".png", mc.getMainRenderTarget(),
@@ -131,7 +164,8 @@ public final class ClientAutoTest {
         server.execute(() -> {
             ServerPlayer player = server.getPlayerList().getPlayer(uuid);
             if (player != null) {
-                CommandSourceStack source = player.createCommandSourceStack().withPermission(4);
+                // Feedback goes to the log (the CI client hides chat so screenshots stay clean).
+                CommandSourceStack source = player.createCommandSourceStack().withPermission(4).withSource(LOG_SOURCE);
                 server.getCommands().performPrefixedCommand(source, command);
             }
         });

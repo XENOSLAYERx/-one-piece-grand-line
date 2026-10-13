@@ -55,6 +55,7 @@ public final class FruitManager {
     public static void register() {
         // Fruit abilities are granted to whoever ate the fruit.
         AbilityAccess.addGrant(FruitManager::grantedAbilities);
+        AbilityManager.addUseListener(FruitManager::onAbilityUsed);
         // The sea (any water) cancels Devil Fruit powers.
         AbilityAccess.addRule((player, ability) -> ability.properties().category() == AbilityCategory.FRUIT
                 && isWeakenedByWater(player)
