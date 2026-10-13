@@ -155,7 +155,7 @@ public final class FruitTests {
         AbilityManager.tryStart(player, LeopardAbilities.BEAST_FORM.get());
         helper.assertTrue(TransformationManager.isActive(player, GLTransformations.LEOPARD_BEAST.get()), "Beast on");
         helper.assertFalse(state.isActive(LeopardAbilities.HYBRID_FORM.getId()), "Hybrid toggle ended with its form");
-        helper.assertTrue(player.getDimensions(player.getPose()).height() < 1.2f, "Beast hitbox is low");
+        helper.assertTrue(player.getBbHeight() < 1.2f, "Beast hitbox is low: " + player.getBbHeight());
 
         AbilityManager.press(player, LeopardAbilities.BEAST_FORM.get());
         helper.assertTrue(TransformationManager.active(player) == null, "Toggling off ends the form");
@@ -205,7 +205,7 @@ public final class FruitTests {
         helper.assertFalse(magic.isCanceled(), "Magic still hurts a Logia");
 
         // Exhausted: no stamina, no intangibility.
-        while (AbilityState.of(player).spendStamina(10f, now)) {
+        while (AbilityState.of(player).spendStamina(1f, now)) {
             // drain
         }
         LivingIncomingDamageEvent tired = event(player, player.damageSources().mobAttack(zombie), 6f);
