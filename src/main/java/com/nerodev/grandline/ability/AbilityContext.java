@@ -37,6 +37,22 @@ public record AbilityContext(ServerPlayer player, Ability ability, int activeTic
         return flat.normalize();
     }
 
+    /** Unit vector to the player's right (horizontal). */
+    public Vec3 right() {
+        float yaw = player.getYRot() * ((float) Math.PI / 180F);
+        return new Vec3(-Math.cos(yaw), 0, -Math.sin(yaw));
+    }
+
+    /** Roughly where the right hand is when punching forward. */
+    public Vec3 handPos() {
+        return player.getEyePosition().add(player.getLookAngle().scale(0.7)).add(right().scale(0.3)).add(0, -0.35, 0);
+    }
+
+    /** Point {@code height} blocks above the head. */
+    public Vec3 aboveHead(double height) {
+        return player.position().add(0, player.getBbHeight() + height, 0);
+    }
+
     /** Plays a registered client effect for everyone nearby (including the user). */
     public void fx(ResourceLocation effect, FxParams params) {
         Fx.play(level(), effect, player, params);

@@ -127,6 +127,25 @@ def whoosh(seconds, start_hz, end_hz, attack=0.02):
     return lowpass_sweep(n, start_hz, end_hz) * envelope(len(n), attack, 1.0, curve=2.2)
 
 
+def tone(seconds, f0, f1, harmonics=(1.0,), vibrato=0.0, vib_rate=6.0):
+    """Pitched tone gliding f0 -> f1 with optional harmonics and vibrato."""
+    t = t_axis(seconds)
+    freq = np.geomspace(f0, f1, len(t)) * (1 + vibrato * np.sin(2 * np.pi * vib_rate * t))
+    phase = 2 * np.pi * np.cumsum(freq) / RATE
+    out = np.zeros_like(t)
+    for i, amp in enumerate(harmonics):
+        out += amp * np.sin(phase * (i + 1))
+    return out
+
+
+def delayed(signal, seconds):
+    return np.concatenate([np.zeros(int(RATE * seconds)), signal])
+
+
+def env(sig, attack, curve=2.0):
+    return sig * envelope(len(sig), attack, 1.0, curve=curve)
+
+
 def sounds():
     # Soru: a sharp snap then a fast air-tearing whoosh.
     snap = highpass(noise(0.03), 3000) * envelope(int(0.03 * RATE), 0.001, 1.0, curve=6)
@@ -148,7 +167,63 @@ def sounds():
     # Evade: a soft swish.
     write("combat/evade", 0.6 * whoosh(0.2, 4000, 900, attack=0.03))
 
+    # ---- Flame-Flame Fruit
+    write("flame/charge", mix(env(lowpass_sweep(noise(1.0), 400, 2500), 0.6, 1.2), 0.5 * crackle(1.0, 60)))
+    write("flame/fire_fist", mix(whoosh(0.8, 3500, 350, attack=0.03), 0.8 * thump(0.6, 90, 40, 2.0),
+                                 0.4 * crackle(0.8, 50)))
+    boom = mix(thump(1.2, 70, 28, 2.5), env(lowpass_sweep(noise(1.2), 2500, 150), 0.005, 2.5), 0.4 * crackle(1.2, 40))
+    write("flame/explosion", boom)
+    pops = [delayed(mix(env(highpass(noise(0.06), 800), 0.002, 4), 0.6 * thump(0.08, 200, 90)), i * 0.045)
+            for i in range(5)]
+    write("flame/fire_gun", mix(*pops))
+    roar = env(lowpass_sweep(noise(1.3), 1800, 900), 0.15, 1.3) * (1 + 0.3 * np.sin(2 * np.pi * 9 * t_axis(1.3)))
+    write("flame/wall", mix(roar, 0.5 * crackle(1.3, 70)))
+    write("flame/pillar", mix(env(lowpass_sweep(noise(1.0), 300, 4500), 0.05, 1.8), 0.9 * thump(0.7, 80, 35, 2.0),
+                              0.4 * crackle(1.0, 50)))
+    rumble = tone(2.0, 40, 55, (1.0, 0.5, 0.25)) * envelope(int(2.0 * RATE), 1.2, 1.0, curve=0.8)
+    write("flame/entei_charge", mix(rumble, env(lowpass_sweep(noise(2.0), 300, 1500), 1.4, 0.8), 0.3 * crackle(2.0, 50)))
+    chimes = [delayed(env(tone(0.5, f, f, (1.0, 0.3)), 0.005, 3), d) for f, d in ((2093, 0), (2637, 0.07), (3136, 0.15), (4186, 0.22))]
+    write("flame/firefly", 0.6 * mix(*chimes))
+
+    # ---- Gum-Gum Fruit
+    write("gum/stretch", mix(env(tone(0.35, 180, 620, (1.0, 0.4), vibrato=0.04, vib_rate=30), 0.02, 1.5),
+                             0.3 * env(lowpass_sweep(noise(0.35), 1500, 600), 0.05, 1.5)))
+    write("gum/snap", mix(env(tone(0.18, 900, 140, (1.0, 0.5)), 0.003, 2.0), 0.6 * env(highpass(noise(0.03), 2000), 0.001, 4)))
+    write("gum/punch", mix(thump(0.3, 130, 45, 3.0), 0.7 * env(lowpass_sweep(noise(0.1), 2500, 400), 0.002, 4)))
+    thuds = [delayed(mix(thump(0.12, 150, 60, 3.0), 0.4 * env(lowpass_sweep(noise(0.05), 2000, 500), 0.002, 4)), i * 0.04)
+             for i in range(6)]
+    write("gum/gatling", mix(*thuds))
+    write("gum/steam", env(highpass(noise(1.2), 2500), 0.25, 1.5))
+    write("gum/inflate", mix(env(tone(1.0, 80, 170, (1.0, 0.6, 0.3), vibrato=0.05, vib_rate=8), 0.2, 1.2),
+                             0.5 * env(lowpass_sweep(noise(1.0), 400, 1600), 0.3, 1.2)))
+    write("gum/bounce", env(tone(0.5, 140, 420, (1.0, 0.35), vibrato=0.12, vib_rate=14), 0.005, 1.8))
+    write("gum/giant_impact", mix(thump(1.3, 60, 22, 2.0), env(lowpass_sweep(noise(1.0), 1800, 120), 0.003, 2.5)))
+
+    # ---- Leopard
+    growl = tone(0.9, 75, 65, (1.0, 0.7, 0.5, 0.35, 0.25)) * (0.6 + 0.4 * np.sin(2 * np.pi * 23 * t_axis(0.9)))
+    write("leopard/growl", mix(env(growl, 0.1, 1.2), 0.4 * env(lowpass_sweep(noise(0.9), 900, 500), 0.1, 1.2)))
+    roar = tone(1.5, 150, 85, (1.0, 0.8, 0.6, 0.45, 0.3, 0.2)) * (0.7 + 0.3 * np.sin(2 * np.pi * 31 * t_axis(1.5)))
+    write("leopard/roar", mix(env(roar, 0.08, 1.4), 0.8 * env(lowpass_sweep(noise(1.5), 2500, 700), 0.05, 1.4)))
+    swipes = [delayed(env(highpass(lowpass_sweep(noise(0.14), 7000, 1500), 600), 0.01, 2.5), i * 0.07) for i in range(3)]
+    write("leopard/claw", mix(*swipes))
+
+
+def sounds_json():
+    """Every .ogg under sounds/ becomes an event named like the path with dots: flame/explosion -> flame.explosion."""
+    import json
+    events = {}
+    for folder, _, files in os.walk(ROOT):
+        for f in sorted(files):
+            if f.endswith(".ogg"):
+                rel = os.path.relpath(os.path.join(folder, f), ROOT)[:-4].replace(os.sep, "/")
+                name = rel.replace("/", ".")
+                events[name] = {"subtitle": "subtitles.grandline." + name, "sounds": ["grandline:" + rel]}
+    with open(os.path.join(ROOT, "..", "sounds.json"), "w") as out:
+        json.dump(dict(sorted(events.items())), out, indent=2)
+        out.write("\n")
+
 
 if __name__ == "__main__":
     sounds()
+    sounds_json()
     print("sounds written to", os.path.normpath(ROOT), file=sys.stderr)

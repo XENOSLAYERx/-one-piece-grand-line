@@ -2,22 +2,35 @@ package com.nerodev.grandline.client;
 
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.client.anim.AnimationLoader;
-import com.nerodev.grandline.client.dev.ClientAutoTest;
 import com.nerodev.grandline.client.anim.PlayerAnimator;
+import com.nerodev.grandline.client.dev.ClientAutoTest;
 import com.nerodev.grandline.client.fx.CameraShake;
+import com.nerodev.grandline.client.fx.FruitEffects;
 import com.nerodev.grandline.client.hud.AbilityHud;
+import com.nerodev.grandline.client.model.TransformationModels;
 import com.nerodev.grandline.client.particle.GLParticleProviders;
+import com.nerodev.grandline.client.render.AbilityProjectileRenderer;
+import com.nerodev.grandline.client.render.ProjectileVisuals;
+import com.nerodev.grandline.client.render.TransformationLayer;
+import com.nerodev.grandline.client.render.TransformationRenderer;
+import com.nerodev.grandline.client.visual.ClientVisuals;
+import com.nerodev.grandline.entity.AbilityProjectile;
+import com.nerodev.grandline.entity.GLEntities;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-/** Client-only entry point: input, HUD, particles, effects and body animation. */
+/** Client-only entry point: input, HUD, particles, effects, body animation and transformation rendering. */
 @Mod(value = GrandLine.MODID, dist = Dist.CLIENT)
 public final class GrandLineClient {
     public GrandLineClient(IEventBus modBus, ModContainer container) {
@@ -26,17 +39,39 @@ public final class GrandLineClient {
         modBus.addListener(GLParticleProviders::register);
         modBus.addListener(RegisterClientReloadListenersEvent.class,
                 event -> event.registerReloadListener(AnimationLoader.INSTANCE));
+        modBus.addListener(EntityRenderersEvent.RegisterRenderers.class,
+                event -> event.registerEntityRenderer(GLEntities.ABILITY_PROJECTILE.get(), AbilityProjectileRenderer::new));
+        modBus.addListener(TransformationModels::registerLayers);
+        modBus.addListener(EntityRenderersEvent.AddLayers.class, GrandLineClient::addLayers);
+
+        FruitEffects.register();
+        TransformationRenderer.register();
+        AbilityProjectile.clientTick = ProjectileVisuals::tick;
 
         boolean autotest = ClientAutoTest.init();
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
             GLKeys.onClientTick();
             PlayerAnimator.tick();
             CameraShake.tick();
+            ClientVisuals.tick();
+            TransformationRenderer.tick();
             if (autotest) {
                 ClientAutoTest.tick();
             }
         });
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, CameraShake::onCameraAngles);
-        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> PlayerAnimator.clear());
+        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, ClientVisuals::onRenderStage);
+        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
+            PlayerAnimator.clear();
+            ClientVisuals.clear();
+        });
+    }
+
+    private static void addLayers(EntityRenderersEvent.AddLayers event) {
+        for (PlayerSkin.Model skin : event.getSkins()) {
+            if (event.getSkin(skin) instanceof PlayerRenderer renderer) {
+                renderer.addLayer(new TransformationLayer(renderer, event.getEntityModels(), skin == PlayerSkin.Model.SLIM));
+            }
+        }
     }
 }

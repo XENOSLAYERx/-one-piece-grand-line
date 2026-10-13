@@ -77,7 +77,7 @@ public final class ClientAutoTest {
             waitTicks--;
             return;
         }
-        while (!steps.isEmpty() && waitTicks == 0) {
+        while (steps != null && !steps.isEmpty() && waitTicks == 0) {
             String step = steps.poll();
             GrandLine.LOGGER.info("[autotest] {}", step);
             try {

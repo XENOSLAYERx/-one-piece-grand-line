@@ -288,7 +288,145 @@ def icons():
         save(out, ICON_DIR, name)
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Entity textures
+# ---------------------------------------------------------------------------------------------------------------
+
+ENTITY_DIR = os.path.join(ROOT, "textures", "entity")
+EFFECT_DIR = os.path.join(ROOT, "textures", "mob_effect")
+
+FUR = (217, 164, 65)
+FUR_DARK = (180, 128, 44)
+CREAM = (242, 226, 184)
+SPOT = (40, 28, 18)
+
+
+def cube_faces(u, v, w, h, d):
+    """UV rectangles (x, y, width, height) of a Minecraft cube: top, bottom, east, north, west, south."""
+    return {
+        "top": (u + d, v, w, d),
+        "bottom": (u + d + w, v, w, d),
+        "east": (u, v + d, d, h),
+        "north": (u + d, v + d, w, h),
+        "west": (u + d + w, v + d, d, h),
+        "south": (u + d + w + d, v + d, w, h),
+    }
+
+
+def paint_fur(px, rect, rnd, base=FUR, spots=True):
+    x0, y0, w, h = rect
+    for y in range(y0, y0 + h):
+        for x in range(x0, x0 + w):
+            n = rnd.uniform(-14, 14)
+            c = tuple(max(0, min(255, int(base[i] + n))) for i in range(3))
+            px[x, y] = c + (255,)
+    if spots and w * h > 6:
+        for _ in range(max(1, w * h // 14)):
+            sx = rnd.randint(x0, x0 + w - 1)
+            sy = rnd.randint(y0, y0 + h - 1)
+            for dx, dy in ((0, 0), (1, 0), (0, 1), (-1, 0), (0, -1)):
+                if x0 <= sx + dx < x0 + w and y0 <= sy + dy < y0 + h and rnd.random() < 0.8:
+                    px[sx + dx, sy + dy] = SPOT + (255,)
+            if x0 <= sx < x0 + w and y0 <= sy < y0 + h:
+                px[sx, sy] = FUR_DARK + (255,)  # rosette centre
+
+
+def leopard():
+    rnd = random.Random(42)
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    px = img.load()
+    cubes = {
+        "body": (0, 0, 8, 8, 18),
+        "head": (0, 26, 8, 7, 6),
+        "snout": (28, 26, 4, 3, 2),
+        "ear_r": (40, 26, 2, 2, 1),
+        "ear_l": (46, 26, 2, 2, 1),
+        "leg_fr": (0, 39, 3, 10, 3),
+        "leg_fl": (12, 39, 3, 10, 3),
+        "leg_br": (24, 39, 3, 10, 3),
+        "leg_bl": (36, 39, 3, 10, 3),
+        "tail": (0, 52, 2, 2, 9),
+        "tail_tip": (22, 52, 2, 2, 8),
+    }
+    for name, (u, v, w, h, d) in cubes.items():
+        faces = cube_faces(u, v, w, h, d)
+        for face, rect in faces.items():
+            belly = face == "bottom" and name in ("body", "head")
+            paint_fur(px, rect, rnd, CREAM if belly else FUR, spots=not belly and not name.startswith("ear"))
+    # face details on the head front (north face)
+    hx, hy, hw, hh = cube_faces(0, 26, 8, 7, 6)["north"]
+    for (ex, ey) in ((hx + 1, hy + 2), (hx + 5, hy + 2)):
+        px[ex, ey] = (40, 30, 20, 255)
+        px[ex + 1, ey] = (120, 200, 90, 255)
+        px[ex, ey + 1] = (230, 220, 160, 255)
+        px[ex + 1, ey + 1] = (40, 30, 20, 255)
+    for x in range(hx + 2, hx + 6):
+        px[x, hy + hh - 1] = CREAM + (255,)
+    # muzzle: cream with a dark nose
+    sx, sy, sw, sh = cube_faces(28, 26, 4, 3, 2)["north"]
+    for y in range(sy, sy + sh):
+        for x in range(sx, sx + sw):
+            px[x, y] = CREAM + (255,)
+    px[sx + 1, sy] = (60, 40, 40, 255)
+    px[sx + 2, sy] = (60, 40, 40, 255)
+    px[sx + 1, sy + 2] = (90, 60, 50, 255)
+    px[sx + 2, sy + 2] = (90, 60, 50, 255)
+    # dark ear backs and tail rings
+    for ear in ((40, 26), (46, 26)):
+        rect = cube_faces(ear[0], ear[1], 2, 2, 1)["south"]
+        for y in range(rect[1], rect[1] + rect[3]):
+            for x in range(rect[0], rect[0] + rect[2]):
+                px[x, y] = (30, 22, 16, 255)
+    u, v = 22, 52
+    for face in cube_faces(u, v, 2, 2, 8).values():
+        x0, y0, w, h = face
+        for y in range(y0, y0 + h):
+            for x in range(x0, x0 + w):
+                if (x - x0 + y - y0) % 4 == 0:
+                    px[x, y] = SPOT + (255,)
+    save(img, ENTITY_DIR, "leopard")
+
+
+def leopard_spots():
+    """Fur overlay in the player skin layout: semi-transparent golden fur with rosettes, face kept clear."""
+    rnd = random.Random(7)
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(64):
+        for x in range(64):
+            if 8 <= x < 16 and 8 <= y < 16:  # face front: leave the face readable
+                continue
+            n = rnd.uniform(-10, 10)
+            px[x, y] = (int(FUR[0] + n), int(FUR[1] + n), int(FUR[2] + n), 120)
+    for _ in range(170):
+        x = rnd.randint(0, 62)
+        y = rnd.randint(0, 62)
+        if 8 <= x < 16 and 8 <= y < 16:
+            continue
+        for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            if rnd.random() < 0.75:
+                px[x + dx, y + dy] = SPOT + (215,)
+    save(img, ENTITY_DIR, "leopard_spots")
+
+
+def glow_orb():
+    save(radial(32, 1.8, core=0.12), ENTITY_DIR, "glow_orb")
+
+
+def bleeding_icon():
+    img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.polygon([(9, 1), (14, 9), (4, 9)], fill=(170, 20, 24, 255))
+    d.ellipse([3, 6, 15, 17], fill=(170, 20, 24, 255))
+    d.ellipse([6, 9, 9, 12], fill=(240, 120, 120, 255))
+    save(img, EFFECT_DIR, "bleeding")
+
+
 if __name__ == "__main__":
     particles()
     icons()
+    leopard()
+    leopard_spots()
+    glow_orb()
+    bleeding_icon()
     print("textures written to", os.path.normpath(ROOT), file=sys.stderr)

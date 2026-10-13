@@ -1,0 +1,17 @@
+{
+  "values": [
+    "grandline:strike",
+    "grandline:slash",
+    "minecraft:player_attack",
+    "minecraft:mob_attack",
+    "minecraft:mob_attack_no_aggro",
+    "minecraft:arrow",
+    "minecraft:trident",
+    "minecraft:thrown",
+    "minecraft:mob_projectile",
+    "minecraft:sting",
+    "minecraft:spit",
+    "minecraft:falling_anvil",
+    "minecraft:falling_stalactite"
+  ]
+}

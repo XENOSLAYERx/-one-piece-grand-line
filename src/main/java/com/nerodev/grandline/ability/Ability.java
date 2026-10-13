@@ -67,6 +67,11 @@ public abstract class Ability {
         return Optional.empty();
     }
 
+    /** Cooldown for this use. Override when a state changes it (e.g. Gear Second shortens Pistol). */
+    public int cooldownFor(ServerPlayer player) {
+        return properties.cooldownTicks();
+    }
+
     /** Called once when the ability starts. For INSTANT abilities this is the whole effect. */
     public void onActivate(AbilityContext ctx) {}
 
@@ -116,6 +121,7 @@ public abstract class Ability {
         @Nullable
         String masteryKey;
         double requiredMastery;
+        double masteryGain = 0.5;
 
         public static Properties of(ActivationType activation, AbilityCategory category) {
             Properties properties = new Properties();
@@ -160,6 +166,16 @@ public abstract class Ability {
             this.masteryKey = key;
             this.requiredMastery = level;
             return this;
+        }
+
+        /** Mastery gained per successful use (fruit abilities). */
+        public Properties masteryGain(double gain) {
+            this.masteryGain = gain;
+            return this;
+        }
+
+        public double masteryGain() {
+            return masteryGain;
         }
 
         public ActivationType activation() {

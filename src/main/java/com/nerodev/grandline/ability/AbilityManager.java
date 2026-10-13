@@ -1,6 +1,8 @@
 package com.nerodev.grandline.ability;
 
+import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.GLAttachments;
+import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fx.Fx;
 import com.nerodev.grandline.fx.FxParams;
 import com.nerodev.grandline.fx.GLEffects;
@@ -144,7 +146,8 @@ public final class AbilityManager {
             return Result.ON_COOLDOWN;
         }
         Ability.Properties props = ability.properties();
-        if (!state.hasStamina(props.staminaCost(), now)) {
+        float cost = staminaCost(ability);
+        if (!state.hasStamina(cost, now)) {
             return Result.NO_STAMINA;
         }
         Optional<Component> blocked = AbilityAccess.blockedBy(player, ability).or(() -> ability.checkUse(player));
@@ -153,14 +156,15 @@ public final class AbilityManager {
             return Result.BLOCKED;
         }
 
-        state.spendStamina(props.staminaCost(), now);
+        state.spendStamina(cost, now);
         if (props.activation() == ActivationType.INSTANT) {
-            state.startCooldown(id, now, props.cooldownTicks());
+            state.startCooldown(id, now, cooldownTicks(player, ability));
             ability.onActivate(context(player, ability, 0));
         } else {
             state.markActive(id, now);
             ability.onActivate(context(player, ability, 0));
         }
+        FruitManager.onAbilityUsed(player, ability);
         sync(player);
         return Result.STARTED;
     }
@@ -179,9 +183,13 @@ public final class AbilityManager {
         int ticks = activeTicks(player, state, ability);
         state.markInactive(id);
         if (cooldown) {
-            state.startCooldown(id, now(player), ability.properties().cooldownTicks());
+            state.startCooldown(id, now(player), cooldownTicks(player, ability));
         }
         ability.onEnd(context(player, ability, ticks), reason);
+        if (reason != Ability.EndReason.RELEASED) {
+            // Charge-up and channel poses must not outlive the ability.
+            Fx.stopAnimation(player);
+        }
         sync(player);
     }
 
@@ -234,7 +242,8 @@ public final class AbilityManager {
             int ticks = activeTicks(player, state, ability);
             if (props.staminaPerTick() > 0) {
                 draining = true;
-                if (!state.spendStamina(props.staminaPerTick(), now)) {
+                float drain = (float) (props.staminaPerTick() * GLServerConfig.staminaCostMultiplier());
+                if (!state.spendStamina(drain, now)) {
                     if (props.activation() == ActivationType.CHARGE) {
                         ability.onRelease(context(player, ability, ticks));
                     }
@@ -312,6 +321,16 @@ public final class AbilityManager {
 
     private static int activeTicks(ServerPlayer player, AbilityState state, Ability ability) {
         return state.activeSince(ability.id()).map(start -> (int) Math.max(0, now(player) - start)).orElse(0);
+    }
+
+    /** Cooldown after server balance multipliers. */
+    public static int cooldownTicks(ServerPlayer player, Ability ability) {
+        return (int) Math.round(ability.cooldownFor(player) * GLServerConfig.cooldownMultiplier());
+    }
+
+    /** Stamina cost after server balance multipliers. */
+    public static float staminaCost(Ability ability) {
+        return (float) (ability.properties().staminaCost() * GLServerConfig.staminaCostMultiplier());
     }
 
     public static long now(ServerPlayer player) {

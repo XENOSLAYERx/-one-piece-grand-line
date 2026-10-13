@@ -8,6 +8,7 @@ cmd gamemode survival
 cmd onepiece invincible on
 cmd onepiece unlock all
 cmd onepiece cooldown off
+cmd onepiece stamina infinite
 cmd onepiece ability equip 1 grandline:soru
 cmd onepiece ability equip 2 grandline:geppo
 cmd onepiece ability equip 3 grandline:tekkai
@@ -15,46 +16,172 @@ wait 20
 look 0 0
 shot 01_hud
 
-# Tekkai (slot 3, hold) seen from the front
+# ---- Rokushiki
 camera front
 look 0 10
 wait 5
-shot 02_idle_front
 press 3
-wait 4
-shot 03_tekkai
-wait 12
-shot 04_tekkai_hold
+wait 6
+shot 02_tekkai
 release 3
-wait 15
-
-# Soru (slot 1) seen from the side
+wait 10
 camera back
 look 90 15
-wait 5
 press 1
 release 1
 wait 2
-shot 05_soru_a
-wait 2
-shot 06_soru_b
-wait 25
+shot 03_soru
+wait 20
 
-# Geppo (slot 2) mid-air
-look 0 5
-jump
-wait 5
+# ---- Flame-Flame Fruit (awakened so every move is available)
+cmd onepiece fruit set grandline:flame
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:fire_fist
+cmd onepiece ability equip 2 grandline:fire_gun
+cmd onepiece ability equip 3 grandline:fire_pillar
+cmd onepiece ability equip 4 grandline:flame_emperor
+cmd onepiece ability equip 5 grandline:flame_commandment
+wait 20
+shot 10_flame_hud
+look 90 12
+press 1
+wait 20
+shot 11_fire_fist_charge
+release 1
+wait 3
+shot 12_fire_fist_flying
+wait 6
+shot 13_fire_fist_impact
+wait 15
 press 2
 release 2
-wait 2
-shot 07_geppo
+wait 3
+shot 14_fire_gun
+wait 15
+press 3
+release 3
+wait 14
+shot 15_fire_pillar
+wait 20
+press 5
+release 5
+wait 8
+shot 16_flame_wall
+wait 20
+camera front
+look 270 -10
+press 4
+wait 45
+shot 17_entei_charge
+release 4
+wait 8
+shot 18_entei_thrown
 wait 30
+camera back
+look 90 12
 
-# Ability menu
+# ---- Gum-Gum Fruit
+cmd onepiece fruit set grandline:gum_gum
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:gum_pistol
+cmd onepiece ability equip 2 grandline:gum_gatling
+cmd onepiece ability equip 3 grandline:gear_second
+cmd onepiece ability equip 4 grandline:gum_giant_pistol
+cmd onepiece ability equip 5 grandline:gear_fifth
+wait 20
+press 1
+release 1
+wait 3
+shot 20_gum_pistol
+wait 15
+press 2
+wait 8
+shot 21_gum_gatling
+release 2
+wait 15
+camera front
+look 270 5
+press 3
+release 3
+wait 10
+shot 22_gear_second
+press 3
+release 3
+wait 10
+camera back
+look 90 10
+press 4
+wait 28
+shot 23_gear_third_inflate
+release 4
+wait 4
+shot 24_gear_third_punch
+wait 20
+camera front
+look 270 5
+press 5
+release 5
+wait 15
+shot 25_gear_fifth
+cmd onepiece ability equip 1 grandline:gum_dawn_fist
+camera back
+look 90 25
+wait 5
+press 1
+release 1
+wait 8
+shot 26_dawn_fist_falling
+wait 8
+shot 27_dawn_fist_impact
+press 5
+release 5
+wait 20
+
+# ---- Leopard
+cmd onepiece fruit set grandline:leopard
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:leopard_hybrid
+cmd onepiece ability equip 2 grandline:leopard_beast
+cmd onepiece ability equip 3 grandline:leopard_claws
+cmd onepiece ability equip 4 grandline:leopard_roar
+cmd onepiece ability equip 5 grandline:leopard_frenzy
+wait 20
+camera front
+look 270 5
+press 1
+release 1
+wait 12
+shot 30_leopard_hybrid
+press 3
+release 3
+wait 2
+shot 31_leopard_claws
+wait 10
+press 5
+wait 6
+shot 32_leopard_frenzy
+release 5
+wait 15
+press 4
+release 4
+wait 4
+shot 33_leopard_roar
+wait 10
+press 2
+release 2
+wait 12
+shot 34_leopard_beast_front
+camera back
+look 90 15
+wait 5
+shot 35_leopard_beast_back
+wait 5
+
+# ---- Menu
 camera first
 menu
 wait 10
-shot 08_menu
+shot 40_menu
 close
 wait 5
 quit

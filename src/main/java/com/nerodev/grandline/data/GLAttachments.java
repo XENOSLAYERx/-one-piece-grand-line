@@ -30,6 +30,12 @@ public final class GLAttachments {
                     .sync((holder, to) -> holder == to, AbilityState.STREAM_CODEC)
                     .build());
 
+    /** Fruit, awakening and transformation for rendering. Not saved; synced to everyone who can see the player. */
+    public static final Supplier<AttachmentType<PublicState>> PUBLIC_STATE = ATTACHMENT_TYPES.register("public_state",
+            () -> AttachmentType.builder(() -> new PublicState())
+                    .sync(PublicState.STREAM_CODEC)
+                    .build());
+
     private GLAttachments() {}
 
     public static void register(IEventBus modBus) {

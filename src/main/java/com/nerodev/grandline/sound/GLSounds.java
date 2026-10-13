@@ -17,6 +17,31 @@ public final class GLSounds {
     public static final Supplier<SoundEvent> TEKKAI_BLOCK = register("rokushiki.tekkai_block");
     public static final Supplier<SoundEvent> EVADE = register("combat.evade");
 
+    // Flame-Flame Fruit
+    public static final Supplier<SoundEvent> FLAME_CHARGE = register("flame.charge");
+    public static final Supplier<SoundEvent> FIRE_FIST = register("flame.fire_fist");
+    public static final Supplier<SoundEvent> FIRE_EXPLOSION = register("flame.explosion");
+    public static final Supplier<SoundEvent> FIRE_GUN = register("flame.fire_gun");
+    public static final Supplier<SoundEvent> FLAME_WALL = register("flame.wall");
+    public static final Supplier<SoundEvent> FIRE_PILLAR = register("flame.pillar");
+    public static final Supplier<SoundEvent> ENTEI_CHARGE = register("flame.entei_charge");
+    public static final Supplier<SoundEvent> FIREFLY = register("flame.firefly");
+
+    // Gum-Gum Fruit
+    public static final Supplier<SoundEvent> RUBBER_STRETCH = register("gum.stretch");
+    public static final Supplier<SoundEvent> RUBBER_SNAP = register("gum.snap");
+    public static final Supplier<SoundEvent> PUNCH_HEAVY = register("gum.punch");
+    public static final Supplier<SoundEvent> GATLING = register("gum.gatling");
+    public static final Supplier<SoundEvent> STEAM = register("gum.steam");
+    public static final Supplier<SoundEvent> INFLATE = register("gum.inflate");
+    public static final Supplier<SoundEvent> BOUNCE = register("gum.bounce");
+    public static final Supplier<SoundEvent> GIANT_IMPACT = register("gum.giant_impact");
+
+    // Leopard
+    public static final Supplier<SoundEvent> LEOPARD_GROWL = register("leopard.growl");
+    public static final Supplier<SoundEvent> LEOPARD_ROAR = register("leopard.roar");
+    public static final Supplier<SoundEvent> CLAW = register("leopard.claw");
+
     private GLSounds() {}
 
     private static Supplier<SoundEvent> register(String name) {

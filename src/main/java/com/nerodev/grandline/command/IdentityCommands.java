@@ -10,6 +10,7 @@ import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
+import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
@@ -41,11 +42,12 @@ final class IdentityCommands {
             new HelpEntry("/onepiece bounty add <amount> [players]", "Add to (or subtract from) bounty", PermissionTier.CREATOR),
             new HelpEntry("/onepiece bounty reset [players]", "Clear bounty", PermissionTier.CREATOR),
             new HelpEntry("/onepiece deathmode <normal|creator> [players]", "Creator mode keeps items and XP on death", PermissionTier.CREATOR),
-            new HelpEntry("/onepiece reset <part> [confirm] [players]", "Reset race, faction, bounty, mastery or all", PermissionTier.CREATOR));
+            new HelpEntry("/onepiece reset <part> [confirm] [players]", "Reset race, fruit, faction, bounty, mastery or all", PermissionTier.CREATOR));
 
     /** What {@code /onepiece reset} can reset. Fruit and Haki join this list with their milestones. */
     private enum ResetPart {
         RACE("race", data -> data.setRace(PlayerData.DEFAULT_RACE)),
+        FRUIT("fruit", data -> { }),
         FACTION("faction", data -> data.setFaction(Optional.empty())),
         BOUNTY("bounty", data -> data.setBounty(0)),
         MASTERY("mastery", PlayerData::clearMastery),
@@ -198,6 +200,9 @@ final class IdentityCommands {
 
     private static int reset(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets, ResetPart part) {
         for (ServerPlayer player : targets) {
+            if (part == ResetPart.FRUIT || part == ResetPart.ALL) {
+                FruitManager.removeFruit(player);
+            }
             GLPlayer.edit(player, part.reset);
         }
         feedback(ctx.getSource(), targets, p -> Component.literal("Reset " + part.name + " data of " + p));

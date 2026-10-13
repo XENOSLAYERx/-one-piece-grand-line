@@ -4,7 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.nerodev.grandline.GrandLine;
-import com.nerodev.grandline.definition.DevilFruitDefinition;
+import com.nerodev.grandline.fruit.DevilFruit;
+import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.definition.FruitType;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
@@ -35,7 +36,7 @@ public final class CoreFrameworkTests {
     @GameTest(template = TEMPLATE)
     public static void registriesLoadFromJson(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
-        Registry<DevilFruitDefinition> fruits = server.registryAccess().registryOrThrow(GLRegistries.DEVIL_FRUIT);
+        Registry<DevilFruit> fruits = server.registryAccess().registryOrThrow(GLFruits.KEY);
 
         helper.assertTrue(fruits.size() == 3, "Expected 3 fruits, found " + fruits.size());
         assertFruitType(helper, fruits, "gum_gum", FruitType.PARAMECIA);
@@ -164,9 +165,9 @@ public final class CoreFrameworkTests {
 
     // ---------------------------------------------------------------------------------------------------------
 
-    private static void assertFruitType(GameTestHelper helper, Registry<DevilFruitDefinition> fruits, String path,
+    private static void assertFruitType(GameTestHelper helper, Registry<DevilFruit> fruits, String path,
             FruitType type) {
-        DevilFruitDefinition fruit = fruits.get(GrandLine.id(path));
+        DevilFruit fruit = fruits.get(GrandLine.id(path));
         helper.assertTrue(fruit != null, "Missing fruit grandline:" + path);
         helper.assertTrue(fruit.type() == type, "grandline:" + path + " should be " + type + " but is " + fruit.type());
     }

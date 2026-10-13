@@ -2,7 +2,8 @@ package com.nerodev.grandline.registry;
 
 import com.nerodev.grandline.ability.Ability;
 import com.nerodev.grandline.ability.GLAbilities;
-import com.nerodev.grandline.definition.DevilFruitDefinition;
+import com.nerodev.grandline.fruit.DevilFruit;
+import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import java.util.ArrayList;
@@ -34,15 +35,18 @@ public record DefinitionType<T>(
         Function<T, Component> name,
         Function<T, List<Component>> details) {
 
-    public static final DefinitionType<DevilFruitDefinition> FRUIT = new DefinitionType<>(
-            "fruit", GLRegistries.DEVIL_FRUIT, DevilFruitDefinition::displayName,
-            fruit -> List.of(
-                    line("Original name", Component.literal(fruit.originalName())),
-                    line("Type", fruit.type().display()),
-                    line("Rarity", fruit.rarity().display()),
-                    line("Colour", Component.literal(fruit.color().serialize())
-                            .withStyle(s -> s.withColor(fruit.color()))),
-                    line("Description", fruit.description())));
+    public static final DefinitionType<DevilFruit> FRUIT = new DefinitionType<>(
+            "fruit", GLFruits.KEY, DevilFruit::displayName,
+            fruit -> {
+                List<Component> lines = new ArrayList<>();
+                lines.add(line("Original name", Component.literal(fruit.originalName())));
+                lines.add(line("Type", fruit.type().display()));
+                lines.add(line("Rarity", fruit.rarity().display()));
+                lines.add(line("Abilities", names(fruit.abilities())));
+                lines.add(line("Awakened", names(fruit.awakenedAbilities())));
+                lines.add(line("Description", fruit.description()));
+                return lines;
+            });
 
     public static final DefinitionType<RaceDefinition> RACE = new DefinitionType<>(
             "race", GLRegistries.RACE, RaceDefinition::displayName,
@@ -106,6 +110,17 @@ public record DefinitionType<T>(
 
     public String pluralName() {
         return commandName.toLowerCase(Locale.ROOT) + "s";
+    }
+
+    private static Component names(List<Ability> abilities) {
+        net.minecraft.network.chat.MutableComponent out = Component.empty();
+        for (int i = 0; i < abilities.size(); i++) {
+            if (i > 0) {
+                out.append(Component.literal(", ").withStyle(ChatFormatting.DARK_GRAY));
+            }
+            out.append(abilities.get(i).displayName().copy().withStyle(ChatFormatting.AQUA));
+        }
+        return abilities.isEmpty() ? Component.literal("-") : out;
     }
 
     private static Component line(String label, Component value) {

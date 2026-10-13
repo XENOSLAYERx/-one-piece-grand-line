@@ -1,7 +1,146 @@
 {
-  "rokushiki.soru": { "subtitle": "subtitles.grandline.rokushiki.soru", "sounds": ["grandline:rokushiki/soru"] },
-  "rokushiki.geppo": { "subtitle": "subtitles.grandline.rokushiki.geppo", "sounds": ["grandline:rokushiki/geppo"] },
-  "rokushiki.tekkai_on": { "subtitle": "subtitles.grandline.rokushiki.tekkai_on", "sounds": ["grandline:rokushiki/tekkai_on"] },
-  "rokushiki.tekkai_block": { "subtitle": "subtitles.grandline.rokushiki.tekkai_block", "sounds": ["grandline:rokushiki/tekkai_block"] },
-  "combat.evade": { "subtitle": "subtitles.grandline.combat.evade", "sounds": ["grandline:combat/evade"] }
+  "combat.evade": {
+    "subtitle": "subtitles.grandline.combat.evade",
+    "sounds": [
+      "grandline:combat/evade"
+    ]
+  },
+  "flame.charge": {
+    "subtitle": "subtitles.grandline.flame.charge",
+    "sounds": [
+      "grandline:flame/charge"
+    ]
+  },
+  "flame.entei_charge": {
+    "subtitle": "subtitles.grandline.flame.entei_charge",
+    "sounds": [
+      "grandline:flame/entei_charge"
+    ]
+  },
+  "flame.explosion": {
+    "subtitle": "subtitles.grandline.flame.explosion",
+    "sounds": [
+      "grandline:flame/explosion"
+    ]
+  },
+  "flame.fire_fist": {
+    "subtitle": "subtitles.grandline.flame.fire_fist",
+    "sounds": [
+      "grandline:flame/fire_fist"
+    ]
+  },
+  "flame.fire_gun": {
+    "subtitle": "subtitles.grandline.flame.fire_gun",
+    "sounds": [
+      "grandline:flame/fire_gun"
+    ]
+  },
+  "flame.firefly": {
+    "subtitle": "subtitles.grandline.flame.firefly",
+    "sounds": [
+      "grandline:flame/firefly"
+    ]
+  },
+  "flame.pillar": {
+    "subtitle": "subtitles.grandline.flame.pillar",
+    "sounds": [
+      "grandline:flame/pillar"
+    ]
+  },
+  "flame.wall": {
+    "subtitle": "subtitles.grandline.flame.wall",
+    "sounds": [
+      "grandline:flame/wall"
+    ]
+  },
+  "gum.bounce": {
+    "subtitle": "subtitles.grandline.gum.bounce",
+    "sounds": [
+      "grandline:gum/bounce"
+    ]
+  },
+  "gum.gatling": {
+    "subtitle": "subtitles.grandline.gum.gatling",
+    "sounds": [
+      "grandline:gum/gatling"
+    ]
+  },
+  "gum.giant_impact": {
+    "subtitle": "subtitles.grandline.gum.giant_impact",
+    "sounds": [
+      "grandline:gum/giant_impact"
+    ]
+  },
+  "gum.inflate": {
+    "subtitle": "subtitles.grandline.gum.inflate",
+    "sounds": [
+      "grandline:gum/inflate"
+    ]
+  },
+  "gum.punch": {
+    "subtitle": "subtitles.grandline.gum.punch",
+    "sounds": [
+      "grandline:gum/punch"
+    ]
+  },
+  "gum.snap": {
+    "subtitle": "subtitles.grandline.gum.snap",
+    "sounds": [
+      "grandline:gum/snap"
+    ]
+  },
+  "gum.steam": {
+    "subtitle": "subtitles.grandline.gum.steam",
+    "sounds": [
+      "grandline:gum/steam"
+    ]
+  },
+  "gum.stretch": {
+    "subtitle": "subtitles.grandline.gum.stretch",
+    "sounds": [
+      "grandline:gum/stretch"
+    ]
+  },
+  "leopard.claw": {
+    "subtitle": "subtitles.grandline.leopard.claw",
+    "sounds": [
+      "grandline:leopard/claw"
+    ]
+  },
+  "leopard.growl": {
+    "subtitle": "subtitles.grandline.leopard.growl",
+    "sounds": [
+      "grandline:leopard/growl"
+    ]
+  },
+  "leopard.roar": {
+    "subtitle": "subtitles.grandline.leopard.roar",
+    "sounds": [
+      "grandline:leopard/roar"
+    ]
+  },
+  "rokushiki.geppo": {
+    "subtitle": "subtitles.grandline.rokushiki.geppo",
+    "sounds": [
+      "grandline:rokushiki/geppo"
+    ]
+  },
+  "rokushiki.soru": {
+    "subtitle": "subtitles.grandline.rokushiki.soru",
+    "sounds": [
+      "grandline:rokushiki/soru"
+    ]
+  },
+  "rokushiki.tekkai_block": {
+    "subtitle": "subtitles.grandline.rokushiki.tekkai_block",
+    "sounds": [
+      "grandline:rokushiki/tekkai_block"
+    ]
+  },
+  "rokushiki.tekkai_on": {
+    "subtitle": "subtitles.grandline.rokushiki.tekkai_on",
+    "sounds": [
+      "grandline:rokushiki/tekkai_on"
+    ]
+  }
 }

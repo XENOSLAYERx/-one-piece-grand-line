@@ -14,6 +14,7 @@ import com.nerodev.grandline.ability.GLAbilities;
 import com.nerodev.grandline.ability.TestFlag;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.UnlockCategory;
+import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
@@ -204,7 +205,7 @@ final class AbilityCommands {
         return started;
     }
 
-    /** Unlocks every registered ability. Fruits, styles and weapons join this as their systems arrive. */
+    /** Unlocks every registered ability and fruit. Styles and weapons join this as their systems arrive. */
     private static int unlockAll(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets) {
         // Registry iteration follows registration order, so slots fill predictably.
         Map<ResourceLocation, Ability> all = new java.util.LinkedHashMap<>();
@@ -212,9 +213,14 @@ final class AbilityCommands {
             all.put(ability.id(), ability);
         }
         for (ServerPlayer player : targets) {
+            FruitCommands.unlockAllFruits(player);
             GLPlayer.edit(player, data -> all.keySet().forEach(id -> data.unlock(UnlockCategory.ABILITY, id)));
+            if (FruitManager.hasFruit(player)) {
+                FruitManager.setMastery(player, com.nerodev.grandline.data.PlayerData.MAX_MASTERY);
+            }
             AbilityState state = AbilityState.of(player);
-            all.keySet().forEach(state::equipInFreeSlot);
+            all.values().stream().filter(ability -> AbilityAccess.canUse(player, ability))
+                    .forEach(ability -> state.equipInFreeSlot(ability.id()));
             AbilityManager.sync(player);
         }
         feedback(ctx.getSource(), targets, name -> Component.literal("Unlocked " + all.size() + " abilities for " + name));

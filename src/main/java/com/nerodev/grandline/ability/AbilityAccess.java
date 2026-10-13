@@ -62,13 +62,17 @@ public final class AbilityAccess {
         return false;
     }
 
-    /** Unlocked outright, or granted and the mastery requirement is met. */
+    /**
+     * Unlocked outright, or granted and the mastery requirement is met. Devil Fruit abilities are special: they
+     * always need the fruit (you cannot use a power you do not have); an unlock only waives the mastery requirement.
+     */
     public static boolean canUse(Player player, Ability ability) {
         ResourceLocation id = ability.id();
-        if (isUnlocked(player, id)) {
-            return true;
+        boolean unlocked = isUnlocked(player, id);
+        if (ability.properties().category() == AbilityCategory.FRUIT) {
+            return isGranted(player, id) && (unlocked || meetsMastery(GLPlayer.data(player), ability));
         }
-        return isGranted(player, id) && meetsMastery(GLPlayer.data(player), ability);
+        return unlocked || (isGranted(player, id) && meetsMastery(GLPlayer.data(player), ability));
     }
 
     public static boolean meetsMastery(PlayerData data, Ability ability) {

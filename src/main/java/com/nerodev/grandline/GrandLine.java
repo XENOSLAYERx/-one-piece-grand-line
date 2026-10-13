@@ -8,10 +8,17 @@ import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.DeathModeHandler;
 import com.nerodev.grandline.data.GLAttachments;
 import com.nerodev.grandline.dev.AutoTestServer;
+import com.nerodev.grandline.effect.GLMobEffects;
+import com.nerodev.grandline.entity.GLEntities;
+import com.nerodev.grandline.fruit.FruitManager;
+import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.fx.GLParticles;
+import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.sound.GLSounds;
+import com.nerodev.grandline.transform.GLTransformations;
+import com.nerodev.grandline.transform.TransformationManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -49,8 +56,17 @@ public final class GrandLine {
         GLAbilities.register(modBus);
         GLParticles.register(modBus);
         GLSounds.register(modBus);
+        GLMobEffects.register(modBus);
         AbilityManager.register();
         modBus.addListener(GLNetwork::onRegisterPayloads);
+
+        // Devil Fruits, transformations, entities and items.
+        GLFruits.register(modBus);
+        GLTransformations.register(modBus);
+        GLEntities.register(modBus);
+        GLItems.register(modBus);
+        FruitManager.register();
+        TransformationManager.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);
