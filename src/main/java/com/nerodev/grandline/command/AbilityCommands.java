@@ -18,6 +18,8 @@ import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
+import com.nerodev.grandline.style.GLStyles;
+import com.nerodev.grandline.style.StyleManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -203,7 +205,7 @@ final class AbilityCommands {
         return started;
     }
 
-    /** Unlocks every registered ability, fruit and Haki. Styles and weapons join this as their systems arrive. */
+    /** Unlocks every registered ability, fruit, fighting style and Haki. Weapons join this when their system arrives. */
     private static int unlockAll(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets) {
         // Registry iteration follows registration order, so slots fill predictably.
         Map<ResourceLocation, Ability> all = new java.util.LinkedHashMap<>();
@@ -212,6 +214,7 @@ final class AbilityCommands {
         }
         for (ServerPlayer player : targets) {
             FruitCommands.unlockAllFruits(player);
+            GLStyles.REGISTRY.forEach(style -> StyleManager.learn(player, style));
             GLPlayer.edit(player, data -> all.keySet().forEach(id -> data.unlock(UnlockCategory.ABILITY, id)));
             if (FruitManager.hasFruit(player)) {
                 FruitManager.setMastery(player, com.nerodev.grandline.data.PlayerData.MAX_MASTERY);

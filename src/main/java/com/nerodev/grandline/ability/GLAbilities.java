@@ -2,6 +2,10 @@ package com.nerodev.grandline.ability;
 
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.ability.rokushiki.GeppoAbility;
+import com.nerodev.grandline.ability.rokushiki.KamieAbility;
+import com.nerodev.grandline.ability.rokushiki.RankyakuAbility;
+import com.nerodev.grandline.ability.rokushiki.RokuoganAbility;
+import com.nerodev.grandline.ability.rokushiki.ShiganAbility;
 import com.nerodev.grandline.ability.rokushiki.SoruAbility;
 import com.nerodev.grandline.ability.rokushiki.TekkaiAbility;
 import java.util.function.Supplier;
@@ -25,6 +29,10 @@ public final class GLAbilities {
     public static final DeferredHolder<Ability, SoruAbility> SORU = register("soru", SoruAbility::new);
     public static final DeferredHolder<Ability, GeppoAbility> GEPPO = register("geppo", GeppoAbility::new);
     public static final DeferredHolder<Ability, TekkaiAbility> TEKKAI = register("tekkai", TekkaiAbility::new);
+    public static final DeferredHolder<Ability, ShiganAbility> SHIGAN = register("shigan", ShiganAbility::new);
+    public static final DeferredHolder<Ability, RankyakuAbility> RANKYAKU = register("rankyaku", RankyakuAbility::new);
+    public static final DeferredHolder<Ability, KamieAbility> KAMIE = register("kami_e", KamieAbility::new);
+    public static final DeferredHolder<Ability, RokuoganAbility> ROKUOGAN = register("rokuogan", RokuoganAbility::new);
 
     private GLAbilities() {}
 
@@ -34,5 +42,6 @@ public final class GLAbilities {
 
     public static void register(IEventBus modBus) {
         ABILITIES.register(modBus);
+        RankyakuAbility.registerBehavior();
     }
 }

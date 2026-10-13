@@ -24,6 +24,8 @@ import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.sound.GLSounds;
+import com.nerodev.grandline.style.GLStyles;
+import com.nerodev.grandline.style.StyleManager;
 import com.nerodev.grandline.transform.GLTransformations;
 import com.nerodev.grandline.transform.TransformationManager;
 import net.minecraft.resources.ResourceLocation;
@@ -61,6 +63,7 @@ public final class GrandLine {
 
         // Abilities, effects and networking.
         GLAbilities.register(modBus);
+        GLStyles.register(modBus);
         GLParticles.register(modBus);
         GLSounds.register(modBus);
         GLMobEffects.register(modBus);
@@ -84,6 +87,7 @@ public final class GrandLine {
         HakiAbilities.register(modBus);
         HakiManager.register();
         CombatManager.register();
+        StyleManager.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);

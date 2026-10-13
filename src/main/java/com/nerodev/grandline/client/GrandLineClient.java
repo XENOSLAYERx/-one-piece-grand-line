@@ -14,6 +14,7 @@ import com.nerodev.grandline.client.fruit.ParameciaLooksD;
 import com.nerodev.grandline.client.fruit.ParameciaLooksE;
 import com.nerodev.grandline.client.fruit.ParameciaLooksF;
 import com.nerodev.grandline.client.fruit.ParameciaLooksG;
+import com.nerodev.grandline.client.fruit.TechniqueLooks;
 import com.nerodev.grandline.client.fruit.ZoanProjectileLooks;
 import com.nerodev.grandline.client.fx.CameraShake;
 import com.nerodev.grandline.client.fx.FruitEffects;
@@ -77,6 +78,7 @@ public final class GrandLineClient {
         ParameciaLooksF.install();
         ParameciaLooksG.install();
         ZoanProjectileLooks.install();
+        TechniqueLooks.install();
         AbilityProjectile.clientTick = ProjectileVisuals::tick;
 
         boolean autotest = ClientAutoTest.init();

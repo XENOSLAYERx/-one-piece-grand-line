@@ -107,6 +107,9 @@ public final class GLEffects {
     public static final ResourceLocation ANIM_GUARD = GrandLine.id("guard");
     public static final ResourceLocation ANIM_PARRY = GrandLine.id("parry");
     public static final ResourceLocation ANIM_UPPERCUT = GrandLine.id("uppercut");
+    public static final ResourceLocation ANIM_KICK_HIGH = GrandLine.id("kick_high");
+    public static final ResourceLocation ANIM_SPIN_KICK = GrandLine.id("spin_kick");
+    public static final ResourceLocation ANIM_AXE_KICK = GrandLine.id("axe_kick");
     public static final ResourceLocation ANIM_STOP = GrandLine.id("stop");
 
     private GLEffects() {}
