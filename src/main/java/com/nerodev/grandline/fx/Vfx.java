@@ -105,7 +105,8 @@ public final class Vfx {
         SOAP(0xE8F4FF, 0.45f, true),
         CREAM(0xFFF4E8, 0.9f, true),
         BARRIER(0xBFE8FF, 0.35f, true),
-        STITCHES(0x3A2A20, 1f, false);
+        STITCHES(0x3A2A20, 1f, false),
+        COILS(0x4A3A5A, 1f, false);
 
         private final int color;
         private final float alpha;

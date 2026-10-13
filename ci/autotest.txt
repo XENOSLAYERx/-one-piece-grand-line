@@ -4,6 +4,7 @@ wait 60
 cmd time set 6000
 cmd weather clear
 cmd gamerule doDaylightCycle false
+cmd gamerule doMobSpawning false
 cmd gamemode survival
 cmd onepiece invincible on
 cmd onepiece unlock all
@@ -433,6 +434,8 @@ wait 10
 
 # ---- Zoans: each body at a three-quarter angle once the transformation smoke has cleared (hybrid, then full beast)
 camera front
+cmd kill @e[type=!minecraft:player]
+wait 5
 look 270 5
 cmd onepiece fruit set grandline:human
 cmd onepiece ability equip 1 grandline:human_hybrid
@@ -868,6 +871,215 @@ wait 36
 body 40
 wait 2
 shot 125_spider_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:phoenix
+cmd onepiece ability equip 1 grandline:phoenix_hybrid
+cmd onepiece ability equip 2 grandline:phoenix_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 126_phoenix_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 127_phoenix_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:azure_dragon
+cmd onepiece ability equip 1 grandline:azure_dragon_hybrid
+cmd onepiece ability equip 2 grandline:azure_dragon_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 128_azure_dragon_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 129_azure_dragon_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:yamata
+cmd onepiece ability equip 1 grandline:yamata_hybrid
+cmd onepiece ability equip 2 grandline:yamata_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 130_yamata_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 131_yamata_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:nine_tailed_fox
+cmd onepiece ability equip 1 grandline:nine_tailed_fox_hybrid
+cmd onepiece ability equip 2 grandline:nine_tailed_fox_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 132_nine_tailed_fox_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 133_nine_tailed_fox_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:okuchi_wolf
+cmd onepiece ability equip 1 grandline:okuchi_wolf_hybrid
+cmd onepiece ability equip 2 grandline:okuchi_wolf_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 134_okuchi_wolf_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 135_okuchi_wolf_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:buddha
+cmd onepiece ability equip 1 grandline:buddha_hybrid
+cmd onepiece ability equip 2 grandline:buddha_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 136_buddha_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 137_buddha_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:gyuki
+cmd onepiece ability equip 1 grandline:gyuki_hybrid
+cmd onepiece ability equip 2 grandline:gyuki_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 138_gyuki_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 139_gyuki_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:itsumade
+cmd onepiece ability equip 1 grandline:itsumade_hybrid
+cmd onepiece ability equip 2 grandline:itsumade_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 140_itsumade_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 141_itsumade_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:bakotsu
+cmd onepiece ability equip 1 grandline:bakotsu_hybrid
+cmd onepiece ability equip 2 grandline:bakotsu_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 142_bakotsu_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 143_bakotsu_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:fengxi
+cmd onepiece ability equip 1 grandline:fengxi_hybrid
+cmd onepiece ability equip 2 grandline:fengxi_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 144_fengxi_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 145_fengxi_beast
+cmd onepiece fruit remove
+wait 5
+look 270 5
+cmd onepiece fruit set grandline:sandworm
+cmd onepiece ability equip 1 grandline:sandworm_hybrid
+cmd onepiece ability equip 2 grandline:sandworm_beast
+wait 5
+press 1
+release 1
+wait 36
+body 40
+wait 2
+shot 146_sandworm_hybrid
+press 2
+release 2
+wait 36
+body 40
+wait 2
+shot 147_sandworm_beast
 cmd onepiece fruit remove
 wait 5
 

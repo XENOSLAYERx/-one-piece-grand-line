@@ -54,6 +54,19 @@ public final class ZoanBatch {
     public static final DeferredHolder<DevilFruit, PachycephalosaurusFruit> PACHYCEPHALOSAURUS = GLFruits.register("pachycephalosaurus", PachycephalosaurusFruit::new, Rarity.RARE);
     public static final DeferredHolder<DevilFruit, SpiderFruit> SPIDER = GLFruits.register("spider", SpiderFruit::new, Rarity.RARE);
 
+    // Mythical Zoans
+    public static final DeferredHolder<DevilFruit, PhoenixFruit> PHOENIX = GLFruits.register("phoenix", PhoenixFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, AzureDragonFruit> AZURE_DRAGON = GLFruits.register("azure_dragon", AzureDragonFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, YamataFruit> YAMATA = GLFruits.register("yamata", YamataFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, NineTailedFoxFruit> NINE_TAILED_FOX = GLFruits.register("nine_tailed_fox", NineTailedFoxFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, OkuchiWolfFruit> OKUCHI_WOLF = GLFruits.register("okuchi_wolf", OkuchiWolfFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, BuddhaFruit> BUDDHA = GLFruits.register("buddha", BuddhaFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, GyukiFruit> GYUKI = GLFruits.register("gyuki", GyukiFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, ItsumadeFruit> ITSUMADE = GLFruits.register("itsumade", ItsumadeFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, BakotsuFruit> BAKOTSU = GLFruits.register("bakotsu", BakotsuFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, FengxiFruit> FENGXI = GLFruits.register("fengxi", FengxiFruit::new, Rarity.EPIC);
+    public static final DeferredHolder<DevilFruit, SandwormFruit> SANDWORM = GLFruits.register("sandworm", SandwormFruit::new, Rarity.EPIC);
+
     private ZoanBatch() {}
 
     static <T extends Ability> DeferredHolder<Ability, T> ability(String name, Supplier<T> factory) {
@@ -105,6 +118,17 @@ public final class ZoanBatch {
         TriceratopsFruit.init();
         PachycephalosaurusFruit.init();
         SpiderFruit.init();
+        PhoenixFruit.init();
+        AzureDragonFruit.init();
+        YamataFruit.init();
+        NineTailedFoxFruit.init();
+        OkuchiWolfFruit.init();
+        BuddhaFruit.init();
+        GyukiFruit.init();
+        ItsumadeFruit.init();
+        BakotsuFruit.init();
+        FengxiFruit.init();
+        SandwormFruit.init();
     }
 
     public static void register(IEventBus modBus) {
@@ -133,5 +157,16 @@ public final class ZoanBatch {
         TriceratopsFruit.behaviors();
         PachycephalosaurusFruit.behaviors();
         SpiderFruit.behaviors();
+        PhoenixFruit.behaviors();
+        AzureDragonFruit.behaviors();
+        YamataFruit.behaviors();
+        NineTailedFoxFruit.behaviors();
+        OkuchiWolfFruit.behaviors();
+        BuddhaFruit.behaviors();
+        GyukiFruit.behaviors();
+        ItsumadeFruit.behaviors();
+        BakotsuFruit.behaviors();
+        FengxiFruit.behaviors();
+        SandwormFruit.behaviors();
     }
 }
