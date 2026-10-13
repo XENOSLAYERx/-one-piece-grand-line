@@ -4,7 +4,9 @@ import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.GLFruits;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,10 +25,18 @@ public final class GLItems {
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GrandLine.MODID);
 
     private static final List<DeferredItem<DevilFruitItem>> FRUIT_ITEMS = new ArrayList<>();
+    private static final Map<ResourceLocation, DeferredItem<DevilFruitItem>> BY_FRUIT = new LinkedHashMap<>();
 
-    public static final DeferredItem<DevilFruitItem> GUM_GUM_FRUIT = fruit(GLFruits.GUM_GUM, Rarity.EPIC);
-    public static final DeferredItem<DevilFruitItem> LEOPARD_FRUIT = fruit(GLFruits.LEOPARD, Rarity.RARE);
-    public static final DeferredItem<DevilFruitItem> FLAME_FRUIT = fruit(GLFruits.FLAME, Rarity.EPIC);
+    static {
+        // One item per registered fruit (GLFruits.register has already loaded every batch).
+        for (GLFruits.Entry entry : GLFruits.entries()) {
+            fruit(entry.holder(), entry.itemRarity());
+        }
+    }
+
+    public static final DeferredItem<DevilFruitItem> GUM_GUM_FRUIT = BY_FRUIT.get(GLFruits.GUM_GUM.getId());
+    public static final DeferredItem<DevilFruitItem> LEOPARD_FRUIT = BY_FRUIT.get(GLFruits.LEOPARD.getId());
+    public static final DeferredItem<DevilFruitItem> FLAME_FRUIT = BY_FRUIT.get(GLFruits.FLAME.getId());
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.grandline"))
@@ -40,6 +50,7 @@ public final class GLItems {
         DeferredItem<DevilFruitItem> item = ITEMS.register(fruit.getId().getPath() + "_fruit",
                 () -> new DevilFruitItem(fruit, rarity));
         FRUIT_ITEMS.add(item);
+        BY_FRUIT.put(fruit.getId(), item);
         return item;
     }
 
@@ -49,12 +60,8 @@ public final class GLItems {
 
     /** The item for a fruit id, or null. */
     public static Item itemFor(ResourceLocation fruit) {
-        for (DeferredItem<DevilFruitItem> item : FRUIT_ITEMS) {
-            if (item.get().fruit().id().equals(fruit)) {
-                return item.get();
-            }
-        }
-        return null;
+        DeferredItem<DevilFruitItem> item = BY_FRUIT.get(fruit);
+        return item == null ? null : item.get();
     }
 
     public static void register(IEventBus modBus) {

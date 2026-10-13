@@ -68,6 +68,18 @@ public final class GLEffects {
     /** The source entity was knocked out. variant = duration in ticks. */
     public static final ResourceLocation KNOCKOUT = GrandLine.id("knockout");
 
+    // Generic, parameterised effects shared by every fruit (see Vfx for what each parameter means)
+    public static final ResourceLocation G_BEAM = GrandLine.id("g_beam");
+    public static final ResourceLocation G_BURST = GrandLine.id("g_burst");
+    public static final ResourceLocation G_TRAIL = GrandLine.id("g_trail");
+    public static final ResourceLocation G_BLINK = GrandLine.id("g_blink");
+    public static final ResourceLocation G_ERUPTION = GrandLine.id("g_eruption");
+    public static final ResourceLocation G_RAIN = GrandLine.id("g_rain");
+    public static final ResourceLocation G_SLASH = GrandLine.id("g_slash");
+    public static final ResourceLocation G_SPIRAL = GrandLine.id("g_spiral");
+    public static final ResourceLocation G_IMPACT = GrandLine.id("g_impact");
+    public static final ResourceLocation G_STATUS = GrandLine.id("g_status");
+
     // Animations
     public static final ResourceLocation ANIM_SORU = GrandLine.id("soru");
     public static final ResourceLocation ANIM_GEPPO = GrandLine.id("geppo");

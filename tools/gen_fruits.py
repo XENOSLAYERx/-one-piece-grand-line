@@ -208,13 +208,11 @@ def render(spec):
     return out
 
 
-# fruit id -> look. Colours are picked to echo each fruit's power.
-FRUITS = {
-    "gum_gum": {"color": 0xA45AD0, "accent": 0x3E1660, "pattern": "swirls", "shape": "round", "seed": 3, "stem": 0x2F6B3A},
-    "leopard": {"color": 0xE2B04A, "accent": 0x5A3A16, "pattern": "spots", "shape": "pear", "seed": 2, "stem": 0x4D3A1C},
-    "flame": {"color": 0xF0602A, "accent": 0xFFC23A, "pattern": "flames", "shape": "round", "seed": 5, "stem": 0x7A2A10,
-              "stem_style": "hook"},
-}
+# fruit id -> look, from the catalog (tools/fruit_catalog.py).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from fruit_catalog import FRUITS as CATALOG  # noqa: E402
+
+FRUITS = {f["id"]: f for f in CATALOG}
 
 
 def write_model(fruit_id):
@@ -225,14 +223,41 @@ def write_model(fruit_id):
         f.write("\n")
 
 
-def main(only=None):
+def write_lang():
+    """Adds name, description and item name for every catalog fruit, keeping any hand-written entries."""
+    path = os.path.join(ROOT, "lang", "en_us.json")
+    with open(path) as f:
+        lang = json.load(f)
+    added = 0
+    for spec in CATALOG:
+        fid = spec["id"]
+        for key, value in (("fruit.grandline." + fid, spec["name"]),
+                           ("fruit.grandline." + fid + ".desc", spec["desc"]),
+                           ("item.grandline." + fid + "_fruit", spec["name"])):
+            if key not in lang:
+                lang[key] = value
+                added += 1
+    with open(path, "w") as f:
+        json.dump(lang, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    return added
+
+
+def main(args):
+    force = "--force" in args
+    only = [a for a in args if not a.startswith("--")]
     os.makedirs(TEX_DIR, exist_ok=True)
+    written = 0
     for fruit_id, spec in FRUITS.items():
         if only and fruit_id not in only:
             continue
-        render(spec).save(os.path.join(TEX_DIR, fruit_id + ".png"))
+        target = os.path.join(TEX_DIR, fruit_id + ".png")
+        if force or only or not os.path.exists(target):
+            render(spec).save(target)
+            written += 1
         write_model(fruit_id)
-    print("fruit sprites written:", len(FRUITS), file=sys.stderr)
+    added = write_lang()
+    print("fruit sprites written:", written, "of", len(FRUITS), "- lang entries added:", added, file=sys.stderr)
 
 
 if __name__ == "__main__":

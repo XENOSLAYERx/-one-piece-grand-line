@@ -483,8 +483,156 @@ def knocked_out_icon():
     save(img, EFFECT_DIR, "knocked_out")
 
 
+def extra_particles():
+    """Particles for the wider fruit roster: bubbles, snowflakes, leaves, hearts, feathers, droplets."""
+    def supersampled(size, fn, ss=4):
+        big = Image.new("RGBA", (size * ss, size * ss))
+        px = big.load()
+        for y in range(size * ss):
+            for x in range(size * ss):
+                v = fn((x + 0.5) / ss, (y + 0.5) / ss)
+                if v:
+                    px[x, y] = v
+        return big.resize((size, size), Image.LANCZOS)
+
+    c = 7.5
+    # Bubble: thin bright rim, faint body, a highlight.
+    def bubble(x, y):
+        r = math.hypot(x - c, y - c)
+        if r > 7.2:
+            return None
+        rim = math.exp(-((r - 6.4) ** 2) / 0.6)
+        hl = math.exp(-(((x - 5) ** 2) + ((y - 5) ** 2)) / 1.6)
+        a = min(1.0, 0.12 + rim * 0.9 + hl)
+        return (255, 255, 255, int(255 * a))
+    save(supersampled(16, bubble), PARTICLE_DIR, "bubble")
+
+    # Snowflake: six arms with small branches.
+    def snow(x, y):
+        dx, dy = x - c, y - c
+        r = math.hypot(dx, dy)
+        if r > 7.2:
+            return None
+        a = math.atan2(dy, dx)
+        best = 0.0
+        for k in range(6):
+            t = a - k * math.pi / 3
+            along = r * math.cos(t)
+            across = abs(r * math.sin(t))
+            if along > 0:
+                best = max(best, math.exp(-across ** 2 / 0.35))
+                for b in (3.2, 5.0):
+                    ba = math.hypot(along - b, 0)
+                    if along > b:
+                        side = abs(across - (along - b) * 0.9)
+                        best = max(best, math.exp(-side ** 2 / 0.25) * (1 if along - b < 1.8 else 0))
+        best = max(best, math.exp(-r * r / 2.0))
+        return (255, 255, 255, int(255 * min(1.0, best))) if best > 0.05 else None
+    save(supersampled(16, snow), PARTICLE_DIR, "snow")
+
+    # Leaf: pointed oval laid along the diagonal, with a midrib (tinted green or autumn colours in game).
+    def leaf(x, y):
+        ax, ay = 1.0 / math.sqrt(2), -1.0 / math.sqrt(2)
+        dx, dy = x - 1.5, y - 14.5
+        along = dx * ax + dy * ay
+        across = -dx * ay + dy * ax
+        t = along / 18.0
+        if t <= 0 or t >= 1:
+            return None
+        half = 3.4 * math.sin(math.pi * t) ** 0.8
+        if abs(across) > half:
+            return None
+        shade = 150 if abs(across) < 0.4 else 205 - int(40 * abs(across) / max(half, 0.1))
+        return (shade, shade, shade, 255)
+    save(supersampled(16, leaf), PARTICLE_DIR, "leaf")
+
+    # Heart.
+    def heart(x, y):
+        nx, ny = (x - c) / 6.5, (c + 1.2 - y) / 6.5
+        return (255, 255, 255, 255) if (nx * nx + ny * ny - 0.45) ** 3 - nx * nx * ny ** 3 * 1.3 <= 0 else None
+    save(supersampled(16, heart), PARTICLE_DIR, "heart")
+
+    # Feather: curved vane with a shaft.
+    def feather(x, y):
+        t = (y - 1.0) / 14.0
+        if t < 0 or t > 1:
+            return None
+        cx = c + math.sin(t * 2.2) * 1.6
+        width = 3.4 * math.sin(math.pi * min(1.0, t * 1.15)) if t < 0.87 else 0.4
+        d = abs(x - cx)
+        if d < 0.45:
+            return (235, 235, 235, 255)
+        if d < width:
+            barb = 0.75 + 0.25 * math.sin((y + d * 1.4) * 2.6)
+            g = int(255 * barb)
+            return (g, g, g, 230)
+        return None
+    save(supersampled(16, feather), PARTICLE_DIR, "feather")
+
+    # Droplet: teardrop with a highlight.
+    def drop(x, y):
+        nx, ny = (x - c) / 4.4, (y - 9.0) / 4.4
+        inside = nx * nx + ny * ny <= 1 or (ny < 0 and abs(nx) <= (1 + ny / 1.6) * 0.75 and ny > -1.9)
+        if not inside:
+            return None
+        hl = math.exp(-((x - 6.2) ** 2 + (y - 8.0) ** 2) / 1.2)
+        g = int(200 + 55 * min(1.0, hl * 2))
+        return (g, g, g, 235)
+    save(supersampled(16, drop), PARTICLE_DIR, "drop")
+
+
+def encase():
+    """Shell texture for encased creatures, tinted per material: bright frame, faint body, a few cracks."""
+    size = 32
+    rnd = random.Random(7)
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            edge = min(x, y, size - 1 - x, size - 1 - y)
+            frame = 1.0 if edge < 1 else (0.75 if edge < 2 else 0.0)
+            v = 200 + rnd.randint(-18, 18)
+            a = 150 + int(105 * frame)
+            px[x, y] = (min(255, v + int(50 * frame)),) * 3 + (a,)
+    d = ImageDraw.Draw(img)
+    for _ in range(4):
+        x0, y0 = rnd.randint(4, 27), rnd.randint(4, 27)
+        pts = [(x0, y0)]
+        for _ in range(3):
+            x0 += rnd.randint(-6, 6)
+            y0 += rnd.randint(-6, 6)
+            pts.append((x0, y0))
+        d.line(pts, fill=(255, 255, 255, 255), width=1)
+    d.line([(5, 4), (12, 4)], fill=(255, 255, 255, 255))
+    d.line([(4, 5), (4, 10)], fill=(255, 255, 255, 255))
+    save(img, ENTITY_DIR, "encase")
+
+
+def status_icons():
+    img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle([3, 2, 14, 15], fill=(150, 210, 240, 200), outline=(230, 250, 255, 255))
+    d.line([(5, 4), (9, 4)], fill=(255, 255, 255, 255))
+    d.line([(10, 9), (12, 13)], fill=(255, 255, 255, 255))
+    save(img, EFFECT_DIR, "encased")
+    img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for y in (5, 9, 13):
+        d.rectangle([3, y, 14, y + 1], fill=(140, 140, 150, 255), outline=(60, 60, 70, 255))
+    d.line([(6, 2), (6, 16)], fill=(200, 170, 120, 255))
+    d.line([(11, 2), (11, 16)], fill=(200, 170, 120, 255))
+    save(img, EFFECT_DIR, "rooted")
+    img = Image.new("RGBA", (18, 18), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse([3, 4, 14, 15], fill=(120, 60, 150, 255), outline=(40, 20, 60, 255))
+    d.line([(4, 14), (14, 4)], fill=(200, 210, 220, 255), width=2)
+    d.rectangle([7, 1, 10, 4], fill=(70, 120, 60, 255))
+    save(img, EFFECT_DIR, "fruit_sealed")
+
+
 if __name__ == "__main__":
     particles()
+    extra_particles()
     icons()
     leopard()
     leopard_spots()
@@ -493,4 +641,6 @@ if __name__ == "__main__":
     haki_armament()
     haki_sheen()
     knocked_out_icon()
+    encase()
+    status_icons()
     print("textures written to", os.path.normpath(ROOT), file=sys.stderr)

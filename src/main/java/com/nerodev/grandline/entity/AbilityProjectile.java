@@ -43,6 +43,10 @@ public class AbilityProjectile extends Projectile {
     private int lifetime = 40;
     private double gravity;
     private final Set<Integer> alreadyHit = new HashSet<>();
+    /** Per-instance state for behaviours (targets, phases, stored positions). Server side, not saved. */
+    private final CompoundTag extra = new CompoundTag();
+    private boolean followOwner;
+    private Vec3 followOffset = Vec3.ZERO;
     @Nullable
     private ResourceLocation kindCache;
 
@@ -130,6 +134,32 @@ public class AbilityProjectile extends Projectile {
         return lifetime;
     }
 
+    public CompoundTag extra() {
+        return extra;
+    }
+
+    /** Keeps the projectile at its owner's position plus {@code offset} (auras, shields, orbiting things). */
+    public AbilityProjectile following(Vec3 offset) {
+        this.followOwner = true;
+        this.followOffset = offset;
+        setDeltaMovement(Vec3.ZERO);
+        return this;
+    }
+
+    /** Forget which entities were already hit, so a lingering zone can hit them again. */
+    public void resetHits() {
+        alreadyHit.clear();
+    }
+
+    /**
+     * A stationary area (fog, swamp, field, dome): no velocity, never collides with blocks unless the behaviour
+     * says so; {@code size} is the diameter, which clients use for visuals.
+     */
+    public static AbilityProjectile zone(ServerPlayer owner, ResourceLocation kind, Vec3 pos, double radius, int color,
+            float damage, int lifetime) {
+        return spawn(owner, kind, pos, Vec3.ZERO, (float) (radius * 2), color, damage, lifetime);
+    }
+
     public void setLifetime(int lifetime) {
         this.lifetime = lifetime;
     }
@@ -144,6 +174,9 @@ public class AbilityProjectile extends Projectile {
     @Override
     public void tick() {
         super.tick();
+        if (followOwner && !level().isClientSide && getOwner() != null) {
+            setPos(getOwner().position().add(followOffset));
+        }
         Vec3 motion = getDeltaMovement();
         if (level().isClientSide) {
             clientTick.accept(this);

@@ -98,6 +98,36 @@ public class GLParticle extends TextureSheetParticle {
                 baseSize = 0.35f * scale;
                 life = 5 + random.nextInt(4);
             }
+            case BUBBLE -> {
+                setMotion(dx, dy, dz);
+                friction = 0.9f;
+                gravity = -0.04f;
+                baseSize = 0.16f * scale;
+                life = 22 + random.nextInt(18);
+            }
+            case SNOW, FEATHER, LEAF -> {
+                setMotion(dx, dy, dz);
+                friction = 0.96f;
+                gravity = kind == Kind.SNOW ? 0.04f : 0.03f;
+                hasPhysics = true;
+                baseSize = (kind == Kind.SNOW ? 0.09f : 0.13f) * scale;
+                life = 30 + random.nextInt(25);
+            }
+            case HEART -> {
+                setMotion(dx, dy, dz);
+                friction = 0.88f;
+                gravity = -0.06f;
+                baseSize = 0.16f * scale;
+                life = 18 + random.nextInt(10);
+            }
+            case DROP -> {
+                setMotion(dx, dy, dz);
+                friction = 0.97f;
+                gravity = 0.7f;
+                hasPhysics = true;
+                baseSize = 0.08f * scale;
+                life = 14 + random.nextInt(10);
+            }
             default -> throw new IllegalStateException("Unhandled particle kind " + kind);
         }
         this.lifetime = options.lifetime() > 0 ? options.lifetime() : life;
@@ -125,14 +155,22 @@ public class GLParticle extends TextureSheetParticle {
         if (kind == Kind.FLAME || kind == Kind.SMOKE) {
             setSpriteFromAge(sprites);
         }
-        if (kind == Kind.SHARD) {
+        if (kind == Kind.SHARD || kind == Kind.SNOW || kind == Kind.LEAF || kind == Kind.FEATHER) {
             oRoll = roll;
-            roll += spin;
+            roll += kind == Kind.SHARD ? spin : spin * 0.4f;
+        }
+        if (kind == Kind.BUBBLE || kind == Kind.LEAF || kind == Kind.FEATHER || kind == Kind.SNOW) {
+            // Sway sideways as it rises or falls.
+            float sway = kind == Kind.BUBBLE ? 0.006f : 0.012f;
+            xd += Mth.sin(age * 0.35f + spin * 10) * sway;
+            zd += Mth.cos(age * 0.31f + spin * 10) * sway;
         }
         alpha = switch (kind) {
             case RING, SHOCKWAVE -> 1f - t;
             case SMOKE -> 0.7f * (1f - t);
             case STAR -> 0.5f + 0.5f * Mth.sin(t * Mth.PI);
+            case BUBBLE -> t > 0.92f ? 0f : 0.85f;
+            case SNOW, LEAF, FEATHER -> t > 0.8f ? (1f - t) * 5f : 1f;
             default -> 1f - t * t;
         };
     }
@@ -147,13 +185,18 @@ public class GLParticle extends TextureSheetParticle {
             case SMOKE -> baseSize * (0.6f + 0.9f * t);
             case RING, SHOCKWAVE -> baseSize * (0.15f + 0.85f * (1f - (1f - t) * (1f - t)));
             case STAR -> baseSize * (0.4f + 0.6f * Mth.sin(t * Mth.PI));
-            case SHARD -> baseSize;
+            case SHARD, SNOW, LEAF, FEATHER, DROP -> baseSize;
+            case BUBBLE -> baseSize * (0.7f + 0.5f * t);
+            case HEART -> baseSize * (0.8f + 0.2f * Mth.sin((age + partialTick) * 0.6f));
         };
     }
 
     @Override
     protected int getLightColor(float partialTick) {
-        return kind == Kind.SMOKE || kind == Kind.SHARD ? super.getLightColor(partialTick) : FULL_BRIGHT;
+        return switch (kind) {
+            case SMOKE, SHARD, LEAF, FEATHER, DROP, SNOW -> super.getLightColor(partialTick);
+            default -> FULL_BRIGHT;
+        };
     }
 
     @Override

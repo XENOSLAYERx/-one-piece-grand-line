@@ -29,6 +29,13 @@ public final class AbilityDamage {
     public static final ResourceKey<DamageType> SLASH = key("slash");
     public static final ResourceKey<DamageType> FIRE = key("fire");
     public static final ResourceKey<DamageType> BLAST = key("blast");
+    public static final ResourceKey<DamageType> FREEZE = key("freeze");
+    public static final ResourceKey<DamageType> SHOCK = key("shock");
+    public static final ResourceKey<DamageType> POISON = key("poison");
+    public static final ResourceKey<DamageType> LIGHT = key("light");
+    public static final ResourceKey<DamageType> DARK = key("dark");
+    public static final ResourceKey<DamageType> CRUSH = key("crush");
+    public static final ResourceKey<DamageType> DRAIN = key("drain");
 
     /** Body blows and blades: what Logia intangibility lets pass through. */
     public static final TagKey<DamageType> PHYSICAL = TagKey.create(Registries.DAMAGE_TYPE, GrandLine.id("physical"));

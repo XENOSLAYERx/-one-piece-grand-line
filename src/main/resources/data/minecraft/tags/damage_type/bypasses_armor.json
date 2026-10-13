@@ -1,4 +1,9 @@
 {
   "replace": false,
-  "values": ["grandline:haki"]
+  "values": [
+    "grandline:haki",
+    "grandline:poison",
+    "grandline:dark",
+    "grandline:drain"
+  ]
 }

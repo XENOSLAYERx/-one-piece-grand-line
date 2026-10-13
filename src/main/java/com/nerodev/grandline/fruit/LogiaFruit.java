@@ -3,6 +3,7 @@ package com.nerodev.grandline.fruit;
 import com.nerodev.grandline.ability.AbilityManager;
 import com.nerodev.grandline.ability.AbilityState;
 import com.nerodev.grandline.combat.AbilityDamage;
+import com.nerodev.grandline.effect.GLMobEffects;
 import com.nerodev.grandline.fx.Fx;
 import com.nerodev.grandline.fx.FxParams;
 import com.nerodev.grandline.fx.GLEffects;
@@ -39,6 +40,19 @@ public abstract class LogiaFruit extends DevilFruit {
     /** True for damage this element ignores completely (e.g. fire for Flame). */
     protected abstract boolean immuneTo(DamageSource source);
 
+    /** Damage multiplier against this element (fire melts ice and snow, burns a forest...). 1 = normal. */
+    protected float weakness(ServerPlayer user, DamageSource source) {
+        return 1f;
+    }
+
+    /**
+     * Whether blows can pass through the body right now. False while the fruit is sealed; subclasses add their own
+     * conditions (wet sand turns solid).
+     */
+    protected boolean intangible(ServerPlayer user) {
+        return !user.hasEffect(GLMobEffects.FRUIT_SEALED);
+    }
+
     public static boolean canTouch(DamageSource source) {
         for (Predicate<DamageSource> rule : TOUCH) {
             if (rule.test(source)) {
@@ -55,7 +69,11 @@ public abstract class LogiaFruit extends DevilFruit {
             event.setCanceled(true);
             return;
         }
-        if (!source.is(AbilityDamage.PHYSICAL) || canTouch(source)) {
+        float weakness = weakness(user, source);
+        if (weakness != 1f) {
+            event.setAmount(event.getAmount() * weakness);
+        }
+        if (!source.is(AbilityDamage.PHYSICAL) || canTouch(source) || !intangible(user)) {
             return;
         }
         AbilityState state = AbilityState.of(user);

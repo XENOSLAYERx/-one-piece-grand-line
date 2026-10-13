@@ -358,6 +358,12 @@ public final class AbilityManager {
         return state.activeSince(ability.id()).map(start -> (int) Math.max(0, now(player) - start)).orElse(0);
     }
 
+    /** Test support: pretend {@code ability} started {@code ticks} earlier (exercises charge and channel paths). */
+    public static void backdate(ServerPlayer player, Ability ability, int ticks) {
+        AbilityState state = AbilityState.of(player);
+        state.activeSince(ability.id()).ifPresent(start -> state.markActive(ability.id(), start - ticks));
+    }
+
     /** Cooldown after server balance multipliers. */
     public static int cooldownTicks(ServerPlayer player, Ability ability) {
         if (freeHaki(AbilityState.of(player), ability)) {

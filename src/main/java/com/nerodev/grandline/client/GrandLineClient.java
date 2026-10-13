@@ -6,6 +6,7 @@ import com.nerodev.grandline.client.anim.PlayerAnimator;
 import com.nerodev.grandline.client.dev.ClientAutoTest;
 import com.nerodev.grandline.client.fx.CameraShake;
 import com.nerodev.grandline.client.fx.FruitEffects;
+import com.nerodev.grandline.client.fx.GenericEffects;
 import com.nerodev.grandline.client.haki.HakiClient;
 import com.nerodev.grandline.client.hud.AbilityHud;
 import com.nerodev.grandline.client.model.TransformationModels;
@@ -16,6 +17,7 @@ import com.nerodev.grandline.client.render.ProjectileVisuals;
 import com.nerodev.grandline.client.render.TransformationLayer;
 import com.nerodev.grandline.client.render.TransformationRenderer;
 import com.nerodev.grandline.client.visual.ClientVisuals;
+import com.nerodev.grandline.client.visual.StatusVisuals;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.entity.GLEntities;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -48,6 +50,8 @@ public final class GrandLineClient {
         modBus.addListener(EntityRenderersEvent.AddLayers.class, GrandLineClient::addLayers);
 
         FruitEffects.register();
+        GenericEffects.register();
+        StatusVisuals.register();
         HakiClient.register();
         TransformationRenderer.register();
         AbilityProjectile.clientTick = ProjectileVisuals::tick;
@@ -60,6 +64,7 @@ public final class GrandLineClient {
             ClientVisuals.tick();
             TransformationRenderer.tick();
             HakiClient.tick();
+            StatusVisuals.tick();
             if (autotest) {
                 ClientAutoTest.tick();
             }
@@ -70,6 +75,7 @@ public final class GrandLineClient {
             PlayerAnimator.clear();
             ClientVisuals.clear();
             HakiClient.clear();
+            StatusVisuals.clear();
         });
     }
 

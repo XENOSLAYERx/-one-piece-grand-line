@@ -12,6 +12,7 @@ import com.nerodev.grandline.effect.GLMobEffects;
 import com.nerodev.grandline.entity.GLEntities;
 import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.fruit.kit.TempBlocks;
 import com.nerodev.grandline.fx.GLParticles;
 import com.nerodev.grandline.haki.HakiAbilities;
 import com.nerodev.grandline.haki.HakiManager;
@@ -60,6 +61,7 @@ public final class GrandLine {
         GLSounds.register(modBus);
         GLMobEffects.register(modBus);
         AbilityManager.register();
+        GLMobEffects.registerRules();
         modBus.addListener(GLNetwork::onRegisterPayloads);
 
         // Devil Fruits, transformations, entities and items.
@@ -69,6 +71,7 @@ public final class GrandLine {
         GLItems.register(modBus);
         FruitManager.register();
         TransformationManager.register();
+        TempBlocks.register();
 
         // Haki.
         HakiAbilities.register(modBus);

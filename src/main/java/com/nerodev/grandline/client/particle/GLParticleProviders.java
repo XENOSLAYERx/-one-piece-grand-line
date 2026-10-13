@@ -21,6 +21,12 @@ public final class GLParticleProviders {
         add(event, GLParticles.STAR, Kind.STAR);
         add(event, GLParticles.SHARD, Kind.SHARD);
         add(event, GLParticles.STREAK, Kind.STREAK);
+        add(event, GLParticles.BUBBLE, Kind.BUBBLE);
+        add(event, GLParticles.SNOW, Kind.SNOW);
+        add(event, GLParticles.LEAF, Kind.LEAF);
+        add(event, GLParticles.HEART, Kind.HEART);
+        add(event, GLParticles.FEATHER, Kind.FEATHER);
+        add(event, GLParticles.DROP, Kind.DROP);
     }
 
     private static void add(RegisterParticleProvidersEvent event, Supplier<ParticleType<GLParticleOptions>> type, Kind kind) {

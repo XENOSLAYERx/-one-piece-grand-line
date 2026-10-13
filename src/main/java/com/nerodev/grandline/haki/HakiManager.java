@@ -22,7 +22,6 @@ import com.nerodev.grandline.transform.TransformationManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -74,15 +73,11 @@ public final class HakiManager {
 
     public static void register() {
         AbilityAccess.addGrant(HakiManager::granted);
-        AbilityAccess.addRule((player, ability) -> player.hasEffect(GLMobEffects.KNOCKED_OUT)
-                ? Optional.of(Component.literal("You are unconscious"))
-                : Optional.empty());
         AbilityManager.addUseListener(HakiManager::onAbilityUsed);
         // Armament and Conqueror's infusion strike a Logia's real body.
         LogiaFruit.TOUCH.add(source -> source.getEntity() instanceof Player attacker
                 && (armamentActive(attacker) || infusionActive(attacker)));
 
-        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, LivingIncomingDamageEvent.class, HakiManager::onUnconsciousAttack);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, false, LivingIncomingDamageEvent.class, HakiManager::onAttack);
         NeoForge.EVENT_BUS.addListener(LivingDamageEvent.Post.class, HakiManager::onDamaged);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, e -> onLogin(e.getEntity()));
@@ -382,13 +377,6 @@ public final class HakiManager {
     public static boolean emissionPrimed(ServerPlayer player) {
         Long until = EMISSION_PRIMED.get(player.getUUID());
         return until != null && until > AbilityManager.now(player);
-    }
-
-    /** Knocked-out creatures cannot attack. */
-    private static void onUnconsciousAttack(LivingIncomingDamageEvent event) {
-        if (event.getSource().getEntity() instanceof LivingEntity attacker && attacker.hasEffect(GLMobEffects.KNOCKED_OUT)) {
-            event.setCanceled(true);
-        }
     }
 
     /** Active Haki changes every physical blow its user lands, abilities included. */

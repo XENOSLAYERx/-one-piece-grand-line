@@ -2,6 +2,7 @@ package com.nerodev.grandline.fx;
 
 import com.mojang.serialization.MapCodec;
 import com.nerodev.grandline.GrandLine;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 import net.minecraft.core.particles.ParticleType;
@@ -36,7 +37,19 @@ public final class GLParticles {
         /** Heavy tumbling fragment with gravity (rubble, ice, metal). */
         SHARD,
         /** Motion line aligned with its velocity. */
-        STREAK;
+        STREAK,
+        /** Soap bubble that rises and wobbles, then pops. */
+        BUBBLE,
+        /** Snowflake that drifts down, turning. */
+        SNOW,
+        /** Leaf (or petal) that flutters down. Lit by the world. */
+        LEAF,
+        /** Heart that floats up and pulses. */
+        HEART,
+        /** Feather that sways down slowly. */
+        FEATHER,
+        /** Liquid droplet with gravity (water, venom, mud, wax). */
+        DROP;
 
         public String id() {
             return name().toLowerCase(Locale.ROOT);
@@ -52,6 +65,16 @@ public final class GLParticles {
     public static final Supplier<ParticleType<GLParticleOptions>> STAR = register(Kind.STAR);
     public static final Supplier<ParticleType<GLParticleOptions>> SHARD = register(Kind.SHARD);
     public static final Supplier<ParticleType<GLParticleOptions>> STREAK = register(Kind.STREAK);
+    public static final Supplier<ParticleType<GLParticleOptions>> BUBBLE = register(Kind.BUBBLE);
+    public static final Supplier<ParticleType<GLParticleOptions>> SNOW = register(Kind.SNOW);
+    public static final Supplier<ParticleType<GLParticleOptions>> LEAF = register(Kind.LEAF);
+    public static final Supplier<ParticleType<GLParticleOptions>> HEART = register(Kind.HEART);
+    public static final Supplier<ParticleType<GLParticleOptions>> FEATHER = register(Kind.FEATHER);
+    public static final Supplier<ParticleType<GLParticleOptions>> DROP = register(Kind.DROP);
+
+    /** Every type, indexed by {@link Kind#ordinal()} (so effects can pick a particle kind from a number). */
+    public static final List<Supplier<ParticleType<GLParticleOptions>>> BY_KIND =
+            List.of(SPARK, GLOW, FLAME, SMOKE, RING, SHOCKWAVE, STAR, SHARD, STREAK, BUBBLE, SNOW, LEAF, HEART, FEATHER, DROP);
 
     private GLParticles() {}
 
@@ -70,6 +93,10 @@ public final class GLParticles {
                 return streamCodec;
             }
         });
+    }
+
+    public static Supplier<ParticleType<GLParticleOptions>> byKind(Kind kind) {
+        return BY_KIND.get(kind.ordinal());
     }
 
     public static GLParticleOptions options(Supplier<ParticleType<GLParticleOptions>> type, int color, float scale) {

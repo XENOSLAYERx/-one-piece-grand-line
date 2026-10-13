@@ -147,10 +147,11 @@ public final class LightningVisual implements ClientVisuals.Visual {
             float t1 = taper(i + 1, n);
             Vec3 s0 = side.normalize().scale(width * 0.5 * t0);
             Vec3 s1 = side.normalize().scale(width * 0.5 * t1);
+            // Wound to face the camera: the lightning render type culls back faces.
             vertex(buffer, matrix, p.subtract(s0), camera, r, g, b, alpha);
-            vertex(buffer, matrix, p.add(s0), camera, r, g, b, alpha);
-            vertex(buffer, matrix, q.add(s1), camera, r, g, b, alpha);
             vertex(buffer, matrix, q.subtract(s1), camera, r, g, b, alpha);
+            vertex(buffer, matrix, q.add(s1), camera, r, g, b, alpha);
+            vertex(buffer, matrix, p.add(s0), camera, r, g, b, alpha);
         }
     }
 

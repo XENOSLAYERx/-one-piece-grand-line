@@ -51,6 +51,42 @@ public final class ProjectileVisuals {
         VISUALS.put(kind, visual);
     }
 
+    /**
+     * A projectile that sheds {@code perTick} particles of {@code kind} in its own colour, scattered over its size,
+     * drifting slightly backwards.
+     */
+    public static Visual particles(float coreScale, int coreTint, GLParticles.Kind kind, float scale, int perTick) {
+        var type = GLParticles.byKind(kind);
+        return new Visual(coreScale, coreTint, (level, p, r) -> {
+            Vec3 pos = p.position().add(0, p.getBbHeight() / 2, 0);
+            Vec3 back = p.getDeltaMovement().scale(-0.1);
+            for (int i = 0; i < perTick; i++) {
+                Vec3 offset = FxKit.randomUnit(r).scale(p.size() * 0.45 * r.nextFloat());
+                FxKit.particle(level, type, p.color(), scale * (0.8f + p.size() * 0.4f), pos.add(offset),
+                        back.add(FxKit.randomUnit(r).scale(0.02)));
+            }
+        });
+    }
+
+    /**
+     * A stationary area (size = diameter) filled with particles of {@code kind}: {@code density} particles per
+     * square block per tick, either near the ground or throughout a dome.
+     */
+    public static Visual zone(GLParticles.Kind kind, float scale, float density, boolean ground) {
+        var type = GLParticles.byKind(kind);
+        return new Visual(0f, 0, (level, p, r) -> {
+            double radius = p.size() / 2.0;
+            int count = Math.max(1, Math.min(40, (int) (Math.PI * radius * radius * density)));
+            for (int i = 0; i < count; i++) {
+                double a = r.nextDouble() * Mth.TWO_PI;
+                double d = Math.sqrt(r.nextDouble()) * radius;
+                double y = ground ? 0.1 + r.nextDouble() * 0.6 : r.nextDouble() * radius;
+                Vec3 at = p.position().add(Math.cos(a) * d, y, Math.sin(a) * d);
+                FxKit.particle(level, type, p.color(), scale, at, new Vec3(0, ground ? 0.02 : 0, 0));
+            }
+        });
+    }
+
     @Nullable
     public static Visual get(ResourceLocation kind) {
         return VISUALS.get(kind);

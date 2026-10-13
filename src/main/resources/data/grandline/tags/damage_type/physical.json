@@ -13,6 +13,7 @@
     "minecraft:sting",
     "minecraft:spit",
     "minecraft:falling_anvil",
-    "minecraft:falling_stalactite"
+    "minecraft:falling_stalactite",
+    "grandline:crush"
   ]
 }
