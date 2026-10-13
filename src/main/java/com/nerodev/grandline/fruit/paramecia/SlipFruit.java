@@ -138,7 +138,7 @@ public class SlipFruit extends DevilFruit {
             player.resetFallDistance();
             Vfx.trail(ctx.level(), player, player.position(), player.position().add(dir.scale(9)), SHEEN, 0.6f, Kind.STAR);
             ctx.animate(GLEffects.ANIM_SORU);
-            ctx.sound(SoundEvents.ICE_BREAK, 0.6f, 1.8f);
+            ctx.sound(SoundEvents.HONEY_BLOCK_SLIDE, 0.6f, 1.8f);
         }
     }
 
