@@ -73,7 +73,7 @@ public final class CoreFrameworkTests {
 
         run(helper, server, source, "onepiece");
         run(helper, server, source, "onepiece help 99");
-        for (int page = 1; page <= 5; page++) {
+        for (int page = 1; page <= 20; page++) {
             run(helper, server, source, "onepiece help " + page);
         }
         helper.assertTrue(out.contains("/onepiece debug config"), "Creator help should list debug config");

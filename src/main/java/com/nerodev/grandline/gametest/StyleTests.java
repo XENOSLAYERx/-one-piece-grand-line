@@ -25,6 +25,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -89,12 +90,13 @@ public final class StyleTests {
 
     @GameTest(template = TEMPLATE)
     public static void blackLegKicksHitHarder(GameTestHelper helper) {
-        ServerPlayer player = newPlayer(helper);
+        ServerPlayer fighter = newPlayer(helper);
+        ServerPlayer cook = newPlayer(helper);
         Zombie zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 3);
-        LivingIncomingDamageEvent brawler = post(zombie, player, 4f);
-        StyleManager.learn(player, GLStyles.BLACK_LEG.get());
-        StyleManager.equip(player, GLStyles.BLACK_LEG.get());
-        LivingIncomingDamageEvent kick = post(zombie, player, 4f);
+        LivingIncomingDamageEvent brawler = post(zombie, fighter, 4f);
+        StyleManager.learn(cook, GLStyles.BLACK_LEG.get());
+        StyleManager.equip(cook, GLStyles.BLACK_LEG.get());
+        LivingIncomingDamageEvent kick = post(zombie, cook, 4f);
         helper.assertTrue(Math.abs(brawler.getAmount() - 5f) < 0.01f, "A Brawler's bare fist adds 1, dealt " + brawler.getAmount());
         helper.assertTrue(Math.abs(kick.getAmount() - 7f) < 0.01f, "A Black Leg kick adds 3, dealt " + kick.getAmount());
         helper.succeed();
@@ -112,7 +114,9 @@ public final class StyleTests {
 
     // ---------------------------------------------------------------------------------------------------------
 
+    /** A real swing: the attack event vanilla fires first, then the blow landing. */
     private static LivingIncomingDamageEvent post(Zombie victim, ServerPlayer attacker, float amount) {
+        NeoForge.EVENT_BUS.post(new AttackEntityEvent(attacker, victim));
         return NeoForge.EVENT_BUS.post(new LivingIncomingDamageEvent(victim,
                 new DamageContainer(victim.damageSources().playerAttack(attacker), amount)));
     }

@@ -114,6 +114,8 @@ public final class CombatManager {
         float pendingStrength = 1f;
         long pendingTick = Long.MIN_VALUE / 2;
         int pendingTarget = -1;
+        int swungTarget = -1;
+        long swungTick = Long.MIN_VALUE / 2;
     }
 
     public static void register() {
@@ -151,6 +153,12 @@ public final class CombatManager {
 
     public static boolean isGuarding(ServerPlayer player) {
         return state(player).guarding;
+    }
+
+    /** True if {@code target} is taking the blow {@code attacker} actually swung at it this tick (not sweep damage). */
+    public static boolean isSwing(ServerPlayer attacker, LivingEntity target) {
+        State s = state(attacker);
+        return s.swungTarget == target.getId() && s.swungTick == AbilityManager.now(attacker);
     }
 
     public static boolean counterReady(ServerPlayer player) {
@@ -191,6 +199,8 @@ public final class CombatManager {
             State s = state(attacker);
             if (s.pendingTarget == target.getId() && AbilityManager.now(attacker) - s.pendingTick <= 1) {
                 s.pendingTarget = -1;
+                s.swungTarget = target.getId();
+                s.swungTick = AbilityManager.now(attacker);
                 event.setAmount(strike(attacker, target, event.getAmount()));
             }
         }

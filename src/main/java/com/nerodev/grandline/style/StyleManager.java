@@ -103,12 +103,13 @@ public final class StyleManager {
         }
     }
 
-    /** Bare-handed blows take on the style's character. */
+    /** Bare-handed blows (the one actually swung, not sweep damage) take on the style's character. */
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
         LivingEntity target = event.getEntity();
         if (source.getEntity() instanceof ServerPlayer attacker && attacker != target && source.getDirectEntity() == attacker
-                && source.is(DamageTypes.PLAYER_ATTACK) && attacker.getMainHandItem().isEmpty()) {
+                && source.is(DamageTypes.PLAYER_ATTACK) && attacker.getMainHandItem().isEmpty()
+                && CombatManager.isSwing(attacker, target)) {
             style(attacker).onUnarmedHit(attacker, target, event);
         }
     }
