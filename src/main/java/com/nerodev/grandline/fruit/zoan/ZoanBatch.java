@@ -1,0 +1,108 @@
+package com.nerodev.grandline.fruit.zoan;
+
+import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.ability.Ability;
+import com.nerodev.grandline.ability.AbilityCategory;
+import com.nerodev.grandline.ability.AbilityIcon;
+import com.nerodev.grandline.ability.ActivationType;
+import com.nerodev.grandline.ability.GLAbilities;
+import com.nerodev.grandline.fruit.DevilFruit;
+import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.transform.GLTransformations;
+import com.nerodev.grandline.transform.Transformation;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.Rarity;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+/**
+ * Registers every Zoan fruit (beyond the original Leopard): their abilities and their two bodies each.
+ * Ability and transformation ids for the bodies are {@code <fruit>_hybrid} and {@code <fruit>_beast}; the client
+ * finds each body's model by that id.
+ */
+public final class ZoanBatch {
+    static final DeferredRegister<Ability> ABILITIES = DeferredRegister.create(GLAbilities.KEY, GrandLine.MODID);
+    static final DeferredRegister<Transformation> FORMS = DeferredRegister.create(GLTransformations.KEY, GrandLine.MODID);
+
+    // Regular Zoans
+    public static final DeferredHolder<DevilFruit, HumanFruit> HUMAN = GLFruits.register("human", HumanFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, FalconFruit> FALCON = GLFruits.register("falcon", FalconFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, JackalFruit> JACKAL = GLFruits.register("jackal", JackalFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, MoleFruit> MOLE = GLFruits.register("mole", MoleFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, BisonFruit> BISON = GLFruits.register("bison", BisonFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, WolfFruit> WOLF = GLFruits.register("wolf", WolfFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, GiraffeFruit> GIRAFFE = GLFruits.register("giraffe", GiraffeFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, HorseFruit> HORSE = GLFruits.register("horse", HorseFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, AnacondaFruit> ANACONDA = GLFruits.register("anaconda", AnacondaFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, KingCobraFruit> KING_COBRA = GLFruits.register("king_cobra", KingCobraFruit::new, Rarity.RARE);
+    public static final DeferredHolder<DevilFruit, AxolotlFruit> AXOLOTL = GLFruits.register("axolotl", AxolotlFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, AlbatrossFruit> ALBATROSS = GLFruits.register("albatross", AlbatrossFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, TanukiFruit> TANUKI = GLFruits.register("tanuki", TanukiFruit::new, Rarity.UNCOMMON);
+    public static final DeferredHolder<DevilFruit, ElephantFruit> ELEPHANT = GLFruits.register("elephant", ElephantFruit::new, Rarity.UNCOMMON);
+
+    private ZoanBatch() {}
+
+    static <T extends Ability> DeferredHolder<Ability, T> ability(String name, Supplier<T> factory) {
+        return ABILITIES.register(name, factory);
+    }
+
+    static Ability.Properties props(ActivationType type, AbilityIcon icon, int color) {
+        return Ability.Properties.of(type, AbilityCategory.FRUIT).icon(icon, color);
+    }
+
+    /**
+     * Registers a Zoan's two bodies and the toggles that hold them. The builders get a {@link Transformation.Group#BODY}
+     * builder to add attribute changes and, for the beast, its hitbox.
+     */
+    static ZoanForms forms(String fruitId, int color, Supplier<SoundEvent> sound, ZoanForms.Traits traits,
+            UnaryOperator<Transformation.Builder> hybrid, UnaryOperator<Transformation.Builder> beast) {
+        ZoanForms forms = new ZoanForms(fruitId, color, sound, traits);
+        forms.hybridAbility = ABILITIES.register(fruitId + "_hybrid", () -> new ZoanForm(forms, true));
+        forms.beastAbility = ABILITIES.register(fruitId + "_beast", () -> new ZoanForm(forms, false));
+        forms.hybrid = FORMS.register(fruitId + "_hybrid", () -> hybrid.apply(Transformation.builder(Transformation.Group.BODY))
+                .source(forms.hybridAbility).build());
+        forms.beast = FORMS.register(fruitId + "_beast", () -> beast.apply(Transformation.builder(Transformation.Group.BODY))
+                .source(forms.beastAbility).build());
+        return forms;
+    }
+
+    /** Loads every Zoan fruit class so its abilities and bodies are queued before the registers go to the bus. */
+    public static void load() {
+        HumanFruit.init();
+        FalconFruit.init();
+        JackalFruit.init();
+        MoleFruit.init();
+        BisonFruit.init();
+        WolfFruit.init();
+        GiraffeFruit.init();
+        HorseFruit.init();
+        AnacondaFruit.init();
+        KingCobraFruit.init();
+        AxolotlFruit.init();
+        AlbatrossFruit.init();
+        TanukiFruit.init();
+        ElephantFruit.init();
+    }
+
+    public static void register(IEventBus modBus) {
+        ABILITIES.register(modBus);
+        FORMS.register(modBus);
+        HumanFruit.behaviors();
+        FalconFruit.behaviors();
+        JackalFruit.behaviors();
+        MoleFruit.behaviors();
+        BisonFruit.behaviors();
+        WolfFruit.behaviors();
+        GiraffeFruit.behaviors();
+        HorseFruit.behaviors();
+        AnacondaFruit.behaviors();
+        KingCobraFruit.behaviors();
+        AxolotlFruit.behaviors();
+        AlbatrossFruit.behaviors();
+        TanukiFruit.behaviors();
+        ElephantFruit.behaviors();
+    }
+}

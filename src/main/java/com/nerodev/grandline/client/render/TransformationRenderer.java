@@ -3,7 +3,9 @@ package com.nerodev.grandline.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.nerodev.grandline.client.fx.FxKit;
+import com.nerodev.grandline.client.model.BeastModel;
 import com.nerodev.grandline.client.model.LeopardModel;
+import com.nerodev.grandline.client.model.ZoanLooks;
 import com.nerodev.grandline.data.GLAttachments;
 import com.nerodev.grandline.data.PublicState;
 import com.nerodev.grandline.fruit.GLFruits;
@@ -17,6 +19,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -50,8 +54,26 @@ public final class TransformationRenderer {
                 && TransformationManager.isActive(player, GLTransformations.LEOPARD_BEAST.get());
     }
 
+    /** The Zoan beast body the player is in, if any (the leopard has its own model above). */
+    @Nullable
+    private static ZoanLooks.Beast zoanBeast(Player player) {
+        if (!player.hasData(GLAttachments.PUBLIC_STATE)) {
+            return null;
+        }
+        return PublicState.of(player).transformation().map(ZoanLooks::beast).orElse(null);
+    }
+
     private static void onRenderPlayer(RenderPlayerEvent.Pre event) {
-        if (!(event.getEntity() instanceof AbstractClientPlayer player) || !isBeast(player) || player.isInvisible()) {
+        if (!(event.getEntity() instanceof AbstractClientPlayer player) || player.isInvisible()) {
+            return;
+        }
+        ZoanLooks.Beast zoan = zoanBeast(player);
+        if (zoan != null) {
+            event.setCanceled(true);
+            renderZoan(event, player, zoan);
+            return;
+        }
+        if (!isBeast(player)) {
             return;
         }
         event.setCanceled(true);
@@ -74,9 +96,32 @@ public final class TransformationRenderer {
         pose.popPose();
     }
 
+    /** Draws a Zoan beast in place of the player, facing the body's yaw, animated from the player's movement. */
+    private static void renderZoan(RenderPlayerEvent.Pre event, AbstractClientPlayer player, ZoanLooks.Beast zoan) {
+        BeastModel model = ZoanLooks.model(zoan.shape());
+        float partial = event.getPartialTick();
+        PoseStack pose = event.getPoseStack();
+        pose.pushPose();
+        float bodyYaw = Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot);
+        pose.mulPose(Axis.YP.rotationDegrees(180f - bodyYaw));
+        pose.scale(-1f, -1f, 1f);
+        float scale = zoan.shape().scale();
+        pose.scale(scale, scale, scale);
+        pose.translate(0f, -1.501f, 0f);
+        float headYaw = Mth.wrapDegrees(Mth.rotLerp(partial, player.yHeadRotO, player.yHeadRot) - bodyYaw);
+        float pitch = Mth.lerp(partial, player.xRotO, player.getXRot());
+        model.attackTime = player.getAttackAnim(partial);
+        model.setupAnim(player, player.walkAnimation.position(partial), player.walkAnimation.speed(partial),
+                player.tickCount + partial, headYaw, pitch);
+        int light = zoan.glowing() ? LightTexture.FULL_BRIGHT : event.getPackedLight();
+        model.renderToBuffer(pose, event.getMultiBufferSource().getBuffer(RenderType.entityCutoutNoCull(zoan.shape().texture())),
+                light, LivingEntityRenderer.getOverlayCoords(player, 0f), 0xFFFFFFFF);
+        pose.popPose();
+    }
+
     private static void onRenderHand(RenderHandEvent event) {
         Player player = Minecraft.getInstance().player;
-        if (player != null && isBeast(player)) {
+        if (player != null && (isBeast(player) || zoanBeast(player) != null)) {
             event.setCanceled(true);
         }
     }
@@ -87,6 +132,7 @@ public final class TransformationRenderer {
         if (mc.level == null) {
             LAST_SEEN.clear();
             leopard = null;
+            ZoanLooks.clearModels();
             return;
         }
         RandomSource random = mc.level.random;

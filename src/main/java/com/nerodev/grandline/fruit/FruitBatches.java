@@ -7,6 +7,7 @@ import com.nerodev.grandline.fruit.paramecia.ParameciaBatchC;
 import com.nerodev.grandline.fruit.paramecia.ParameciaBatchD;
 import com.nerodev.grandline.fruit.paramecia.ParameciaBatchE;
 import com.nerodev.grandline.fruit.paramecia.ParameciaBatchF;
+import com.nerodev.grandline.fruit.zoan.ZoanBatch;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -25,6 +26,7 @@ final class FruitBatches {
         ParameciaBatchD.load();
         ParameciaBatchE.load();
         ParameciaBatchF.load();
+        ZoanBatch.load();
     }
 
     static void register(IEventBus modBus) {
@@ -35,5 +37,6 @@ final class FruitBatches {
         ParameciaBatchD.register(modBus);
         ParameciaBatchE.register(modBus);
         ParameciaBatchF.register(modBus);
+        ZoanBatch.register(modBus);
     }
 }

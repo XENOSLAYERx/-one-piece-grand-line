@@ -26,6 +26,7 @@ public final class TransformationModels {
         event.registerLayerDefinition(SHELL_WIDE, () -> LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.12f), false), 64, 64));
         event.registerLayerDefinition(SHELL_SLIM, () -> LayerDefinition.create(PlayerModel.createMesh(new CubeDeformation(0.12f), true), 64, 64));
         event.registerLayerDefinition(HYBRID_PARTS, TransformationModels::hybridParts);
+        ZoanLooks.registerLayers(event);
     }
 
     private static LayerDefinition hybridParts() {

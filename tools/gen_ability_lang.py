@@ -26,6 +26,9 @@ NAMES = {
 }
 
 REGISTRATION = re.compile(r'ability\("([a-z0-9_]+)",\s*(\w+)::new\)')
+# Zoan bodies: a javadoc with "@hybrid Name | description" and "@beast Name | description" above forms("fruit", ...).
+FORMS = re.compile(r'/\*\*((?:(?!\*/).)*?)\*/\s*(?:public )?static final ZoanForms \w+ = (?:ZoanBatch\.)?forms\("([a-z0-9_]+)"',
+                   re.S)
 CLASS_DOC = r'/\*\*((?:(?!\*/).)*?)\*/\s*public static (?:final )?class {}\b'
 
 
@@ -66,6 +69,19 @@ def main():
             prefixed = os.sep + "paramecia" in folder or os.sep + "zoan" in folder
             fruit = re.search(r'"fruit/grandline:([a-z0-9_]+)"', source)
             fruit_id = fruit.group(1) if fruit and prefixed else None
+            for doc, fruit_form in FORMS.findall(source):
+                for body in ("hybrid", "beast"):
+                    tag = re.search(r"@%s\s+([^|\n]+)\|((?:(?!@hybrid|@beast).)*)" % body, doc, re.S)
+                    key = "ability.grandline.%s_%s" % (fruit_form, body)
+                    if not tag:
+                        missing_docs.append(f"{name}:{fruit_form} {body} form")
+                        continue
+                    if key not in lang:
+                        lang[key] = tag.group(1).strip()
+                        added += 1
+                    if key + ".desc" not in lang:
+                        lang[key + ".desc"] = clean_doc(tag.group(2))
+                        added += 1
             for ability_id, cls in REGISTRATION.findall(source):
                 key = "ability.grandline." + ability_id
                 match = re.search(CLASS_DOC.format(cls), source, re.S)

@@ -13,6 +13,10 @@ import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.fruit.kit.Minions;
 import com.nerodev.grandline.fruit.kit.TempBlocks;
+import com.nerodev.grandline.fruit.zoan.ZoanForm;
+import com.nerodev.grandline.fruit.zoan.ZoanFruit;
+import com.nerodev.grandline.transform.Transformation;
+import com.nerodev.grandline.transform.TransformationManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -88,6 +92,20 @@ public final class AllFruitsTests {
                 exercise(player, ability);
             }
             AbilityManager.endAll(player, Ability.EndReason.INTERRUPTED, false);
+            if (fruit instanceof ZoanFruit zoan) {
+                // Zoan moves mostly need a body: run them again in each one.
+                for (Transformation body : List.of(zoan.forms().hybridForm(), zoan.forms().beastForm())) {
+                    TransformationManager.start(player, body);
+                    for (Ability ability : abilities) {
+                        if (!(ability instanceof ZoanForm)) {
+                            current = fruit.id() + " / " + ability.id() + " in " + body.id();
+                            exercise(player, ability);
+                        }
+                    }
+                    AbilityManager.endAll(player, Ability.EndReason.INTERRUPTED, false);
+                    TransformationManager.end(player);
+                }
+            }
             ran.add(fruit.id().toString());
         } catch (Throwable t) {
             GrandLine.LOGGER.error("Ability failed: {}", current, t);

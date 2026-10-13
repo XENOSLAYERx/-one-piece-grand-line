@@ -431,6 +431,219 @@ cmd kill @e[type=!minecraft:player]
 cmd onepiece fruit remove
 wait 10
 
+# ---- Zoans: each body from the front (hybrid, then full beast)
+camera front
+look 270 5
+cmd onepiece fruit set grandline:human
+cmd onepiece ability equip 1 grandline:human_hybrid
+cmd onepiece ability equip 2 grandline:human_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 80_human_hybrid
+press 2
+release 2
+wait 12
+shot 81_human_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:falcon
+cmd onepiece ability equip 1 grandline:falcon_hybrid
+cmd onepiece ability equip 2 grandline:falcon_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 82_falcon_hybrid
+press 2
+release 2
+wait 12
+shot 83_falcon_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:jackal
+cmd onepiece ability equip 1 grandline:jackal_hybrid
+cmd onepiece ability equip 2 grandline:jackal_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 84_jackal_hybrid
+press 2
+release 2
+wait 12
+shot 85_jackal_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:mole
+cmd onepiece ability equip 1 grandline:mole_hybrid
+cmd onepiece ability equip 2 grandline:mole_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 86_mole_hybrid
+press 2
+release 2
+wait 12
+shot 87_mole_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:bison
+cmd onepiece ability equip 1 grandline:bison_hybrid
+cmd onepiece ability equip 2 grandline:bison_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 88_bison_hybrid
+press 2
+release 2
+wait 12
+shot 89_bison_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:wolf
+cmd onepiece ability equip 1 grandline:wolf_hybrid
+cmd onepiece ability equip 2 grandline:wolf_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 90_wolf_hybrid
+press 2
+release 2
+wait 12
+shot 91_wolf_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:giraffe
+cmd onepiece ability equip 1 grandline:giraffe_hybrid
+cmd onepiece ability equip 2 grandline:giraffe_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 92_giraffe_hybrid
+press 2
+release 2
+wait 12
+shot 93_giraffe_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:horse
+cmd onepiece ability equip 1 grandline:horse_hybrid
+cmd onepiece ability equip 2 grandline:horse_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 94_horse_hybrid
+press 2
+release 2
+wait 12
+shot 95_horse_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:anaconda
+cmd onepiece ability equip 1 grandline:anaconda_hybrid
+cmd onepiece ability equip 2 grandline:anaconda_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 96_anaconda_hybrid
+press 2
+release 2
+wait 12
+shot 97_anaconda_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:king_cobra
+cmd onepiece ability equip 1 grandline:king_cobra_hybrid
+cmd onepiece ability equip 2 grandline:king_cobra_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 98_king_cobra_hybrid
+press 2
+release 2
+wait 12
+shot 99_king_cobra_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:axolotl
+cmd onepiece ability equip 1 grandline:axolotl_hybrid
+cmd onepiece ability equip 2 grandline:axolotl_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 100_axolotl_hybrid
+press 2
+release 2
+wait 12
+shot 101_axolotl_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:albatross
+cmd onepiece ability equip 1 grandline:albatross_hybrid
+cmd onepiece ability equip 2 grandline:albatross_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 102_albatross_hybrid
+press 2
+release 2
+wait 12
+shot 103_albatross_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:tanuki
+cmd onepiece ability equip 1 grandline:tanuki_hybrid
+cmd onepiece ability equip 2 grandline:tanuki_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 104_tanuki_hybrid
+press 2
+release 2
+wait 12
+shot 105_tanuki_beast
+cmd onepiece fruit remove
+wait 5
+
+cmd onepiece fruit set grandline:elephant
+cmd onepiece ability equip 1 grandline:elephant_hybrid
+cmd onepiece ability equip 2 grandline:elephant_beast
+wait 5
+press 1
+release 1
+wait 12
+shot 106_elephant_hybrid
+press 2
+release 2
+wait 12
+shot 107_elephant_beast
+cmd onepiece fruit remove
+wait 5
+
 # ---- Menu
 camera first
 menu
