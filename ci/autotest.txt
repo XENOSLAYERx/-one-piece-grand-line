@@ -259,6 +259,178 @@ release 1
 cmd kill @e[type=!minecraft:player]
 wait 10
 
+# ---- Logia (one or two signature moves each, against two husks)
+camera back
+look 90 12
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:rumble
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:thunder_spear
+cmd onepiece ability equip 2 grandline:raigo
+wait 10
+press 1
+release 1
+wait 4
+shot 60_rumble_thunder_spear
+wait 10
+press 2
+release 2
+wait 15
+look 90 -15
+wait 10
+shot 61_rumble_raigo
+wait 10
+look 90 12
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:ice
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:ice_age
+cmd onepiece ability equip 2 grandline:partisan
+wait 10
+press 1
+release 1
+wait 12
+shot 62_ice_age
+wait 10
+press 2
+release 2
+wait 4
+shot 63_ice_partisan
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:magma
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:meteor_volcano
+cmd onepiece ability equip 2 grandline:magma_tsunami
+wait 10
+press 1
+release 1
+wait 14
+shot 64_magma_meteor_volcano
+wait 10
+press 2
+release 2
+wait 16
+shot 65_magma_tsunami
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:dark
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:black_hole
+wait 10
+press 1
+release 1
+wait 20
+shot 66_dark_black_hole
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:glint
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:light_rain
+cmd onepiece ability equip 2 grandline:light_laser
+wait 10
+press 1
+release 1
+wait 16
+shot 67_glint_light_rain
+wait 10
+press 2
+release 2
+wait 3
+shot 68_glint_light_laser
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:sand
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:sables
+wait 10
+press 1
+release 1
+wait 20
+shot 69_sand_sables
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:smoke
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:white_snake
+wait 10
+press 1
+release 1
+wait 8
+shot 70_smoke_white_snake
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:gas
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:shinokuni
+wait 10
+press 1
+release 1
+wait 16
+shot 71_gas_shinokuni
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:snow
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:avalanche
+wait 10
+press 1
+release 1
+wait 14
+shot 72_snow_avalanche
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:swamp
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:swamp_pit
+wait 10
+press 1
+release 1
+wait 16
+shot 73_swamp_pit
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd summon minecraft:husk ~-7 ~ ~1 {NoAI:1b}
+cmd summon minecraft:husk ~-8 ~ ~-2 {NoAI:1b}
+cmd onepiece fruit set grandline:forest
+cmd onepiece fruit awaken
+cmd onepiece ability equip 1 grandline:root_snare
+cmd onepiece ability equip 2 grandline:giant_tree
+wait 10
+press 1
+release 1
+wait 10
+shot 74_forest_root_snare
+wait 10
+press 2
+release 2
+wait 10
+shot 75_forest_giant_tree
+wait 10
+cmd kill @e[type=!minecraft:player]
+cmd onepiece fruit remove
+wait 10
+
 # ---- Menu
 camera first
 menu

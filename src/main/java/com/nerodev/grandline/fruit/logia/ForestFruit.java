@@ -102,6 +102,12 @@ public class ForestFruit extends LogiaFruit {
         return living && player.level().isDay() && player.level().canSeeSky(player.blockPosition());
     }
 
+    /** Wood shrugs off nothing in particular; its defence is the Logia body itself. */
+    @Override
+    protected boolean immuneTo(DamageSource source) {
+        return false;
+    }
+
     @Override
     protected float weakness(ServerPlayer user, DamageSource source) {
         return source.is(DamageTypeTags.IS_FIRE) ? 1.5f : 1f;

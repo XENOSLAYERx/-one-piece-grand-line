@@ -65,6 +65,9 @@ public final class AbilityDamage {
         if (target instanceof net.minecraft.world.entity.OwnableEntity pet && attacker.getUUID().equals(pet.getOwnerUUID())) {
             return false;
         }
+        if (com.nerodev.grandline.fruit.kit.Minions.isAlly(attacker, target)) {
+            return false;
+        }
         return !(target instanceof Player) && target instanceof LivingEntity living ? !living.isAlliedTo(attacker) : true;
     }
 

@@ -12,6 +12,7 @@ import com.nerodev.grandline.effect.GLMobEffects;
 import com.nerodev.grandline.entity.GLEntities;
 import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.fruit.kit.Minions;
 import com.nerodev.grandline.fruit.kit.TempBlocks;
 import com.nerodev.grandline.fx.GLParticles;
 import com.nerodev.grandline.haki.HakiAbilities;
@@ -72,6 +73,7 @@ public final class GrandLine {
         FruitManager.register();
         TransformationManager.register();
         TempBlocks.register();
+        Minions.register();
 
         // Haki.
         HakiAbilities.register(modBus);
