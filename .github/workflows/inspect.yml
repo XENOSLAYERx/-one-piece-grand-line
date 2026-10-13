@@ -1,0 +1,43 @@
+name: Inspect API
+
+# Developer tool: prints the signatures of Minecraft/NeoForge classes (javap) so APIs can be checked
+# against the exact versions this mod builds with. Run manually from the Actions tab.
+on:
+  workflow_dispatch:
+    inputs:
+      classes:
+        description: 'Space-separated fully qualified class names'
+        required: true
+      filter:
+        description: 'Optional grep -E filter applied to the output'
+        required: false
+        default: ''
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Prepare Minecraft artifacts
+        run: ./gradlew createMinecraftArtifacts --quiet
+      - name: javap
+        env:
+          CLASSES: ${{ inputs.classes }}
+          FILTER: ${{ inputs.filter }}
+        run: |
+          JAR=$(ls build/moddev/artifacts/neoforge-*.jar | grep -v sources | head -1)
+          echo "Using $JAR"
+          for c in $CLASSES; do
+            echo "===== $c"
+            if [ -n "$FILTER" ]; then
+              javap -p -cp "$JAR" "$c" | grep -E "$FILTER" || true
+            else
+              javap -p -cp "$JAR" "$c" || true
+            fi
+          done
