@@ -7,6 +7,7 @@ import com.nerodev.grandline.command.OnePieceCommand;
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.DeathModeHandler;
 import com.nerodev.grandline.data.GLAttachments;
+import com.nerodev.grandline.dev.AutoTestServer;
 import com.nerodev.grandline.fx.GLParticles;
 import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.registry.GLRegistries;
@@ -53,6 +54,9 @@ public final class GrandLine {
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);
+
+        // CI only (inactive unless a system property is set).
+        AutoTestServer.register();
 
         LOGGER.info("One Piece: Grand Line {} initialised", version());
     }

@@ -1,0 +1,57 @@
+# Client smoke test script, run by CI (see ClientAutoTest for the step syntax).
+# Screenshots end up on the ci-screenshots branch.
+wait 60
+cmd time set 6000
+cmd weather clear
+cmd gamerule doDaylightCycle false
+cmd gamemode survival
+cmd onepiece invincible on
+cmd onepiece unlock all
+cmd onepiece cooldown off
+wait 20
+look 0 0
+shot 01_hud
+
+# Tekkai (slot 3, hold) seen from the front
+camera front
+look 0 10
+wait 5
+shot 02_idle_front
+press 3
+wait 8
+shot 03_tekkai
+wait 12
+shot 04_tekkai_hold
+release 3
+wait 15
+
+# Soru (slot 1) seen from the side
+camera back
+look 90 15
+wait 5
+press 1
+release 1
+wait 1
+shot 05_soru_a
+wait 2
+shot 06_soru_b
+wait 25
+
+# Geppo (slot 2) mid-air
+look 0 5
+jump
+wait 5
+press 2
+release 2
+wait 2
+shot 07_geppo
+wait 30
+
+# Ability menu
+camera first
+menu
+wait 10
+shot 08_menu
+close
+wait 5
+quit

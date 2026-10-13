@@ -45,6 +45,22 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        // CI visual smoke test: the server generates a world and exits, then the client opens it and runs
+        // ci/autotest.txt (see ClientAutoTest), taking screenshots.
+        autotestServer {
+            server()
+            programArgument '--nogui'
+            gameDirectory = project.file('run-autotest')
+            systemProperty 'grandline.autotest.server', 'true'
+        }
+
+        autotestClient {
+            client()
+            gameDirectory = project.file('run-autotest')
+            systemProperty 'grandline.autotest', project.file('ci/autotest.txt').absolutePath
+            programArguments.addAll '--quickPlaySingleplayer', 'autotest', '--width', '1280', '--height', '720'
+        }
+
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             logLevel = org.slf4j.event.Level.INFO

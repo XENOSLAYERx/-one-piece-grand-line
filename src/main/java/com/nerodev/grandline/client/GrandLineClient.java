@@ -2,6 +2,7 @@ package com.nerodev.grandline.client;
 
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.client.anim.AnimationLoader;
+import com.nerodev.grandline.client.dev.ClientAutoTest;
 import com.nerodev.grandline.client.anim.PlayerAnimator;
 import com.nerodev.grandline.client.fx.CameraShake;
 import com.nerodev.grandline.client.hud.AbilityHud;
@@ -26,10 +27,14 @@ public final class GrandLineClient {
         modBus.addListener(RegisterClientReloadListenersEvent.class,
                 event -> event.registerReloadListener(AnimationLoader.INSTANCE));
 
+        boolean autotest = ClientAutoTest.init();
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
             GLKeys.onClientTick();
             PlayerAnimator.tick();
             CameraShake.tick();
+            if (autotest) {
+                ClientAutoTest.tick();
+            }
         });
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, CameraShake::onCameraAngles);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> PlayerAnimator.clear());

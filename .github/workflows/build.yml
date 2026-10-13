@@ -50,3 +50,66 @@ jobs:
           name: gametest-log
           path: gametest.log
           if-no-files-found: ignore
+
+  # Boots the real client under a virtual display with software OpenGL, runs ci/autotest.txt and publishes
+  # screenshots + logs to the ci-screenshots branch. Catches client-only problems (mixins, rendering, HUD).
+  client-smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install virtual display
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-utils > /dev/null
+
+      - name: Generate test world
+        run: |
+          mkdir -p run-autotest
+          echo "eula=true" > run-autotest/eula.txt
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\nspawn-protection=0\ngamemode=survival\nspawn-monsters=false\ngenerate-structures=false\n' > run-autotest/server.properties
+          ./gradlew runAutotestServer --no-daemon --quiet 2>&1 | tail -20
+          mkdir -p run-autotest/saves
+          cp -r run-autotest/world run-autotest/saves/autotest
+          printf 'onboardAccessibility:false\npauseOnLostFocus:false\nrenderDistance:6\nsimulationDistance:6\nguiScale:2\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nnarrator:0\nsoundCategory_master:0.0\n' > run-autotest/options.txt
+
+      - name: Run client autotest
+        run: |
+          export LIBGL_ALWAYS_SOFTWARE=1
+          timeout 1200 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runAutotestClient --no-daemon > client.log 2>&1 || true
+          grep -E "\[autotest\]" client.log | tail -60 || true
+          grep -q "\[autotest\] done" client.log
+
+      - name: Client log summary
+        if: always()
+        run: grep -E "ERROR|FATAL|Mixin|Caused by|Exception" client.log | grep -v "^\s*at " | head -80 || true
+
+      - name: Publish screenshots and logs
+        if: always()
+        run: |
+          mkdir -p publish
+          cp -r run-autotest/screenshots/. publish/ 2>/dev/null || true
+          cp client.log publish/client-console.txt 2>/dev/null || true
+          cp run-autotest/logs/latest.log publish/latest-log.txt 2>/dev/null || true
+          cd publish
+          git init -q
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git checkout -q -b ci-screenshots
+          git add -A
+          git commit -qm "Client smoke test for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-screenshots
