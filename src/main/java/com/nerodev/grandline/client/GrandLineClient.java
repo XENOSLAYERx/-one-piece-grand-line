@@ -14,6 +14,12 @@ import com.nerodev.grandline.client.particle.GLParticleProviders;
 import com.nerodev.grandline.client.render.AbilityProjectileRenderer;
 import com.nerodev.grandline.client.render.HakiLayer;
 import com.nerodev.grandline.client.fruit.LogiaLooks;
+import com.nerodev.grandline.client.fruit.ParameciaLooksA;
+import com.nerodev.grandline.client.fruit.ParameciaLooksB;
+import com.nerodev.grandline.client.fruit.ParameciaLooksC;
+import com.nerodev.grandline.client.fruit.ParameciaLooksD;
+import com.nerodev.grandline.client.fruit.ParameciaLooksE;
+import com.nerodev.grandline.client.fruit.ParameciaLooksF;
 import com.nerodev.grandline.client.render.ProjectileVisuals;
 import com.nerodev.grandline.client.render.TransformationLayer;
 import com.nerodev.grandline.client.render.TransformationRenderer;
@@ -56,6 +62,12 @@ public final class GrandLineClient {
         HakiClient.register();
         TransformationRenderer.register();
         LogiaLooks.install();
+        ParameciaLooksA.install();
+        ParameciaLooksB.install();
+        ParameciaLooksC.install();
+        ParameciaLooksD.install();
+        ParameciaLooksE.install();
+        ParameciaLooksF.install();
         AbilityProjectile.clientTick = ProjectileVisuals::tick;
 
         boolean autotest = ClientAutoTest.init();

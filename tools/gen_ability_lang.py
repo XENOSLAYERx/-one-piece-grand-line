@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Fills in missing ability names and descriptions in en_us.json.
 
-Scans the fruit sources for ``ability("id", Move::new)`` registrations, takes the display name from the id (or from
-NAMES for moves whose canon name does not title-case cleanly) and the description from the javadoc above
-``class Move``. Existing keys are never touched, so hand-written text always wins.
+Scans the fruit sources for ``ability("id", Move::new)`` registrations and takes:
+  - the display name from an ``@name Display Name`` line in the move's javadoc, else NAMES, else the id title-cased
+    (for Paramecia and Zoan moves, whose ids start with "<fruit id>_", that prefix is left out of the name);
+  - the description from the rest of the javadoc above ``class Move``.
+Existing keys are never touched, so hand-written text always wins.
 """
 import json
 import os
@@ -27,9 +29,15 @@ REGISTRATION = re.compile(r'ability\("([a-z0-9_]+)",\s*(\w+)::new\)')
 CLASS_DOC = r'/\*\*((?:(?!\*/).)*?)\*/\s*public static (?:final )?class {}\b'
 
 
-def display_name(ability_id):
+def display_name(ability_id, fruit_id=None, doc=None):
+    if doc:
+        named = re.search(r"@name\s+(.+)", doc)
+        if named:
+            return named.group(1).strip()
     if ability_id in NAMES:
         return NAMES[ability_id]
+    if fruit_id and ability_id.startswith(fruit_id + "_"):
+        ability_id = ability_id[len(fruit_id) + 1:]
     words = ability_id.split("_")
     out = []
     for i, word in enumerate(words):
@@ -55,13 +63,16 @@ def main():
             if not name.endswith(".java"):
                 continue
             source = open(os.path.join(folder, name), encoding="utf-8").read()
+            prefixed = os.sep + "paramecia" in folder or os.sep + "zoan" in folder
+            fruit = re.search(r'"fruit/grandline:([a-z0-9_]+)"', source)
+            fruit_id = fruit.group(1) if fruit and prefixed else None
             for ability_id, cls in REGISTRATION.findall(source):
                 key = "ability.grandline." + ability_id
+                match = re.search(CLASS_DOC.format(cls), source, re.S)
                 if key not in lang:
-                    lang[key] = display_name(ability_id)
+                    lang[key] = display_name(ability_id, fruit_id, match.group(1) if match else None)
                     added += 1
                 if key + ".desc" not in lang:
-                    match = re.search(CLASS_DOC.format(cls), source, re.S)
                     if match:
                         lang[key + ".desc"] = clean_doc(match.group(1))
                         added += 1

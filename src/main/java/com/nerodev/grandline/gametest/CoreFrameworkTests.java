@@ -38,7 +38,8 @@ public final class CoreFrameworkTests {
         MinecraftServer server = helper.getLevel().getServer();
         Registry<DevilFruit> fruits = server.registryAccess().registryOrThrow(GLFruits.KEY);
 
-        helper.assertTrue(fruits.size() == 3, "Expected 3 fruits, found " + fruits.size());
+        int expected = GLFruits.entries().size();
+        helper.assertTrue(expected >= 3 && fruits.size() == expected, "Expected " + expected + " fruits, found " + fruits.size());
         assertFruitType(helper, fruits, "gum_gum", FruitType.PARAMECIA);
         assertFruitType(helper, fruits, "leopard", FruitType.ZOAN);
         assertFruitType(helper, fruits, "flame", FruitType.LOGIA);
@@ -80,7 +81,8 @@ public final class CoreFrameworkTests {
 
         out.clear();
         run(helper, server, source, "onepiece debug");
-        helper.assertTrue(out.contains("fruits 3"), "Debug overview should report 3 fruits: " + out.lines);
+        int fruitCount = GLFruits.entries().size();
+        helper.assertTrue(out.contains("fruits " + fruitCount), "Debug overview should report " + fruitCount + " fruits: " + out.lines);
 
         run(helper, server, source, "onepiece debug config");
         run(helper, server, source, "onepiece debug permissions");
@@ -154,7 +156,8 @@ public final class CoreFrameworkTests {
         }
 
         List<String> fruits = suggestions(server, creator, "onepiece debug fruit ");
-        helper.assertTrue(fruits.equals(List.of("grandline:flame", "grandline:gum_gum", "grandline:leopard")),
+        helper.assertTrue(fruits.size() == GLFruits.entries().size()
+                        && fruits.containsAll(List.of("grandline:flame", "grandline:gum_gum", "grandline:leopard")),
                 "Fruit suggestions: " + fruits);
         List<String> partial = suggestions(server, creator, "onepiece debug fruit gum");
         helper.assertTrue(partial.equals(List.of("grandline:gum_gum")), "Partial fruit suggestions: " + partial);

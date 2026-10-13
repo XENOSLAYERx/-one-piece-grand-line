@@ -11,6 +11,7 @@ import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.fruit.kit.Minions;
 import com.nerodev.grandline.fruit.kit.TempBlocks;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,7 @@ public final class AllFruitsTests {
                     e.discard();
                 }
                 target.discard();
+                Minions.dismiss(player, null);
                 helper.assertTrue(ran.size() >= fruits.size(), "Ran abilities of " + ran.size() + " fruits");
                 helper.succeed();
             }

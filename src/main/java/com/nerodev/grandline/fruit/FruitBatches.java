@@ -1,6 +1,12 @@
 package com.nerodev.grandline.fruit;
 
 import com.nerodev.grandline.fruit.logia.LogiaBatch;
+import com.nerodev.grandline.fruit.paramecia.ParameciaBatchA;
+import com.nerodev.grandline.fruit.paramecia.ParameciaBatchB;
+import com.nerodev.grandline.fruit.paramecia.ParameciaBatchC;
+import com.nerodev.grandline.fruit.paramecia.ParameciaBatchD;
+import com.nerodev.grandline.fruit.paramecia.ParameciaBatchE;
+import com.nerodev.grandline.fruit.paramecia.ParameciaBatchF;
 import net.neoforged.bus.api.IEventBus;
 
 /**
@@ -13,9 +19,21 @@ final class FruitBatches {
 
     static void load() {
         LogiaBatch.load();
+        ParameciaBatchA.load();
+        ParameciaBatchB.load();
+        ParameciaBatchC.load();
+        ParameciaBatchD.load();
+        ParameciaBatchE.load();
+        ParameciaBatchF.load();
     }
 
     static void register(IEventBus modBus) {
         LogiaBatch.register(modBus);
+        ParameciaBatchA.register(modBus);
+        ParameciaBatchB.register(modBus);
+        ParameciaBatchC.register(modBus);
+        ParameciaBatchD.register(modBus);
+        ParameciaBatchE.register(modBus);
+        ParameciaBatchF.register(modBus);
     }
 }
