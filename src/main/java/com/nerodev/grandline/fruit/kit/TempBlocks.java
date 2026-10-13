@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -26,7 +27,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  * so no power can permanently change the world unless a fruit explicitly does it with griefing enabled.
  */
 public final class TempBlocks {
-    private record Entry(BlockState original, BlockState placed, long until) {}
+    private record Entry(BlockState original, BlockState placed, long until, boolean unbreakable) {}
 
     private static final Map<ResourceKey<Level>, Map<BlockPos, Entry>> PLACED = new HashMap<>();
 
@@ -36,6 +37,9 @@ public final class TempBlocks {
         NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, e -> tick(e.getServer()));
         NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, e -> revertAll(e.getServer()));
         NeoForge.EVENT_BUS.addListener(BlockEvent.BreakEvent.class, TempBlocks::onBreak);
+        // Explosions leave temporary blocks alone, so they can never be blown into item drops.
+        NeoForge.EVENT_BUS.addListener(ExplosionEvent.Detonate.class,
+                e -> e.getAffectedBlocks().removeIf(pos -> isTemporary(e.getLevel(), pos)));
     }
 
     /** True if {@code state} may be replaced by a temporary block. */
@@ -51,6 +55,14 @@ public final class TempBlocks {
      * @return true if placed
      */
     public static boolean place(ServerLevel level, BlockPos pos, BlockState state, int ticks) {
+        return place(level, pos, state, ticks, false);
+    }
+
+    /**
+     * As {@link #place(ServerLevel, BlockPos, BlockState, int)}; an {@code unbreakable} block (a barrier) cannot be
+     * broken by players until it runs out.
+     */
+    public static boolean place(ServerLevel level, BlockPos pos, BlockState state, int ticks, boolean unbreakable) {
         if (!level.isLoaded(pos) || level.isOutsideBuildHeight(pos)) {
             return false;
         }
@@ -70,7 +82,7 @@ public final class TempBlocks {
             return false;
         }
         long until = level.getGameTime() + Math.max(1, ticks);
-        placed.put(key, new Entry(original, state, existing != null ? Math.max(until, existing.until()) : until));
+        placed.put(key, new Entry(original, state, existing != null ? Math.max(until, existing.until()) : until, unbreakable));
         return true;
     }
 
@@ -159,7 +171,12 @@ public final class TempBlocks {
         if (placed == null) {
             return;
         }
-        Entry entry = placed.remove(event.getPos());
+        Entry entry = placed.get(event.getPos());
+        if (entry != null && entry.unbreakable()) {
+            event.setCanceled(true);
+            return;
+        }
+        placed.remove(event.getPos());
         if (entry != null) {
             event.setCanceled(true);
             level.setBlock(event.getPos(), entry.original(), Block.UPDATE_ALL);

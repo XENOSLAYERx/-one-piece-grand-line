@@ -184,6 +184,17 @@ public final class Kit {
         return placed;
     }
 
+    /** Places {@code state} at every position for {@code ticks}; players cannot break these (barriers). */
+    public static int placeUnbreakable(ServerLevel level, Iterable<BlockPos> positions, BlockState state, int ticks) {
+        int placed = 0;
+        for (BlockPos pos : positions) {
+            if (TempBlocks.place(level, pos, state, ticks, true)) {
+                placed++;
+            }
+        }
+        return placed;
+    }
+
     /** A flat wall {@code width} wide and {@code height} tall centred on {@code center}, facing {@code facing}. */
     public static List<BlockPos> wall(Vec3 center, Vec3 facing, int width, int height) {
         Vec3 flat = new Vec3(facing.x, 0, facing.z);

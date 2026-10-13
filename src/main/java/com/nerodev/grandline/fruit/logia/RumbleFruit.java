@@ -90,7 +90,7 @@ public class RumbleFruit extends LogiaFruit {
     }
 
     /** A visual-only lightning bolt: the real flash and thunder, no fire. */
-    static void bolt(ServerLevel level, Vec3 at) {
+    public static void bolt(ServerLevel level, Vec3 at) {
         LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
         if (bolt != null) {
             bolt.moveTo(at);

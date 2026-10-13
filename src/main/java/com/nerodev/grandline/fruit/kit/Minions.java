@@ -39,8 +39,10 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class Minions {
     /** Persistent-data flag every minion carries so stray ones can be recognised after a reload. */
     public static final String TAG = "grandline_minion";
+    /** Flag on an existing creature temporarily bound to someone's will (released, not removed, afterwards). */
+    public static final String BORROWED = "grandline_borrowed";
 
-    private record Minion(Mob mob, UUID owner, ResourceLocation kind, long until) {}
+    private record Minion(Mob mob, UUID owner, ResourceLocation kind, long until, boolean borrowed) {}
 
     private static final List<Minion> ACTIVE = new ArrayList<>();
 
@@ -87,7 +89,7 @@ public final class Minions {
         if (setup != null) {
             setup.accept(mob);
         }
-        ACTIVE.add(new Minion(mob, owner.getUUID(), kind, level.getGameTime() + lifetime));
+        ACTIVE.add(new Minion(mob, owner.getUUID(), kind, level.getGameTime() + lifetime, false));
         level.addFreshEntity(mob);
         Vfx.burst(level, mob, mob.position().add(0, mob.getBbHeight() / 2, 0), 0xFFFFFF, mob.getBbWidth() + 0.5f, Kind.SMOKE, 0);
         return mob;
@@ -119,10 +121,25 @@ public final class Minions {
         if (setup != null) {
             setup.accept(mob);
         }
-        ACTIVE.add(new Minion(mob, owner.getUUID(), kind, level.getGameTime() + lifetime));
+        ACTIVE.add(new Minion(mob, owner.getUUID(), kind, level.getGameTime() + lifetime, false));
         level.addFreshEntity(mob);
         Vfx.burst(level, mob, mob.position().add(0, mob.getBbHeight() / 2, 0), 0xFFFFFF, mob.getBbWidth() + 0.5f, Kind.SMOKE, 0);
         return mob;
+    }
+
+    /**
+     * Bends an existing creature to {@code owner}'s will for {@code ticks} (a puppet, a toy, a rewritten memory): it
+     * fights for the owner like a minion, then is simply released. Bosses refuse. @return true if bound
+     */
+    public static boolean bind(ServerPlayer owner, ResourceLocation kind, Mob mob, int ticks) {
+        if (mob.getType().is(net.neoforged.neoforge.common.Tags.EntityTypes.BOSSES) || isMinion(mob)) {
+            return false;
+        }
+        ACTIVE.removeIf(m -> m.mob() == mob);
+        mob.getPersistentData().putBoolean(BORROWED, true);
+        mob.setTarget(null);
+        ACTIVE.add(new Minion(mob, owner.getUUID(), kind, mob.level().getGameTime() + ticks, true));
+        return true;
     }
 
     public static boolean isMinion(Entity entity) {
@@ -167,7 +184,7 @@ public final class Minions {
         while (it.hasNext()) {
             Minion m = it.next();
             if (m.owner().equals(owner.getUUID()) && (kind == null || kind.equals(m.kind()))) {
-                vanish(m.mob());
+                end(m);
                 it.remove();
             }
         }
@@ -175,9 +192,27 @@ public final class Minions {
 
     private static void dismissAll() {
         for (Minion m : ACTIVE) {
-            m.mob().discard();
+            if (m.borrowed()) {
+                release(m.mob());
+            } else {
+                m.mob().discard();
+            }
         }
         ACTIVE.clear();
+    }
+
+    private static void end(Minion m) {
+        if (m.borrowed()) {
+            release(m.mob());
+        } else {
+            vanish(m.mob());
+        }
+    }
+
+    /** A borrowed creature comes back to its senses. */
+    private static void release(Mob mob) {
+        mob.getPersistentData().remove(BORROWED);
+        mob.setTarget(null);
     }
 
     private static void vanish(Mob mob) {
@@ -198,7 +233,7 @@ public final class Minions {
                 continue;
             }
             if (owner == null || owner.level() != mob.level() || mob.level().getGameTime() >= m.until()) {
-                vanish(mob);
+                end(m);
                 it.remove();
                 continue;
             }
@@ -249,8 +284,13 @@ public final class Minions {
     }
 
     private static void onJoin(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk() && isMinion(event.getEntity())) {
+        if (!event.loadedFromDisk()) {
+            return;
+        }
+        if (isMinion(event.getEntity())) {
             event.setCanceled(true);
+        } else if (event.getEntity().getPersistentData().getBoolean(BORROWED)) {
+            event.getEntity().getPersistentData().remove(BORROWED);
         }
     }
 
