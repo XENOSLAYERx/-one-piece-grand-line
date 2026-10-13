@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.ability.Ability;
@@ -47,7 +47,7 @@ public class MoleFruit extends ZoanFruit {
      * @hybrid Mole-Woman | Grow digging claws: you dig much faster and hit harder.
      * @beast Mole Form | Become a mole: low to the ground, quick, and digs faster still.
      */
-    static final ZoanForms FORMS = forms("mole", COLOR, () -> SoundEvents.ROOTED_DIRT_BREAK, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("mole", COLOR, () -> SoundEvents.ROOTED_DIRT_BREAK, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.BLOCK_BREAK_SPEED, 1.5, Operation.ADD_MULTIPLIED_BASE)
                     .modifier(Attributes.ATTACK_DAMAGE, 2, Operation.ADD_VALUE)
                     .modifier(Attributes.ARMOR, 2, Operation.ADD_VALUE),

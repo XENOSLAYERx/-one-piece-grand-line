@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.ability.Ability;
@@ -39,7 +39,7 @@ public class ElephantFruit extends ZoanFruit {
      * @hybrid Elephant-Man | Grow tusks and great ears: bigger, stronger, armoured and hard to push.
      * @beast Elephant Form | Become an elephant: huge, very tough, immovable and crushing.
      */
-    static final ZoanForms FORMS = forms("elephant", COLOR, () -> SoundEvents.RAVAGER_ROAR, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("elephant", COLOR, () -> SoundEvents.RAVAGER_ROAR, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.SCALE, 0.3, Operation.ADD_VALUE)
                     .modifier(Attributes.ATTACK_DAMAGE, 4, Operation.ADD_VALUE)
                     .modifier(Attributes.ARMOR, 4, Operation.ADD_VALUE)

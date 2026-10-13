@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -46,7 +46,7 @@ public class AlbatrossFruit extends ZoanFruit {
      * @hybrid Albatross-Man | Grow great white wings: you can fly, and you are quicker on the ground.
      * @beast Albatross Form | Become an albatross: a tireless flier, fast and light.
      */
-    static final ZoanForms FORMS = forms("albatross", COLOR, () -> SoundEvents.PARROT_AMBIENT, ZoanForms.Traits.WINGED,
+    static final ZoanForms FORMS = bodies("albatross", COLOR, () -> SoundEvents.PARROT_AMBIENT, ZoanForms.Traits.WINGED,
             b -> b.modifier(Attributes.MOVEMENT_SPEED, 0.1, Operation.ADD_MULTIPLIED_BASE)
                     .modifier(Attributes.SAFE_FALL_DISTANCE, 20, Operation.ADD_VALUE),
             b -> b.modifier(Attributes.MOVEMENT_SPEED, 0.35, Operation.ADD_MULTIPLIED_BASE)

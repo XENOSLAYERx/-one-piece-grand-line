@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -43,7 +43,7 @@ public class BisonFruit extends ZoanFruit {
      * @hybrid Bison-Man | Grow horns and a bison's bulk: bigger, harder-hitting, armoured and hard to push.
      * @beast Bison Form | Become a bison: a heavy, fast charger that can't be knocked back.
      */
-    static final ZoanForms FORMS = forms("bison", COLOR, () -> SoundEvents.RAVAGER_ROAR, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("bison", COLOR, () -> SoundEvents.RAVAGER_ROAR, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.SCALE, 0.3, Operation.ADD_VALUE)
                     .modifier(Attributes.ATTACK_DAMAGE, 4, Operation.ADD_VALUE)
                     .modifier(Attributes.ARMOR, 4, Operation.ADD_VALUE)

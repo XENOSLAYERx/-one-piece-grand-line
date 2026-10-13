@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.ability.Ability;
@@ -41,7 +41,7 @@ public class HorseFruit extends ZoanFruit {
      * @hybrid Horse-Man | Grow a horse's ears, mane and legs: quick on your feet, a high jumper and a hard kicker.
      * @beast Horse Form | Become a horse: a very fast galloper that jumps high and steps over obstacles.
      */
-    static final ZoanForms FORMS = forms("horse", COLOR, () -> SoundEvents.HORSE_AMBIENT, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("horse", COLOR, () -> SoundEvents.HORSE_AMBIENT, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.MOVEMENT_SPEED, 0.2, Operation.ADD_MULTIPLIED_BASE)
                     .modifier(Attributes.JUMP_STRENGTH, 0.2, Operation.ADD_VALUE)
                     .modifier(Attributes.ATTACK_DAMAGE, 2, Operation.ADD_VALUE),

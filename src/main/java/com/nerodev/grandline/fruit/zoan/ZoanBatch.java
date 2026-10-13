@@ -57,7 +57,7 @@ public final class ZoanBatch {
      * Registers a Zoan's two bodies and the toggles that hold them. The builders get a {@link Transformation.Group#BODY}
      * builder to add attribute changes and, for the beast, its hitbox.
      */
-    static ZoanForms forms(String fruitId, int color, Supplier<SoundEvent> sound, ZoanForms.Traits traits,
+    static ZoanForms bodies(String fruitId, int color, Supplier<SoundEvent> sound, ZoanForms.Traits traits,
             UnaryOperator<Transformation.Builder> hybrid, UnaryOperator<Transformation.Builder> beast) {
         ZoanForms forms = new ZoanForms(fruitId, color, sound, traits);
         forms.hybridAbility = ABILITIES.register(fruitId + "_hybrid", () -> new ZoanForm(forms, true));

@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.ability.Ability;
@@ -45,7 +45,7 @@ public class AnacondaFruit extends ZoanFruit {
      * @hybrid Snake-Woman | Your legs become a great snake's tail: tougher, stronger, and at home in water.
      * @beast Anaconda Form | Become an anaconda: long, heavy, very tough, and a swift swimmer.
      */
-    static final ZoanForms FORMS = forms("anaconda", COLOR, () -> SoundEvents.CAT_HISS, ZoanForms.Traits.SWIMMER,
+    static final ZoanForms FORMS = bodies("anaconda", COLOR, () -> SoundEvents.CAT_HISS, ZoanForms.Traits.SWIMMER,
             b -> b.modifier(Attributes.SCALE, 0.2, Operation.ADD_VALUE)
                     .modifier(Attributes.MAX_HEALTH, 6, Operation.ADD_VALUE)
                     .modifier(Attributes.ATTACK_DAMAGE, 3, Operation.ADD_VALUE),

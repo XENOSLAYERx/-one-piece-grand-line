@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -46,7 +46,7 @@ public class GiraffeFruit extends ZoanFruit {
      * @hybrid Giraffe-Man | Grow ossicones, a giraffe's hide and a long reach: harder-hitting and a little bigger.
      * @beast Giraffe Form | Become a towering giraffe: tall, fast, and able to step over walls.
      */
-    static final ZoanForms FORMS = forms("giraffe", COLOR, () -> SoundEvents.HORSE_AMBIENT, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("giraffe", COLOR, () -> SoundEvents.HORSE_AMBIENT, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.SCALE, 0.2, Operation.ADD_VALUE)
                     .modifier(Attributes.ATTACK_DAMAGE, 4, Operation.ADD_VALUE)
                     .modifier(Attributes.ENTITY_INTERACTION_RANGE, 2, Operation.ADD_VALUE)

@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -47,7 +47,7 @@ public class FalconFruit extends ZoanFruit {
      * @hybrid Falcon-Man | Grow great wings and talons: you can fly, and you strike harder.
      * @beast Falcon Form | Become a great falcon: fast in the air and hard to bring down from a fall.
      */
-    static final ZoanForms FORMS = forms("falcon", COLOR, () -> SoundEvents.PARROT_AMBIENT, ZoanForms.Traits.WINGED,
+    static final ZoanForms FORMS = bodies("falcon", COLOR, () -> SoundEvents.PARROT_AMBIENT, ZoanForms.Traits.WINGED,
             b -> b.modifier(Attributes.ATTACK_DAMAGE, 3, Operation.ADD_VALUE)
                     .modifier(Attributes.MOVEMENT_SPEED, 0.1, Operation.ADD_MULTIPLIED_BASE)
                     .modifier(Attributes.SAFE_FALL_DISTANCE, 20, Operation.ADD_VALUE),

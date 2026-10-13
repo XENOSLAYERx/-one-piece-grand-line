@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 /**
  * A Zoan fruit's two bodies, hybrid and full beast, with the toggle abilities that hold them and what each body can do
- * (fly, swim, climb). Built by {@link ZoanBatch#forms}.
+ * (fly, swim, climb). Built by {@link ZoanBatch#bodies}.
  */
 public final class ZoanForms {
     /** What the transformed body can do beyond its attribute changes. */

@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.ability.Ability;
@@ -48,7 +48,7 @@ public class HumanFruit extends ZoanFruit {
      * @hybrid Heavy Point | Bulk up into Heavy Point: half again your size, much stronger and tougher.
      * @beast Monster Point | Become the Monster Point: a towering, shaggy giant with antlers, immensely strong but slow.
      */
-    static final ZoanForms FORMS = forms("human", COLOR, GLSounds.INFLATE, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("human", COLOR, GLSounds.INFLATE, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.SCALE, 0.5, Operation.ADD_VALUE)
                     .modifier(Attributes.ATTACK_DAMAGE, 4, Operation.ADD_VALUE)
                     .modifier(Attributes.MAX_HEALTH, 8, Operation.ADD_VALUE)

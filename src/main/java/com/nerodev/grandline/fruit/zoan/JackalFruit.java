@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -47,7 +47,7 @@ public class JackalFruit extends ZoanFruit {
      * @hybrid Jackal-Man | Grow a jackal's head, ears and jaws: quicker, tougher and harder-biting.
      * @beast Jackal Form | Become a jackal: very fast on four legs and light on its feet.
      */
-    static final ZoanForms FORMS = forms("jackal", COLOR, () -> SoundEvents.WOLF_GROWL, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("jackal", COLOR, () -> SoundEvents.WOLF_GROWL, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.ATTACK_DAMAGE, 3, Operation.ADD_VALUE)
                     .modifier(Attributes.ARMOR, 3, Operation.ADD_VALUE)
                     .modifier(Attributes.MOVEMENT_SPEED, 0.1, Operation.ADD_MULTIPLIED_BASE),

@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -53,7 +53,7 @@ public class TanukiFruit extends ZoanFruit {
      * @hybrid Tanuki-Man | Grow round ears and a bushy tail: quicker and a little tougher.
      * @beast Tanuki Form | Become a tanuki: small and quick on your feet.
      */
-    static final ZoanForms FORMS = forms("tanuki", COLOR, () -> SoundEvents.FOX_AMBIENT, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("tanuki", COLOR, () -> SoundEvents.FOX_AMBIENT, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.ARMOR, 2, Operation.ADD_VALUE)
                     .modifier(Attributes.MOVEMENT_SPEED, 0.1, Operation.ADD_MULTIPLIED_BASE),
             b -> b.modifier(Attributes.MOVEMENT_SPEED, 0.3, Operation.ADD_MULTIPLIED_BASE)

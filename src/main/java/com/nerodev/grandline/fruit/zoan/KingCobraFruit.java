@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -46,7 +46,7 @@ public class KingCobraFruit extends ZoanFruit {
      * @hybrid Cobra-Woman | Grow a hood and a cobra's tail: stronger and tougher, with venom in your bite.
      * @beast King Cobra Form | Become a king cobra, reared up and hooded: very tough and quick to strike.
      */
-    static final ZoanForms FORMS = forms("king_cobra", COLOR, () -> SoundEvents.CAT_HISS, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("king_cobra", COLOR, () -> SoundEvents.CAT_HISS, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.ATTACK_DAMAGE, 3, Operation.ADD_VALUE)
                     .modifier(Attributes.MAX_HEALTH, 4, Operation.ADD_VALUE),
             b -> b.modifier(Attributes.MAX_HEALTH, 10, Operation.ADD_VALUE)

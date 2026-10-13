@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -48,7 +48,7 @@ public class AxolotlFruit extends ZoanFruit {
      * @hybrid Axolotl-Man | Grow gills and a tail: tougher, quick to heal, and at home in water.
      * @beast Axolotl Form | Become an axolotl: low and slippery, very tough, a swift swimmer that heals fast.
      */
-    static final ZoanForms FORMS = forms("axolotl", COLOR, () -> SoundEvents.AXOLOTL_SPLASH, ZoanForms.Traits.SWIMMER,
+    static final ZoanForms FORMS = bodies("axolotl", COLOR, () -> SoundEvents.AXOLOTL_SPLASH, ZoanForms.Traits.SWIMMER,
             b -> b.modifier(Attributes.ARMOR, 2, Operation.ADD_VALUE)
                     .modifier(Attributes.MAX_HEALTH, 6, Operation.ADD_VALUE),
             b -> b.modifier(Attributes.MAX_HEALTH, 10, Operation.ADD_VALUE)

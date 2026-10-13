@@ -26,8 +26,8 @@ NAMES = {
 }
 
 REGISTRATION = re.compile(r'ability\("([a-z0-9_]+)",\s*(\w+)::new\)')
-# Zoan bodies: a javadoc with "@hybrid Name | description" and "@beast Name | description" above forms("fruit", ...).
-FORMS = re.compile(r'/\*\*((?:(?!\*/).)*?)\*/\s*(?:public )?static final ZoanForms \w+ = (?:ZoanBatch\.)?forms\("([a-z0-9_]+)"',
+# Zoan bodies: a javadoc with "@hybrid Name | description" and "@beast Name | description" above bodies("fruit", ...).
+FORMS = re.compile(r'/\*\*((?:(?!\*/).)*?)\*/\s*(?:public )?static final ZoanForms \w+ = (?:ZoanBatch\.)?bodies\("([a-z0-9_]+)"',
                    re.S)
 CLASS_DOC = r'/\*\*((?:(?!\*/).)*?)\*/\s*public static (?:final )?class {}\b'
 

@@ -1,7 +1,7 @@
 package com.nerodev.grandline.fruit.zoan;
 
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.ability;
-import static com.nerodev.grandline.fruit.zoan.ZoanBatch.forms;
+import static com.nerodev.grandline.fruit.zoan.ZoanBatch.bodies;
 import static com.nerodev.grandline.fruit.zoan.ZoanBatch.props;
 
 import com.nerodev.grandline.GrandLine;
@@ -48,7 +48,7 @@ public class WolfFruit extends ZoanFruit {
      * @hybrid Wolf-Man | Grow a wolf's head, claws and fangs: quicker, tougher and much harder-hitting.
      * @beast Wolf Form | Become a grey wolf: very fast on four legs and a strong jumper.
      */
-    static final ZoanForms FORMS = forms("wolf", COLOR, () -> SoundEvents.WOLF_GROWL, ZoanForms.Traits.NONE,
+    static final ZoanForms FORMS = bodies("wolf", COLOR, () -> SoundEvents.WOLF_GROWL, ZoanForms.Traits.NONE,
             b -> b.modifier(Attributes.ATTACK_DAMAGE, 4, Operation.ADD_VALUE)
                     .modifier(Attributes.ARMOR, 3, Operation.ADD_VALUE)
                     .modifier(Attributes.MOVEMENT_SPEED, 0.15, Operation.ADD_MULTIPLIED_BASE),
