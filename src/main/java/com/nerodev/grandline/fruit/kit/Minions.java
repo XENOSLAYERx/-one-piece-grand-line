@@ -93,6 +93,38 @@ public final class Minions {
         return mob;
     }
 
+    /**
+     * Like {@link #spawn} for a type only known at runtime (e.g. a creature the user copied). Returns null if the type
+     * is not a mob or is a boss.
+     */
+    @Nullable
+    public static Mob spawnAny(ServerPlayer owner, ResourceLocation kind, EntityType<?> type, Vec3 pos, int lifetime,
+            @Nullable Consumer<Mob> setup) {
+        if (type.is(net.neoforged.neoforge.common.Tags.EntityTypes.BOSSES)) {
+            return null;
+        }
+        ServerLevel level = owner.serverLevel();
+        Entity created = type.create(level);
+        if (!(created instanceof Mob mob)) {
+            if (created != null) {
+                created.discard();
+            }
+            return null;
+        }
+        mob.moveTo(pos.x, pos.y, pos.z, owner.getYRot(), 0);
+        EventHooks.finalizeMobSpawn(mob, level, level.getCurrentDifficultyAt(BlockPos.containing(pos)),
+                MobSpawnType.MOB_SUMMONED, null);
+        mob.getPersistentData().putBoolean(TAG, true);
+        mob.setPersistenceRequired();
+        if (setup != null) {
+            setup.accept(mob);
+        }
+        ACTIVE.add(new Minion(mob, owner.getUUID(), kind, level.getGameTime() + lifetime));
+        level.addFreshEntity(mob);
+        Vfx.burst(level, mob, mob.position().add(0, mob.getBbHeight() / 2, 0), 0xFFFFFF, mob.getBbWidth() + 0.5f, Kind.SMOKE, 0);
+        return mob;
+    }
+
     public static boolean isMinion(Entity entity) {
         return entity.getPersistentData().getBoolean(TAG);
     }

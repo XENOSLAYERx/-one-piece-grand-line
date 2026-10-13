@@ -20,6 +20,7 @@ import com.nerodev.grandline.client.fruit.ParameciaLooksC;
 import com.nerodev.grandline.client.fruit.ParameciaLooksD;
 import com.nerodev.grandline.client.fruit.ParameciaLooksE;
 import com.nerodev.grandline.client.fruit.ParameciaLooksF;
+import com.nerodev.grandline.client.render.DisguiseRenderer;
 import com.nerodev.grandline.client.render.ProjectileVisuals;
 import com.nerodev.grandline.client.render.TransformationLayer;
 import com.nerodev.grandline.client.render.TransformationRenderer;
@@ -61,6 +62,7 @@ public final class GrandLineClient {
         StatusVisuals.register();
         HakiClient.register();
         TransformationRenderer.register();
+        DisguiseRenderer.register();
         LogiaLooks.install();
         ParameciaLooksA.install();
         ParameciaLooksB.install();
@@ -77,6 +79,7 @@ public final class GrandLineClient {
             CameraShake.tick();
             ClientVisuals.tick();
             TransformationRenderer.tick();
+            DisguiseRenderer.tick();
             HakiClient.tick();
             StatusVisuals.tick();
             if (autotest) {

@@ -4,6 +4,7 @@
   "package": "com.nerodev.grandline.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "AbstractClientPlayerMixin",
     "EntityMixin",
     "HumanoidModelMixin",
     "LivingEntityRendererMixin",

@@ -99,7 +99,13 @@ public final class Vfx {
         IRON_BANDS(0x8A9098, 1f, false),
         STRINGS(0xF4F4F4, 1f, false),
         ROOTS(0x6A4A2A, 1f, false),
-        GLUE(0xA8C83A, 0.8f, false);
+        GLUE(0xA8C83A, 0.8f, false),
+        HANDS(0xE8B898, 1f, false),
+        BISCUIT(0xD8A060, 1f, true),
+        SOAP(0xE8F4FF, 0.45f, true),
+        CREAM(0xFFF4E8, 0.9f, true),
+        BARRIER(0xBFE8FF, 0.35f, true),
+        STITCHES(0x3A2A20, 1f, false);
 
         private final int color;
         private final float alpha;
