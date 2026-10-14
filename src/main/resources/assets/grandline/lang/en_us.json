@@ -2803,5 +2803,13 @@
   "itemGroup.grandline.ships": "One Piece: Ships",
   "entity.grandline.ship": "Ship",
   "key.grandline.ship_fire": "Ship: fire cannons",
-  "key.grandline.ship_burst": "Ship: Coup de Burst"
+  "key.grandline.ship_burst": "Ship: Coup de Burst",
+  "island.grandline.dawn_island": "Dawn Island",
+  "island.grandline.dawn_island.desc": "The windmill village of Foosha, Partys Bar and Mt. Colubo's forests, where a certain rubber boy grew up.",
+  "island.grandline.shells_town": "Shells Town",
+  "island.grandline.shells_town.desc": "A harbour town under the walls of the 153rd Marine branch, and the stake in its yard.",
+  "island.grandline.conomi_islands": "Conomi Islands",
+  "island.grandline.conomi_islands.desc": "Cocoyasi's villas and tangerine groves, in the shadow of Arlong Park.",
+  "block.grandline.tangerine_leaves": "Tangerine Leaves",
+  "item.grandline.tangerine": "Tangerine"
 }

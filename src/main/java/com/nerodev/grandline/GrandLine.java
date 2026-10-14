@@ -33,6 +33,7 @@ import com.nerodev.grandline.transform.GLTransformations;
 import com.nerodev.grandline.transform.TransformationManager;
 import com.nerodev.grandline.weapon.GLWeapons;
 import com.nerodev.grandline.weapon.WeaponManager;
+import com.nerodev.grandline.world.GLWorldgen;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -84,6 +85,7 @@ public final class GrandLine {
         GLItems.register(modBus);
         GLWeapons.register(modBus);
         GLShips.register(modBus);
+        GLWorldgen.register(modBus);
         FruitManager.register();
         TransformationManager.register();
         TempBlocks.register();

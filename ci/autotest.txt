@@ -1213,6 +1213,7 @@ camera back
 look -90 12
 wait 10
 shot 163_at_the_helm
+cmd give @s grandline:cannonball 16
 cmd onepiece ship fire
 wait 4
 shot 164_broadside
@@ -1227,6 +1228,32 @@ wait 20
 shot 165_thousand_sunny
 cmd kill @e[type=grandline:ship]
 wait 5
+
+# ---- Islands: each raised in a sea above the plain, seen from the air
+camera first
+cmd tp @s 3000 -45 3000
+wait 20
+cmd onepiece island place dawn_island 42
+wait 20
+cmd tp @s 3000 -14 3068 180 26
+wait 80
+shot 166_dawn_island
+cmd tp @s 3400 -45 3000
+wait 20
+cmd onepiece island place shells_town 7
+wait 20
+cmd tp @s 3400 -18 3062 180 26
+wait 80
+shot 167_shells_town
+cmd tp @s 3800 -45 3000
+wait 20
+cmd onepiece island place conomi_islands 11
+wait 20
+cmd tp @s 3800 -14 3074 180 26
+wait 80
+shot 168_conomi_islands
+cmd tp @s 0 -60 0
+wait 20
 
 # ---- Creator Menu
 camera first

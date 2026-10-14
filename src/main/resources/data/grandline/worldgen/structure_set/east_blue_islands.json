@@ -1,0 +1,22 @@
+{
+  "structures": [
+    {
+      "structure": "grandline:dawn_island",
+      "weight": 1
+    },
+    {
+      "structure": "grandline:shells_town",
+      "weight": 1
+    },
+    {
+      "structure": "grandline:conomi_islands",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 44,
+    "separation": 20,
+    "salt": 1640813377
+  }
+}

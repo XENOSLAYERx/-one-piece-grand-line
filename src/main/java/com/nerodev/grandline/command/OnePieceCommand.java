@@ -45,6 +45,7 @@ public final class OnePieceCommand {
         WeaponCommands.register(root);
         CreatorCommands.register(root);
         ShipCommands.register(root);
+        IslandCommands.register(root);
         DebugCommand.register(root);
 
         event.getDispatcher().register(root);
@@ -61,6 +62,7 @@ public final class OnePieceCommand {
         entries.addAll(WeaponCommands.HELP);
         entries.addAll(CreatorCommands.HELP);
         entries.addAll(ShipCommands.HELP);
+        entries.addAll(IslandCommands.HELP);
         entries.addAll(AbilityCommands.HELP);
         entries.addAll(DebugCommand.HELP);
         return entries;
