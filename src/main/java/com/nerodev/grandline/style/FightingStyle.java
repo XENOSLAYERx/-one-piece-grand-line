@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 /**
@@ -69,4 +70,17 @@ public class FightingStyle {
      * the damage or add effects here.
      */
     public void onUnarmedHit(ServerPlayer user, LivingEntity target, LivingIncomingDamageEvent event) {}
+
+    /** A melee blow with {@code weapon} in the main hand is landing. Weapon styles shape it here. */
+    public void onArmedHit(ServerPlayer user, LivingEntity target, ItemStack weapon, LivingIncomingDamageEvent event) {}
+
+    /** Multiplier on how long a gun takes to reload in this style's hands. */
+    public float reloadMultiplier() {
+        return 1f;
+    }
+
+    /** Multiplier on the damage of the bullets this style's user fires. */
+    public float gunDamageMultiplier() {
+        return 1f;
+    }
 }

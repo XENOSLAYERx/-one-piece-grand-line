@@ -13,6 +13,7 @@ import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.fruit.LogiaFruit;
 import com.nerodev.grandline.haki.HakiManager;
+import com.nerodev.grandline.style.StyleManager;
 import com.nerodev.grandline.transform.Transformation;
 import com.nerodev.grandline.transform.TransformationManager;
 import java.util.List;
@@ -125,9 +126,14 @@ public final class WeaponManager {
         event.setAmount(event.getAmount() * (1f + (coat - 1f) * weapon.hakiAffinity()) / coat);
     }
 
-    /** Guns reload this many ticks after a shot. */
+    /** Guns reload this many ticks after a shot (a Gunslinger reloads faster). */
     public static int reloadTicks(ServerPlayer shooter, int base) {
-        return base;
+        return Math.max(4, Math.round(base * StyleManager.style(shooter).reloadMultiplier()));
+    }
+
+    /** The damage of a bullet fired by {@code shooter} from a gun that deals {@code base}. */
+    public static float gunDamage(ServerPlayer shooter, float base) {
+        return base * StyleManager.style(shooter).gunDamageMultiplier();
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -139,7 +145,8 @@ public final class WeaponManager {
         Entity direct = source.getDirectEntity();
         if (direct instanceof AbilityProjectile shot) {
             ResourceLocation kind = shot.kind();
-            return GLWeapons.SEASTONE_BULLET_SHOT.equals(kind) || GLWeapons.NET_THROWN.equals(kind);
+            return GLWeapons.SEASTONE_BULLET_SHOT.equals(kind) || GLWeapons.NET_THROWN.equals(kind)
+                    || shot.extra().getBoolean(GunItem.SEASTONE_TAG);
         }
         return source.getEntity() instanceof LivingEntity attacker && direct == attacker && source.is(AbilityDamage.PHYSICAL)
                 && attacker.getMainHandItem().is(SEASTONE_WEAPONS);

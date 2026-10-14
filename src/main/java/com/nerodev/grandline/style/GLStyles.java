@@ -25,6 +25,9 @@ public final class GLStyles {
     public static final DeferredHolder<FightingStyle, BlackLegStyle> BLACK_LEG = STYLES.register("black_leg", BlackLegStyle::new);
     public static final DeferredHolder<FightingStyle, FishmanKarateStyle> FISHMAN_KARATE = STYLES.register("fishman_karate",
             FishmanKarateStyle::new);
+    public static final DeferredHolder<FightingStyle, SwordsmanStyle> SWORDSMAN = STYLES.register("swordsman", SwordsmanStyle::new);
+    public static final DeferredHolder<FightingStyle, PolearmStyle> POLEARM = STYLES.register("polearm", PolearmStyle::new);
+    public static final DeferredHolder<FightingStyle, GunslingerStyle> GUNSLINGER = STYLES.register("gunslinger", GunslingerStyle::new);
 
     private GLStyles() {}
 
@@ -40,8 +43,13 @@ public final class GLStyles {
         BrawlerStyle.init();
         BlackLegStyle.init();
         FishmanKarateStyle.init();
+        SwordsmanStyle.init();
+        PolearmStyle.init();
+        GunslingerStyle.init();
         STYLES.register(modBus);
         ABILITIES.register(modBus);
         FishmanKarateStyle.behaviors();
+        SwordsmanStyle.behaviors();
+        GunslingerStyle.behaviors();
     }
 }

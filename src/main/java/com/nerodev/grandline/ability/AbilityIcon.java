@@ -9,7 +9,7 @@ import java.util.Locale;
 public enum AbilityIcon {
     FIST, KICK, DASH, JUMP, SHIELD, BEAM, BURST, WAVE, CLAW, FLAME, SWIRL, BLADE, EYE, CROWN, GRAB, ORB, TRANSFORM,
     BOLT, DROP, CLOUD, STAR, SNOWFLAKE, LEAF, HAND, WALL, SPEAR, VORTEX, SUN, SKULL, HEART, CAGE, TORNADO, MOON, METEOR,
-    SWORD;
+    SWORD, GUN, SWORDS;
 
     public String texturePath() {
         return "textures/gui/ability/" + name().toLowerCase(Locale.ROOT) + ".png";

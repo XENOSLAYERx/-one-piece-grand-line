@@ -47,6 +47,12 @@ public final class GLItems {
             () -> TechniqueScrollItem.style(GLStyles.BLACK_LEG));
     public static final DeferredItem<TechniqueScrollItem> FISHMAN_KARATE_SCROLL = scroll("fishman_karate_scroll",
             () -> TechniqueScrollItem.style(GLStyles.FISHMAN_KARATE));
+    public static final DeferredItem<TechniqueScrollItem> SWORDSMAN_SCROLL = scroll("swordsman_scroll",
+            () -> TechniqueScrollItem.style(GLStyles.SWORDSMAN));
+    public static final DeferredItem<TechniqueScrollItem> POLEARM_SCROLL = scroll("polearm_scroll",
+            () -> TechniqueScrollItem.style(GLStyles.POLEARM));
+    public static final DeferredItem<TechniqueScrollItem> GUNSLINGER_SCROLL = scroll("gunslinger_scroll",
+            () -> TechniqueScrollItem.style(GLStyles.GUNSLINGER));
     public static final DeferredItem<TechniqueScrollItem> SORU_SCROLL = scroll("soru_scroll",
             () -> TechniqueScrollItem.technique(GLAbilities.SORU));
     public static final DeferredItem<TechniqueScrollItem> GEPPO_SCROLL = scroll("geppo_scroll",

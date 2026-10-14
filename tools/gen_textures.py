@@ -372,6 +372,25 @@ def glyph_sword(d):
     d.rectangle([29, 45, 35, 58], fill=W)
 
 
+def glyph_gun(d):
+    # A flintlock pistol facing right: barrel, lock and a raked grip.
+    d.rectangle([20, 18, 58, 26], fill=W)
+    d.rectangle([14, 16, 26, 30], fill=W)
+    d.polygon([(14, 26), (26, 26), (20, 54), (6, 54)], fill=W)
+    d.rectangle([14, 8, 20, 18], fill=W)
+    d.arc([22, 26, 36, 40], 0, 180, fill=W, width=3)
+
+
+def glyph_swords(d):
+    # Two crossed blades.
+    for flip in (False, True):
+        def p(x, y):
+            return (64 - x, y) if flip else (x, y)
+        d.polygon([p(10, 6), p(16, 6), p(46, 44), p(42, 48)], fill=W)
+        d.line([p(36, 50), p(52, 34)], fill=W, width=5)
+        d.line([p(46, 46), p(58, 58)], fill=W, width=5)
+
+
 GLYPHS = {
     "fist": glyph_fist, "kick": glyph_kick, "dash": glyph_dash, "jump": glyph_jump, "shield": glyph_shield,
     "beam": glyph_beam, "burst": glyph_burst, "wave": glyph_wave, "claw": glyph_claw, "flame": glyph_flame,
@@ -380,6 +399,7 @@ GLYPHS = {
     "star": glyph_star, "snowflake": glyph_snowflake, "leaf": glyph_leaf, "hand": glyph_hand, "wall": glyph_wall,
     "spear": glyph_spear, "vortex": glyph_vortex, "sun": glyph_sun, "skull": glyph_skull, "heart": glyph_heart,
     "cage": glyph_cage, "tornado": glyph_tornado, "moon": glyph_moon, "meteor": glyph_meteor, "sword": glyph_sword,
+    "gun": glyph_gun, "swords": glyph_swords,
 }
 
 

@@ -18,6 +18,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -103,14 +104,18 @@ public final class StyleManager {
         }
     }
 
-    /** Bare-handed blows (the one actually swung, not sweep damage) take on the style's character. */
+    /** Melee blows (the one actually swung, not sweep damage) take on the style's character. */
     private static void onIncomingDamage(LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
         LivingEntity target = event.getEntity();
         if (source.getEntity() instanceof ServerPlayer attacker && attacker != target && source.getDirectEntity() == attacker
-                && source.is(DamageTypes.PLAYER_ATTACK) && attacker.getMainHandItem().isEmpty()
-                && CombatManager.isSwing(attacker, target)) {
-            style(attacker).onUnarmedHit(attacker, target, event);
+                && source.is(DamageTypes.PLAYER_ATTACK) && CombatManager.isSwing(attacker, target)) {
+            ItemStack weapon = attacker.getMainHandItem();
+            if (weapon.isEmpty()) {
+                style(attacker).onUnarmedHit(attacker, target, event);
+            } else {
+                style(attacker).onArmedHit(attacker, target, weapon, event);
+            }
         }
     }
 

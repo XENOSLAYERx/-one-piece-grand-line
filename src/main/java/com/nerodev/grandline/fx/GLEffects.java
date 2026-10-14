@@ -112,6 +112,11 @@ public final class GLEffects {
     public static final ResourceLocation ANIM_AXE_KICK = GrandLine.id("axe_kick");
     public static final ResourceLocation ANIM_PISTOL_SHOT = GrandLine.id("pistol_shot");
     public static final ResourceLocation ANIM_RIFLE_SHOT = GrandLine.id("rifle_shot");
+    public static final ResourceLocation ANIM_SWORD_SLASH = GrandLine.id("sword_slash");
+    public static final ResourceLocation ANIM_SWORD_IAI = GrandLine.id("sword_iai");
+    public static final ResourceLocation ANIM_SWORD_OVERHEAD = GrandLine.id("sword_overhead");
+    public static final ResourceLocation ANIM_SWORD_SPIN = GrandLine.id("sword_spin");
+    public static final ResourceLocation ANIM_POLEARM_THRUST = GrandLine.id("polearm_thrust");
     public static final ResourceLocation ANIM_STOP = GrandLine.id("stop");
 
     private GLEffects() {}

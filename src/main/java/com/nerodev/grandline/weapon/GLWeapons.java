@@ -198,11 +198,11 @@ public final class GLWeapons {
     }
 
     /** A lead or Seastone ball: strikes one target; Seastone seals its fruit for five seconds. */
-    private static ProjectileBehavior bullet(boolean seastone) {
+    public static ProjectileBehavior bullet(boolean seastone) {
         ProjectileBehavior hit = Projectiles.bolt(AbilityDamage.STRIKE, (shot, target) -> {
             ServerLevel level = (ServerLevel) shot.level();
             Vfx.impact(level, shot.getOwner(), shot.position(), seastone ? SEASTONE_COLOR : 0xD0C0A0, 0.7f, Kind.SPARK);
-            if (seastone) {
+            if (seastone || shot.extra().getBoolean(GunItem.SEASTONE_TAG)) {
                 SeastoneCuffsItem.cuff(target, 100);
                 Vfx.status(level, target, Vfx.StatusLook.SEASTONE, 100);
             }

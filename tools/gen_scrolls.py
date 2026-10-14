@@ -17,6 +17,9 @@ MODEL_DIR = os.path.join(ROOT, "models", "item")
 SCROLLS = {
     "black_leg_scroll": (0x2A2A3A, 0xF08A2A),
     "fishman_karate_scroll": (0x3A8AC8, 0x6AC8F0),
+    "swordsman_scroll": (0x4A9A5A, 0xE8F0F8),
+    "polearm_scroll": (0xC89A4A, 0xF0E8D8),
+    "gunslinger_scroll": (0xC8783A, 0x3A3A44),
     "soru_scroll": (0x9AB0E8, 0xFFFFFF),
     "geppo_scroll": (0x8AC8E8, 0xF0F8FF),
     "tekkai_scroll": (0x6A707A, 0xC8CCD4),
