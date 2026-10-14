@@ -42,6 +42,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
@@ -69,6 +70,7 @@ public final class Quests {
             }
         });
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, event -> REMINDED.remove(event.getEntity().getUUID()));
+        NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> REMINDED.clear());
     }
 
     public static Registry<QuestDefinition> registry(RegistryAccess access) {

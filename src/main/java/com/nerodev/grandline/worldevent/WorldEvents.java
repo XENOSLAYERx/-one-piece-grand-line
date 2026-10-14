@@ -39,6 +39,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 /**
@@ -128,6 +129,12 @@ public final class WorldEvents {
             }
         });
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, event -> LAST_EVENT.remove(event.getEntity().getUUID()));
+        // Events belong to one server's run: none carry over into the next world opened in the same game.
+        NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> {
+            ACTIVE.forEach(active -> active.bar.removeAllPlayers());
+            ACTIVE.clear();
+            LAST_EVENT.clear();
+        });
     }
 
     public static List<Active> active() {

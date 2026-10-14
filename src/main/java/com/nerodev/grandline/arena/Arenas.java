@@ -28,6 +28,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 /**
@@ -99,6 +100,11 @@ public final class Arenas {
     public static void register() {
         NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> tick(event.getServer()));
         NeoForge.EVENT_BUS.addListener(EntityJoinLevelEvent.class, Arenas::onJoin);
+        // Fights belong to one server's run: none carry over into the next world opened in the same game.
+        NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> {
+            SESSIONS.values().forEach(session -> session.bar.removeAllPlayers());
+            SESSIONS.clear();
+        });
     }
 
     @Nullable
