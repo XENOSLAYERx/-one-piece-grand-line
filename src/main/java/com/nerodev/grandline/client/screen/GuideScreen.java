@@ -11,6 +11,7 @@ import com.nerodev.grandline.client.GLKeys;
 import com.nerodev.grandline.combat.CombatManager;
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.PlayerData;
+import com.nerodev.grandline.data.Titles;
 import com.nerodev.grandline.data.UnlockCategory;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.FruitType;
@@ -110,6 +111,7 @@ public class GuideScreen extends BrowserScreen {
         super.init();
         if (pendingEntry != null) {
             select(pendingEntry);
+            pendingEntry = null;
         }
     }
 
@@ -263,6 +265,7 @@ public class GuideScreen extends BrowserScreen {
                     + info.crewSize() + (info.crewSize() == 1 ? " member" : " members"))));
             overview.add(line("Crew bounty", Component.literal(Bounties.format(info.crewBounty()))));
         }
+        overview.add(line("Title", data.title().<Component>map(Titles::name).orElse(Component.literal("None"))));
         overview.add(line("Death mode", data.deathMode().display()));
         if (RaceManager.canChoose(player)) {
             overview.add(note("You have not chosen your race yet. Pick one under Races: it is yours for good."));
@@ -284,6 +287,26 @@ public class GuideScreen extends BrowserScreen {
         }
         out.add(new Entry(Component.literal("Devil Fruit"), fruitLines, fruit == null ? 0x909090 : fruit.color(),
                 fruit == null ? ItemStack.EMPTY : stack(GLItems.itemFor(fruit.id())), () -> false, List.of()));
+
+        List<Component> titleLines = new ArrayList<>();
+        List<Action> wear = new ArrayList<>();
+        for (ResourceLocation title : data.unlocked(UnlockCategory.TITLE)) {
+            boolean worn = data.title().map(title::equals).orElse(false);
+            titleLines.add(Component.literal(worn ? "* " : "- ").append(Titles.name(title).withStyle(ChatFormatting.GOLD))
+                    .append(Component.literal(worn ? "  (worn)" : "").withStyle(ChatFormatting.GRAY)));
+            if (!worn) {
+                wear.add(Action.of("Wear " + Titles.name(title).getString(), "onepiece title wear " + title));
+            }
+        }
+        if (titleLines.isEmpty()) {
+            titleLines.add(text("None yet."));
+        }
+        titleLines.add(text("Titles are earned by finishing chapters of the story, and worn before your name in chat and in the "
+                + "player list."));
+        if (data.title().isPresent()) {
+            wear.add(Action.of("Wear none", "onepiece title clear"));
+        }
+        out.add(new Entry(Component.literal("Titles"), titleLines, 0xF0C050, new ItemStack(Items.NAME_TAG), () -> false, wear));
 
         List<Component> hakiLines = new ArrayList<>();
         for (HakiType type : HakiType.values()) {

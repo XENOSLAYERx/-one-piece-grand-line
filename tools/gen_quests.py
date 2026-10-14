@@ -198,11 +198,24 @@ def check(qid, q):
         assert exists(ITEM_MODELS, it["id"]), f"{qid}: unknown reward {it['id']}"
 
 
+# Titles a quest grants (worn before the player's name): quest -> (title id, name).
+TITLES = {
+    "romance_dawn": ("rookie_of_the_sea", "Rookie of the Sea"),
+    "the_marine_base": ("axe_hands_bane", "Axe-Hand's Bane"),
+    "the_clown_of_orange_town": ("clown_breaker", "Clown Breaker"),
+    "the_butler_of_syrup_village": ("guardian_of_syrup", "Guardian of Syrup"),
+    "arlong_park": ("liberator_of_cocoyasi", "Liberator of Cocoyasi"),
+    "toward_the_grand_line": ("grand_line_bound", "Grand Line Bound"),
+    "marine_drills": ("marine_cadet", "Marine Cadet"),
+}
+
+
 def main():
     os.makedirs(QUESTS, exist_ok=True)
     lang_path = ROOT + "/assets/grandline/lang/en_us.json"
     with open(lang_path) as f:
         lang = json.load(f)
+    assert set(TITLES) <= set(QUEST_LIST), "titles for unknown quests"
     for qid, q in QUEST_LIST.items():
         check(qid, q)
         key = f"quest.grandline.{qid}"
@@ -215,7 +228,11 @@ def main():
             data["requires"] = ["grandline:" + req for req in q["requires"]]
         data["objectives"] = q["objectives"]
         if "rewards" in q:
-            data["rewards"] = q["rewards"]
+            data["rewards"] = dict(q["rewards"])
+        if qid in TITLES:
+            tid, name = TITLES[qid]
+            data.setdefault("rewards", {})["title"] = "grandline:" + tid
+            lang[f"title.grandline.{tid}"] = name
         if "lines" in q:
             data["lines"] = q["lines"]
         with open(f"{QUESTS}/{qid}.json", "w") as f:

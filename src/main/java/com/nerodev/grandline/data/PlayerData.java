@@ -54,7 +54,8 @@ public final class PlayerData {
             Codec.unboundedMap(Codec.STRING, Loadout.CODEC).optionalFieldOf("loadouts", Map.of()).forGetter(d -> d.loadouts),
             Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(d -> d.reputation),
             UUIDUtil.CODEC.optionalFieldOf("crew").forGetter(d -> d.crew),
-            Journey.CODEC.optionalFieldOf("journey").forGetter(d -> Optional.of(d.journey))
+            Journey.CODEC.optionalFieldOf("journey").forGetter(d -> Optional.of(d.journey)),
+            ResourceLocation.CODEC.optionalFieldOf("title").forGetter(d -> d.title)
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -75,17 +76,20 @@ public final class PlayerData {
     private final Map<ResourceLocation, Integer> reputation = new TreeMap<>();
     private Optional<UUID> crew;
     private final Journey journey;
+    private Optional<ResourceLocation> title;
 
     public PlayerData() {
         this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false, Map.of(),
-                Optional.empty(), Map.of(), Map.of(), Optional.empty(), Optional.empty());
+                Optional.empty(), Map.of(), Map.of(), Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
             Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
             Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style,
-            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation, Optional<UUID> crew, Optional<Journey> journey) {
+            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation, Optional<UUID> crew, Optional<Journey> journey,
+            Optional<ResourceLocation> title) {
         this.journey = journey.orElseGet(Journey::new);
+        this.title = title;
         this.loadouts.putAll(loadouts);
         this.crew = crew;
         reputation.forEach((key, value) -> this.reputation.put(key, clampReputation(value)));
@@ -313,6 +317,19 @@ public final class PlayerData {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    // Title
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** The earned title the player wears before their name, if any (earned ones are TITLE unlocks). */
+    public Optional<ResourceLocation> title() {
+        return title;
+    }
+
+    public void setTitle(Optional<ResourceLocation> title) {
+        this.title = title;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
 
     /** Copies every field from {@code other}. Used by respawn copies and full resets. */
     public void copyFrom(PlayerData other) {
@@ -335,6 +352,7 @@ public final class PlayerData {
         this.reputation.putAll(other.reputation);
         this.crew = other.crew;
         this.journey.copyFrom(other.journey);
+        this.title = other.title;
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {

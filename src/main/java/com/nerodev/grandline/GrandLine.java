@@ -12,6 +12,7 @@ import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.DeathModeHandler;
 import com.nerodev.grandline.data.GLAttachments;
+import com.nerodev.grandline.data.Titles;
 import com.nerodev.grandline.dev.AutoTestServer;
 import com.nerodev.grandline.effect.GLMobEffects;
 import com.nerodev.grandline.entity.GLEntities;
@@ -100,6 +101,7 @@ public final class GrandLine {
         Arenas.register();
         BountyHunts.register();
         Crews.register();
+        Titles.register();
         FruitManager.register();
         TransformationManager.register();
         TempBlocks.register();

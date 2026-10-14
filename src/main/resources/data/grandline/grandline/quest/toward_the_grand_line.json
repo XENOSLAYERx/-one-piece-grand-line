@@ -31,7 +31,8 @@
         "count": 32
       }
     ],
-    "renown": 100
+    "renown": 100,
+    "title": "grandline:grand_line_bound"
   },
   "lines": {
     "done": "The East Blue is behind you. The Grand Line's charts are still being drawn - its islands await."

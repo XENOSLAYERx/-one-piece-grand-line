@@ -95,7 +95,8 @@ Arlong the Saw, and the Lord of the Coast, a Sea King that surfaces beside ships
 fought by a party, everyone who fought it shares the credit, and island bosses return to their posts after a while.
 
 **Quests** tell the East Blue story chapter by chapter, from Romance Dawn to Toward the Grand Line, alongside side
-quests the islanders offer. The **Log Pose** records every island you reach and its needle points the way to the
+quests the islanders offer. Chapters grant **titles**, worn before your name in chat and in the player list
+(`/onepiece title`). The **Log Pose** records every island you reach and its needle points the way to the
 next one, whose name stays a mystery until you arrive.
 
 **World events** befall players now and then: pirate, Marine and Fish-Man raids, bands of bounty hunters, and Sea
@@ -110,6 +111,7 @@ A few highlights:
 /onepiece guide                           the Guide (anyone)
 /onepiece race choose <race>              choose your race, once (anyone)
 /onepiece faction join <faction> | leave  join a faction that trusts you (anyone)
+/onepiece title [wear <title> | clear]    wear a title you have earned (anyone)
 /onepiece menu                            the Creator Menu (every system, with unlock/equip/test buttons)
 /onepiece unlock all                      everything, max level
 /onepiece fruit set <fruit>               gain a fruit's power now

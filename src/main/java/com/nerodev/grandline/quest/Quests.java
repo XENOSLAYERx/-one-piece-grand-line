@@ -6,6 +6,7 @@ import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
+import com.nerodev.grandline.data.Titles;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.npc.NpcDefinition;
 import com.nerodev.grandline.npc.NpcEntity;
@@ -183,6 +184,7 @@ public final class Quests {
         if (!quest.lines().done().isEmpty()) {
             player.sendSystemMessage(quoted(player.level().registryAccess(), quest, quest.lines().done()));
         }
+        rewards.title().ifPresent(title -> Titles.grant(player, title));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.8f, 1.1f);
         startDue(player);
     }

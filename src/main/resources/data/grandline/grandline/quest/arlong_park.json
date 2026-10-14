@@ -48,7 +48,8 @@
     "renown": 60,
     "reputation": {
       "grandline:civilians": 20
-    }
+    },
+    "title": "grandline:liberator_of_cocoyasi"
   },
   "lines": {
     "done": "Arlong Park has fallen. The Conomi Islands are free, and your bounty poster is on every wall."

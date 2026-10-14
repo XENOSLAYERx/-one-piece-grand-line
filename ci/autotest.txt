@@ -1372,24 +1372,30 @@ cmd onepiece boss move kiribachi_spin
 wait 24
 shot 177_arlong_spin
 cmd onepiece boss remove 64
-cmd tp @s 900 -60 900 0 0
+cmd tp @s 900 -60 900 0 20
 wait 5
+cmd clear @s grandline:cannonball
 cmd onepiece boss spawn grandline:buggy
 wait 15
+camera back
 cmd onepiece boss move buggy_ball
 wait 22
 shot 185_buggy_ball
+camera first
 cmd onepiece boss remove 32
+cmd tp @s 900 -60 900 0 0
 cmd onepiece boss spawn grandline:kuro
 wait 15
 cmd onepiece boss move shakushi
 wait 32
 shot 186_kuro_shakushi
 cmd onepiece boss remove 32
-cmd fill 1090 -63 1076 1120 -61 1115 water
 cmd tp @s 1105 -60 1073 0 10
-wait 10
+wait 20
+cmd fill 1090 -63 1076 1120 -61 1115 water
+wait 5
 cmd onepiece boss spawn grandline:lord_of_the_coast
+cmd tp @s 1105 -60 1066 0 15
 wait 30
 cmd onepiece boss move water_jet
 wait 24

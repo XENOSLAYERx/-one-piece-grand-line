@@ -39,7 +39,8 @@
     "renown": 40,
     "reputation": {
       "grandline:civilians": 10
-    }
+    },
+    "title": "grandline:guardian_of_syrup"
   },
   "lines": {
     "done": "Captain Kuro's hundred plans came to nothing. Next, the sea restaurant and the Fish-Men beyond it."

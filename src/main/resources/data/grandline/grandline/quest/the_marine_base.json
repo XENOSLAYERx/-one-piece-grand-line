@@ -39,7 +39,8 @@
     "renown": 30,
     "reputation": {
       "grandline:civilians": 10
-    }
+    },
+    "title": "grandline:axe_hands_bane"
   },
   "lines": {
     "done": "Shells Town is free. Word of what you did will travel - to the Fish-Man pirates' ears, too."

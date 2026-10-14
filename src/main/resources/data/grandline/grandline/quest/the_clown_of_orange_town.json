@@ -40,7 +40,8 @@
     "renown": 35,
     "reputation": {
       "grandline:civilians": 10
-    }
+    },
+    "title": "grandline:clown_breaker"
   },
   "lines": {
     "done": "The townsfolk are coming home. A blade can't cut a Chop-Chop body, but Haki - or fists - can."

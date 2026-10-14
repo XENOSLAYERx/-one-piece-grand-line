@@ -1,11 +1,13 @@
 package com.nerodev.grandline.gametest;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
+import com.nerodev.grandline.data.UnlockCategory;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.quest.GLQuests;
 import com.nerodev.grandline.quest.Journey;
@@ -101,6 +103,36 @@ public final class QuestTests {
         helper.assertTrue(journey.isCompleted(ROMANCE_DAWN) && journey.isActive(LAND_HO), "Finishing it starts Land Ho!: " + journey.activeQuests());
         helper.assertTrue(player.getInventory().countItem(GLQuests.LOG_POSE.get()) == 1, "Romance Dawn pays a Log Pose");
         helper.assertTrue(!journey.isActive(MARINE_BASE), "Later chapters wait their turn");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty")
+    public static void chaptersGrantTitlesWornBeforeTheName(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        ServerPlayer player = NpcTests.newPlayer(helper);
+        PlayerData data = GLPlayer.data(player);
+        ResourceLocation rookie = GrandLine.id("rookie_of_the_sea");
+        Quests.complete(player, ROMANCE_DAWN, Quests.get(helper.getLevel().registryAccess(), ROMANCE_DAWN), true);
+        helper.assertTrue(data.isUnlocked(UnlockCategory.TITLE, rookie), "Romance Dawn grants a title");
+        helper.assertTrue(data.title().equals(Optional.of(rookie)), "The first title is worn at once: " + data.title());
+        String name = player.getGameProfile().getName();
+        helper.assertTrue(player.getDisplayName().getString().startsWith("[") && player.getDisplayName().getString().endsWith(name),
+                "The title shows before the name: " + player.getDisplayName().getString());
+
+        CommandSourceStack source = server.createCommandSourceStack().withSuppressedOutput().withPermission(0).withEntity(player);
+        NpcTests.run(helper, server, source, "onepiece title");
+        NpcTests.run(helper, server, source, "onepiece title clear");
+        helper.assertTrue(data.title().isEmpty() && player.getDisplayName().getString().equals(name),
+                "Cleared, the name stands alone: " + player.getDisplayName().getString());
+        NpcTests.run(helper, server, source, "onepiece title wear grandline:rookie_of_the_sea");
+        helper.assertTrue(data.title().equals(Optional.of(rookie)), "Worn again: " + data.title());
+        try {
+            helper.assertTrue(server.getCommands().getDispatcher().execute("onepiece title wear grandline:grand_line_bound", source) == 0,
+                    "A title not yet earned cannot be worn");
+        } catch (CommandSyntaxException e) {
+            helper.fail("/onepiece title wear failed: " + e.getMessage());
+        }
+        helper.assertTrue(data.title().equals(Optional.of(rookie)), "and the worn one stays: " + data.title());
         helper.succeed();
     }
 

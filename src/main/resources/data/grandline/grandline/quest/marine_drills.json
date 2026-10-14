@@ -32,7 +32,8 @@
     ],
     "reputation": {
       "grandline:marine": 25
-    }
+    },
+    "title": "grandline:marine_cadet"
   },
   "lines": {
     "offer": "Civilian volunteers are rare. Bring down some pirates and the Marines will remember it.",

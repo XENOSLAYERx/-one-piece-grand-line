@@ -8,6 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nerodev.grandline.data.DeathMode;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
+import com.nerodev.grandline.data.Titles;
+import com.nerodev.grandline.data.UnlockCategory;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.fruit.FruitManager;
@@ -21,11 +23,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
@@ -43,6 +47,8 @@ final class IdentityCommands {
             new HelpEntry("/onepiece race choose <race>", "Choose your race (once)", PermissionTier.PLAYER),
             new HelpEntry("/onepiece faction join <faction>", "Join a faction that trusts you (Friendly standing)", PermissionTier.PLAYER),
             new HelpEntry("/onepiece faction leave", "Leave your faction (it will think less of you)", PermissionTier.PLAYER),
+            new HelpEntry("/onepiece title", "List the titles you have earned", PermissionTier.PLAYER),
+            new HelpEntry("/onepiece title wear <title> | clear", "Wear an earned title before your name, or none", PermissionTier.PLAYER),
             new HelpEntry("/onepiece faction set <faction> [players]", "Join a faction", PermissionTier.CREATOR),
             new HelpEntry("/onepiece faction clear [players]", "Leave your faction", PermissionTier.CREATOR),
             new HelpEntry("/onepiece bounty set <amount> [players]", "Set bounty", PermissionTier.CREATOR),
@@ -88,6 +94,14 @@ final class IdentityCommands {
                         .then(Commands.argument("race", ResourceLocationArgument.id())
                                 .suggests(RegistryArguments.suggest(DefinitionType.RACE))
                                 .executes(IdentityCommands::chooseRace))));
+
+        root.then(Commands.literal("title")
+                .executes(ctx -> listTitles(ctx.getSource()))
+                .then(Commands.literal("wear")
+                        .then(Commands.argument("title", ResourceLocationArgument.id())
+                                .suggests((ctx, builder) -> SharedSuggestionProvider.suggestResource(earnedTitles(ctx.getSource()), builder))
+                                .executes(ctx -> wearTitle(ctx.getSource(), Optional.of(ResourceLocationArgument.getId(ctx, "title"))))))
+                .then(Commands.literal("clear").executes(ctx -> wearTitle(ctx.getSource(), Optional.empty()))));
 
         root.then(Commands.literal("faction")
                 .then(creator("set")
@@ -206,6 +220,37 @@ final class IdentityCommands {
         }
         Component name = ProfileCommand.factionName(source.registryAccess(), left.get());
         source.sendSuccess(() -> Component.literal("You left the ").append(name).append(". They will not forget it."), false);
+        return 1;
+    }
+
+    private static Set<ResourceLocation> earnedTitles(CommandSourceStack source) {
+        return source.getPlayer() == null ? Set.of() : GLPlayer.data(source.getPlayer()).unlocked(UnlockCategory.TITLE);
+    }
+
+    private static int listTitles(CommandSourceStack source) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        PlayerData data = GLPlayer.data(player);
+        Set<ResourceLocation> earned = data.unlocked(UnlockCategory.TITLE);
+        Text.send(source, Text.header("Titles"));
+        if (earned.isEmpty()) {
+            Text.send(source, Component.literal("  None yet: the story's chapters grant them.").withStyle(ChatFormatting.GRAY));
+        }
+        for (ResourceLocation title : earned) {
+            boolean worn = data.title().map(title::equals).orElse(false);
+            Text.send(source, Component.literal(worn ? "  * " : "  - ").append(Titles.name(title).withStyle(ChatFormatting.GOLD))
+                    .append(Component.literal(" (" + title + ")" + (worn ? ", worn" : "")).withStyle(ChatFormatting.GRAY)));
+        }
+        return earned.size();
+    }
+
+    private static int wearTitle(CommandSourceStack source, Optional<ResourceLocation> title) throws CommandSyntaxException {
+        ServerPlayer player = source.getPlayerOrException();
+        if (!Titles.wear(player, title)) {
+            source.sendFailure(Component.literal("You have not earned that title."));
+            return 0;
+        }
+        source.sendSuccess(() -> title.map(t -> Component.literal("You now go by ").append(Titles.name(t)).append("."))
+                .orElse(Component.literal("You wear no title.")), false);
         return 1;
     }
 

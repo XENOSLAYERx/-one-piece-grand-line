@@ -51,13 +51,15 @@ public record QuestDefinition(Component displayName, Component description, Cate
     }
 
     /** What finishing the quest is worth. */
-    public record Rewards(List<ItemStack> items, long bounty, long renown, Map<ResourceLocation, Integer> reputation) {
-        public static final Rewards NONE = new Rewards(List.of(), 0, 0, Map.of());
+    public record Rewards(List<ItemStack> items, long bounty, long renown, Map<ResourceLocation, Integer> reputation,
+            Optional<ResourceLocation> title) {
+        public static final Rewards NONE = new Rewards(List.of(), 0, 0, Map.of(), Optional.empty());
         public static final Codec<Rewards> CODEC = RecordCodecBuilder.create(i -> i.group(
                 ItemStack.CODEC.listOf().optionalFieldOf("items", List.of()).forGetter(Rewards::items),
                 Codec.LONG.optionalFieldOf("bounty", 0L).forGetter(Rewards::bounty),
                 Codec.LONG.optionalFieldOf("renown", 0L).forGetter(Rewards::renown),
-                Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(Rewards::reputation)
+                Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(Rewards::reputation),
+                ResourceLocation.CODEC.optionalFieldOf("title").forGetter(Rewards::title)
         ).apply(i, Rewards::new));
     }
 

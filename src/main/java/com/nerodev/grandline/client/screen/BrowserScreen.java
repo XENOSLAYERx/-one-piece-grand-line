@@ -60,6 +60,8 @@ public abstract class BrowserScreen extends Screen {
     private int scroll;
     private int detailScroll;
     private EditBox search;
+    /** Ticks until the entries are read again after a button ran (so they show what the server changed). */
+    private int refreshIn;
 
     protected BrowserScreen(Component title) {
         super(title);
@@ -104,6 +106,8 @@ public abstract class BrowserScreen extends Screen {
 
     @Override
     protected void init() {
+        // init runs again on a resize or on coming back from a confirmation: keep the picked entry.
+        String picked = selected == null ? null : selected.name().getString();
         entryWidgets.clear();
         int rowStep = Math.min(21, Math.max(14, (height - top() - 8) / Math.max(1, categories.size())));
         for (int i = 0; i < categories.size(); i++) {
@@ -116,6 +120,9 @@ public abstract class BrowserScreen extends Screen {
         search.setResponder(text -> filter());
         addRenderableWidget(search);
         selectCategory(category);
+        if (picked != null) {
+            select(picked);
+        }
     }
 
     protected void selectCategory(int index) {
@@ -189,7 +196,28 @@ public abstract class BrowserScreen extends Screen {
         LocalPlayer player = minecraft == null ? null : minecraft.player;
         if (player != null) {
             commands.forEach(player.connection::sendCommand);
+            refreshIn = 10;
         }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (refreshIn > 0 && --refreshIn == 0) {
+            refresh();
+        }
+    }
+
+    /** Reads the current category's entries again, keeping the picked entry and the scroll positions. */
+    private void refresh() {
+        String picked = selected == null ? null : selected.name().getString();
+        int keepDetail = detailScroll;
+        entries = categories.get(category).entries().get();
+        filter();
+        selected = picked == null ? null
+                : entries.stream().filter(e -> e.name().getString().equals(picked)).findFirst().orElse(null);
+        detailScroll = keepDetail;
+        rebuildActions();
     }
 
     protected void confirm(Component title, Component message, List<String> commands) {
