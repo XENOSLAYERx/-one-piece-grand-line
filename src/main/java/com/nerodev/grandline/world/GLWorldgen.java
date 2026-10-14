@@ -17,6 +17,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -32,6 +33,12 @@ public final class GLWorldgen {
             GrandLine.MODID);
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(GrandLine.MODID);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(GrandLine.MODID);
+    private static final DeferredRegister<LootItemConditionType> CONDITIONS = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE,
+            GrandLine.MODID);
+
+    /** The Devil Fruit chance of a treasure chest, scaled by the server config. */
+    public static final DeferredHolder<LootItemConditionType, LootItemConditionType> FRUIT_CHANCE = CONDITIONS.register("fruit_chance",
+            () -> new LootItemConditionType(FruitChance.CODEC));
 
     public static final DeferredHolder<StructureType<?>, StructureType<IslandStructure>> ISLAND = STRUCTURE_TYPES.register("island",
             () -> () -> IslandStructure.CODEC);
@@ -67,6 +74,7 @@ public final class GLWorldgen {
         PIECE_TYPES.register(modBus);
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
+        CONDITIONS.register(modBus);
         modBus.addListener(GLWorldgen::onCreativeTabs);
     }
 

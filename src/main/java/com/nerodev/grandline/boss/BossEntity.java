@@ -3,6 +3,7 @@ package com.nerodev.grandline.boss;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.combat.AbilityDamage;
+import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.GLPlayer;
@@ -208,8 +209,8 @@ public class BossEntity extends Monster {
         entityData.set(SKIN, def.skin());
         entityData.set(PARTS, def.parts());
         entityData.set(SCALE, def.stats().scale());
-        getAttribute(Attributes.MAX_HEALTH).setBaseValue(def.stats().health());
-        getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(def.stats().attack());
+        getAttribute(Attributes.MAX_HEALTH).setBaseValue(def.stats().health() * GLServerConfig.bossHealthMultiplier());
+        getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(def.stats().attack() * GLServerConfig.bossDamageMultiplier());
         getAttribute(Attributes.ARMOR).setBaseValue(def.stats().armor());
         getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(def.stats().speed());
         getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(def.stats().knockbackResistance());

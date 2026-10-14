@@ -128,13 +128,14 @@
       },
       "entries": [
         {
-          "type": "minecraft:empty",
-          "weight": 19
-        },
-        {
           "type": "minecraft:loot_table",
           "value": "grandline:gameplay/devil_fruit",
-          "weight": 1
+          "conditions": [
+            {
+              "condition": "grandline:fruit_chance",
+              "chance": 0.05
+            }
+          ]
         }
       ]
     }

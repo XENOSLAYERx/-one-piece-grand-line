@@ -46,8 +46,8 @@ fruit, Haki training, mastery, journey) beside your character, then every system
 what it costs, what counters it and how to get it in survival play, read from the game's own recipes, merchants and
 bosses. Creators also see buttons that grant each thing at once.
 
-**Devil Fruits** are hidden in island treasure (buried treasure holds one about 1 time in 12) and eaten (one per
-body; a second one kills). Using a fruit trains its mastery (0-100), which
+**Devil Fruits** are hidden in island treasure and pirates' holds (buried treasure holds one about 1 time in 12,
+set by `fruitFindMultiplier`) and eaten (one per body; a second one kills). Using a fruit trains its mastery (0-100), which
 unlocks stronger techniques; at 100 the fruit awakens. Any water drains fruit powers, and so does Seastone.
 
 Every fruit has five techniques and two awakened ones, designed from what it does in canon. Logia users turn
@@ -139,8 +139,9 @@ A few highlights:
 ## Configuration
 
 `<world>/serverconfig/grandline-server.toml` holds the server's settings: permission tiers and creator UUIDs,
-combat and ability balance, Haki training, bounty gain and bounty hunters, crew size and friendly fire, how often
-world events happen, and how long island bosses take to return.
+combat and ability balance (cooldowns, stamina costs, ability damage, mastery gain, PvP), how often Devil Fruits are
+found, boss health and damage, Haki training, bounty gain and bounty hunters, crew size and friendly fire, how often
+world events and ships at sea turn up, and how long island bosses take to return.
 
 ## Building
 

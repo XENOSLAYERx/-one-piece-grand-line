@@ -32,6 +32,9 @@ public final class GLServerConfig {
     public static final ModConfigSpec.BooleanValue ABILITY_PVP;
     public static final ModConfigSpec.BooleanValue ABILITY_GRIEFING;
     public static final ModConfigSpec.BooleanValue SECOND_FRUIT_KILLS;
+    public static final ModConfigSpec.DoubleValue FRUIT_FIND_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue BOSS_HEALTH_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue BOSS_DAMAGE_MULTIPLIER;
 
     public static final ModConfigSpec.BooleanValue HAKI_TRAINING;
     public static final ModConfigSpec.IntValue ARMAMENT_TRAINING_HITS;
@@ -110,6 +113,15 @@ public final class GLServerConfig {
                 .comment("If true, deliberately eating a second Devil Fruit (sneak + eat) kills you in normal death mode,",
                         "as in the story. Creator death mode always swaps fruits instead.")
                 .define("secondFruitKills", true);
+        FRUIT_FIND_MULTIPLIER = BUILDER
+                .comment("Multiplies the chance of finding a Devil Fruit in treasure (buried treasure: 1 in 12 at 1.0). 0 = never.")
+                .defineInRange("fruitFindMultiplier", 1.0, 0.0, 12.0);
+        BOSS_HEALTH_MULTIPLIER = BUILDER
+                .comment("Multiplies every boss's health (before the toughness a party adds).")
+                .defineInRange("bossHealthMultiplier", 1.0, 0.1, 10.0);
+        BOSS_DAMAGE_MULTIPLIER = BUILDER
+                .comment("Multiplies the damage bosses deal.")
+                .defineInRange("bossDamageMultiplier", 1.0, 0.1, 10.0);
         BUILDER.pop();
 
         BUILDER.comment("Haki: how players earn it without commands.").push("haki");
@@ -260,6 +272,18 @@ public final class GLServerConfig {
 
     public static int bossRespawnMinutes() {
         return value(BOSS_RESPAWN_MINUTES);
+    }
+
+    public static double fruitFindMultiplier() {
+        return value(FRUIT_FIND_MULTIPLIER);
+    }
+
+    public static double bossHealthMultiplier() {
+        return value(BOSS_HEALTH_MULTIPLIER);
+    }
+
+    public static double bossDamageMultiplier() {
+        return value(BOSS_DAMAGE_MULTIPLIER);
     }
 
     public static boolean seaEncounters() {

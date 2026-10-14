@@ -187,6 +187,11 @@ public class GuideScreen extends BrowserScreen {
         return String.format(Locale.ROOT, "%.1f / 100", mastery);
     }
 
+    /** "1 time in 12", scaled by the server's fruit find multiplier. */
+    private static String oneIn(int base) {
+        return "1 time in " + Math.max(1, Math.round(base / GLServerConfig.fruitFindMultiplier()));
+    }
+
     private List<Action> creator(Action... actions) {
         return info.creator() ? List.of(actions) : List.of();
     }
@@ -431,7 +436,8 @@ public class GuideScreen extends BrowserScreen {
                 List.of()));
 
         out.add(new Entry(Component.literal("Devil Fruits"), List.of(
-                text("Rare fruits hidden in island treasure. Eat one and its power is yours for life, even past death."),
+                text("Rare fruits hidden in island treasure and pirates' holds. Eat one and its power is yours for life, even past "
+                        + "death."),
                 text(GLServerConfig.secondFruitKills()
                         ? "One fruit per body: eating a second (you must sneak to try) kills you."
                         : "One fruit per body: a second one (eaten while sneaking) replaces the first."),
@@ -513,9 +519,10 @@ public class GuideScreen extends BrowserScreen {
                 details.add(Component.translatable(counter));
             }
             details.add(heading("How to get it"));
-            details.add(text("Hidden in island treasure, one fruit of all " + GLFruits.REGISTRY.size() + " at random: buried "
-                    + "treasure (about 1 chest in 12), Arlong's hoard (1 in 20) and Buggy's stash (1 in 24). Eat it to gain its "
-                    + "power."));
+            details.add(text(GLServerConfig.fruitFindMultiplier() <= 0 ? "This server keeps Devil Fruits out of treasure: only "
+                    + "creators can hand them out." : "Hidden in treasure, one fruit of all " + GLFruits.REGISTRY.size() + " at random: "
+                    + "buried treasure holds one about " + oneIn(12) + ", Arlong's hoard " + oneIn(20) + ", Buggy's stash " + oneIn(24)
+                    + " and a pirate ship's hold " + oneIn(30) + ". Eat it to gain its power."));
             String id = fruit.id().toString();
             out.add(new Entry(fruit.displayName(), details, fruit.color(), stack(GLItems.itemFor(fruit.id())),
                     () -> data() != null && data().fruit().map(fruit.id()::equals).orElse(false),

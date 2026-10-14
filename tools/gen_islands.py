@@ -56,8 +56,10 @@ def pick_one(name, tag):
     })
 
 
-def fruit(weight):
-    return {"type": "minecraft:loot_table", "value": "grandline:gameplay/devil_fruit", "weight": weight}
+def fruit_pool(one_in):
+    """A pool that holds a random Devil Fruit about one time in {one_in}, scaled by the server's fruitFindMultiplier."""
+    return (1, 1, [{"type": "minecraft:loot_table", "value": "grandline:gameplay/devil_fruit",
+                    "conditions": [{"condition": "grandline:fruit_chance", "chance": round(1 / one_in, 5)}]}])
 
 
 def legendary_blade(weight):
@@ -147,10 +149,7 @@ def loot_tables():
             item("grandline:kanabo", 1),
             item("grandline:fishman_karate_scroll", 2),
         ]),
-        (1, 1, [
-            {"type": "minecraft:empty", "weight": 19},
-            fruit(1),
-        ]),
+        fruit_pool(20),
     ])
     table("buggy_stash", [
         (4, 8, [
@@ -164,10 +163,7 @@ def loot_tables():
             item("minecraft:firework_rocket", 3, 1, 3),
             item("grandline:cutlass", 2),
         ]),
-        (1, 1, [
-            {"type": "minecraft:empty", "weight": 23},
-            fruit(1),
-        ]),
+        fruit_pool(24),
     ])
     table("kaya_mansion", [
         (3, 6, [
@@ -205,10 +201,7 @@ def loot_tables():
             item("grandline:flintlock", 1),
             item("minecraft:map", 3),
         ]),
-        (1, 1, [
-            {"type": "minecraft:empty", "weight": 29},
-            fruit(1),
-        ]),
+        fruit_pool(30),
     ])
     table("ship_merchant", [
         (5, 9, [
@@ -236,10 +229,7 @@ def loot_tables():
             ship("sloop", 2),
             ship("caravel", 1),
         ]),
-        (1, 1, [
-            {"type": "minecraft:empty", "weight": 11},
-            fruit(1),
-        ]),
+        fruit_pool(12),
         (1, 1, [
             {"type": "minecraft:empty", "weight": 39},
             legendary_blade(1),
