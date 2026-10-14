@@ -1,0 +1,25 @@
+{
+  "display_name": {
+    "translate": "ship.grandline.raft"
+  },
+  "description": {
+    "translate": "ship.grandline.raft.desc"
+  },
+  "length": 4,
+  "width": 2.6,
+  "hull_height": 0.5,
+  "draft": 0.15,
+  "masts": 1,
+  "mast_height": 3.2,
+  "max_health": 40,
+  "max_speed": 0.2,
+  "acceleration": 0.006,
+  "turn_rate": 4.0,
+  "cannons": 0,
+  "crew": 2,
+  "storage_rows": 1,
+  "sail": "plain",
+  "hull_color": 9071172,
+  "trim_color": 5914664,
+  "sail_color": 15260864
+}

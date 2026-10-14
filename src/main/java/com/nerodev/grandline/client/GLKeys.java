@@ -6,6 +6,8 @@ import com.nerodev.grandline.client.screen.AbilityScreen;
 import com.nerodev.grandline.network.AbilityKeyPayload;
 import com.nerodev.grandline.network.DodgePayload;
 import com.nerodev.grandline.network.GuardPayload;
+import com.nerodev.grandline.network.ShipActionPayload;
+import com.nerodev.grandline.ship.ShipEntity;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -30,6 +32,12 @@ public final class GLKeys {
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT, CATEGORY);
     public static final KeyMapping GUARD = new KeyMapping("key.grandline.guard", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, CATEGORY);
+    /** Aboard a ship: fire a broadside toward the side you look at. */
+    public static final KeyMapping SHIP_FIRE = new KeyMapping("key.grandline.ship_fire", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, CATEGORY);
+    /** At a ship's helm: Coup de Burst (ships that have one). */
+    public static final KeyMapping SHIP_BURST = new KeyMapping("key.grandline.ship_burst", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, CATEGORY);
     /** Asks the server to open the Creator Menu (it only does for players with the CREATOR permission). */
     public static final KeyMapping CREATOR_MENU = new KeyMapping("key.grandline.creator_menu", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, CATEGORY);
@@ -54,6 +62,8 @@ public final class GLKeys {
         event.register(DODGE);
         event.register(GUARD);
         event.register(CREATOR_MENU);
+        event.register(SHIP_FIRE);
+        event.register(SHIP_BURST);
     }
 
     /** Sends a payload whenever a slot key changes state. Opening any screen counts as releasing every key. */
@@ -88,6 +98,16 @@ public final class GLKeys {
         while (ABILITY_MENU.consumeClick()) {
             if (listening) {
                 mc.setScreen(new AbilityScreen());
+            }
+        }
+        while (SHIP_FIRE.consumeClick()) {
+            if (listening && mc.player.getVehicle() instanceof ShipEntity) {
+                PacketDistributor.sendToServer(new ShipActionPayload(ShipActionPayload.FIRE));
+            }
+        }
+        while (SHIP_BURST.consumeClick()) {
+            if (listening && mc.player.getVehicle() instanceof ShipEntity) {
+                PacketDistributor.sendToServer(new ShipActionPayload(ShipActionPayload.BURST));
             }
         }
         while (CREATOR_MENU.consumeClick()) {

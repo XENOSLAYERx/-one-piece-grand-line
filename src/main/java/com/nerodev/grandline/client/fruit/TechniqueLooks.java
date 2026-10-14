@@ -7,6 +7,7 @@ import static com.nerodev.grandline.client.render.ProjectileVisuals.register;
 
 import com.nerodev.grandline.ability.rokushiki.RankyakuAbility;
 import com.nerodev.grandline.fx.GLParticles.Kind;
+import com.nerodev.grandline.ship.GLShips;
 import com.nerodev.grandline.style.FishmanKarateStyle;
 import com.nerodev.grandline.style.GunslingerStyle;
 import com.nerodev.grandline.style.SwordsmanStyle;
@@ -31,6 +32,8 @@ public final class TechniqueLooks {
         register(GunslingerStyle.SMOKE_SHOT, particles(0.3f, 0x7A7E84, Kind.SMOKE, 0.5f, 2));
         register(GunslingerStyle.HOMING_SHOT, both(particles(0.2f, 0x5A5A60, Kind.SMOKE, 0.25f, 1),
                 sparse(Kind.SPARK, 0xFF5A3A, 0.35f, 2)));
+        // Cannonballs: a heavy black ball trailing smoke.
+        register(GLShips.CANNONBALL_SHOT, both(particles(0.45f, 0x2A2A2E, Kind.SMOKE, 0.6f, 2), sparse(Kind.SPARK, 0xF0A040, 0.4f, 4)));
         // Bullets: a small dark ball with a faint smoke trail; Seastone ones glint sea-green.
         register(GLWeapons.BULLET_SHOT, both(particles(0.18f, 0x5A5A60, Kind.SMOKE, 0.25f, 1), sparse(Kind.SPARK, 0xF0C060, 0.25f, 6)));
         register(GLWeapons.SEASTONE_BULLET_SHOT, both(particles(0.2f, GLWeapons.SEASTONE_COLOR, Kind.SMOKE, 0.25f, 1),

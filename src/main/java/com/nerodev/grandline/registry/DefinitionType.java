@@ -6,6 +6,7 @@ import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.ship.ShipDefinition;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -78,7 +79,19 @@ public record DefinitionType<T>(
                         line("Description", ability.description()));
             });
 
-    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY);
+    public static final DefinitionType<ShipDefinition> SHIP = new DefinitionType<>(
+            "ship", GLRegistries.SHIP, ShipDefinition::displayName,
+            ship -> List.of(
+                    line("Size", Component.literal(String.format(Locale.ROOT, "%.0f x %.0f blocks, %d masts", ship.length(), ship.width(),
+                            ship.masts()))),
+                    line("Hull", Component.literal(String.format(Locale.ROOT, "%.0f", ship.maxHealth()))),
+                    line("Speed", Component.literal(String.format(Locale.ROOT, "%.2f blocks/tick, turns %.1f deg/tick", ship.maxSpeed(),
+                            ship.turnRate()))),
+                    line("Cannons", Component.literal(ship.cannons() + " a side, " + ship.cannonDamage() + " damage")),
+                    line("Crew", Component.literal(ship.crew() + ", " + ship.storageRows() + " rows of cargo")),
+                    line("Description", ship.description())));
+
+    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP);
 
     public Registry<T> registry(RegistryAccess access) {
         return access.registryOrThrow(key);

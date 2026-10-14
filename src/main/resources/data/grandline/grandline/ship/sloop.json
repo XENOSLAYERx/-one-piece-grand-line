@@ -1,0 +1,27 @@
+{
+  "display_name": {
+    "translate": "ship.grandline.sloop"
+  },
+  "description": {
+    "translate": "ship.grandline.sloop.desc"
+  },
+  "length": 8,
+  "width": 3,
+  "hull_height": 1.2,
+  "draft": 0.5,
+  "masts": 1,
+  "mast_height": 6.5,
+  "max_health": 120,
+  "max_speed": 0.32,
+  "acceleration": 0.007,
+  "turn_rate": 3.2,
+  "cannons": 1,
+  "cannon_reload": 60,
+  "cannon_damage": 14,
+  "crew": 4,
+  "storage_rows": 2,
+  "sail": "plain",
+  "hull_color": 10123860,
+  "trim_color": 4863012,
+  "sail_color": 15788248
+}

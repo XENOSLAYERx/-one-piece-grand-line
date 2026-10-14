@@ -1,0 +1,28 @@
+{
+  "display_name": {
+    "translate": "ship.grandline.galleon"
+  },
+  "description": {
+    "translate": "ship.grandline.galleon.desc"
+  },
+  "length": 18,
+  "width": 6,
+  "hull_height": 2.6,
+  "draft": 1.0,
+  "masts": 3,
+  "mast_height": 13,
+  "castle": true,
+  "max_health": 520,
+  "max_speed": 0.27,
+  "acceleration": 0.005,
+  "turn_rate": 1.8,
+  "cannons": 4,
+  "cannon_reload": 80,
+  "cannon_damage": 18,
+  "crew": 8,
+  "storage_rows": 6,
+  "sail": "pirate",
+  "hull_color": 5914672,
+  "trim_color": 9054762,
+  "sail_color": 2763310
+}

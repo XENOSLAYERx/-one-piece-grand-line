@@ -1199,6 +1199,35 @@ cmd onepiece race set grandline:human
 cmd onepiece ability equip 1 grandline:soru
 wait 10
 
+# ---- Ships: a bay dug into the plain, a galleon broadside-on, the view from its helm, a broadside, and the Sunny
+camera first
+look 0 10
+cmd fill ~-20 ~-3 ~4 ~26 ~-1 ~36 water
+cmd execute rotated -90 0 positioned ~ ~ ~20 run onepiece ship spawn grandline:galleon
+wait 20
+look -22 8
+wait 5
+shot 162_galleon
+cmd ride @s mount @e[type=grandline:ship,limit=1,sort=nearest]
+camera back
+look -90 12
+wait 10
+shot 163_at_the_helm
+cmd onepiece ship fire
+wait 4
+shot 164_broadside
+cmd ride @s dismount
+cmd tp @s ~ ~ ~-30
+cmd kill @e[type=grandline:ship]
+wait 5
+cmd execute rotated -90 0 positioned ~ ~ ~20 run onepiece ship spawn grandline:thousand_sunny
+camera first
+look -22 8
+wait 20
+shot 165_thousand_sunny
+cmd kill @e[type=grandline:ship]
+wait 5
+
 # ---- Creator Menu
 camera first
 cmd onepiece menu

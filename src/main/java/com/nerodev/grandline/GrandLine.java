@@ -25,6 +25,7 @@ import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.race.RaceAbilities;
 import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.registry.GLRegistries;
+import com.nerodev.grandline.ship.GLShips;
 import com.nerodev.grandline.sound.GLSounds;
 import com.nerodev.grandline.style.GLStyles;
 import com.nerodev.grandline.style.StyleManager;
@@ -82,6 +83,7 @@ public final class GrandLine {
         GLEntities.register(modBus);
         GLItems.register(modBus);
         GLWeapons.register(modBus);
+        GLShips.register(modBus);
         FruitManager.register();
         TransformationManager.register();
         TempBlocks.register();

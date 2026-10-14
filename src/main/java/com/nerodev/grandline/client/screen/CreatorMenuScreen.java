@@ -17,6 +17,9 @@ import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.haki.HakiType;
 import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.registry.GLRegistries;
+import com.nerodev.grandline.ship.ShipDefinition;
+import com.nerodev.grandline.ship.ShipEntity;
+import com.nerodev.grandline.ship.ShipItem;
 import com.nerodev.grandline.style.FightingStyle;
 import com.nerodev.grandline.style.GLStyles;
 import com.nerodev.grandline.transform.GLTransformations;
@@ -99,6 +102,7 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("Transformations"), this::transformations));
         categories.add(new Category(Component.literal("Weapons"), this::weapons));
         categories.add(new Category(Component.literal("Factions"), this::factions));
+        categories.add(new Category(Component.literal("Ships"), this::ships));
         categories.add(new Category(Component.literal("Battle Test"), this::battleTest));
         categories.add(new Category(Component.literal("Loadouts"), this::loadouts));
         categories.add(new Category(Component.literal("Player Data"), this::playerData));
@@ -515,6 +519,30 @@ public class CreatorMenuScreen extends Screen {
             out.add(new Entry(faction.displayName(), List.of(faction.description()), faction.color().getValue(), ItemStack.EMPTY,
                     () -> data() != null && data().faction().map(id::equals).orElse(false),
                     List.of(Action.of("Join", "onepiece faction set " + id), Action.of("Leave faction", "onepiece faction clear"))));
+        }
+        return out;
+    }
+
+    private List<Entry> ships() {
+        List<Entry> out = new ArrayList<>();
+        List<Map.Entry<ResourceKey<ShipDefinition>, ShipDefinition>> ships = new ArrayList<>(sorted(GLRegistries.SHIP));
+        ships.sort(Comparator.comparing(e -> e.getValue().length()));
+        for (Map.Entry<ResourceKey<ShipDefinition>, ShipDefinition> e : ships) {
+            ResourceLocation id = e.getKey().location();
+            ShipDefinition ship = e.getValue();
+            List<Component> details = new ArrayList<>();
+            details.add(line("Size", Component.literal(String.format(Locale.ROOT, "%.0f x %.0f blocks, %d masts", ship.length(),
+                    ship.width(), ship.masts()))));
+            details.add(line("Hull", Component.literal(String.format(Locale.ROOT, "%.0f", ship.maxHealth()))));
+            details.add(line("Cannons", Component.literal(ship.cannons() + " a side")));
+            details.add(line("Crew", Component.literal(ship.crew() + ", " + ship.storageRows() + " rows of cargo")));
+            details.add(ship.description());
+            out.add(new Entry(ship.displayName(), details, ship.hullColor(), ShipItem.of(id, ship.maxHealth()),
+                    () -> minecraft != null && minecraft.player != null && minecraft.player.getVehicle() instanceof ShipEntity aboard
+                            && aboard.typeId().equals(id),
+                    List.of(Action.of("Launch here", "onepiece ship spawn " + id), Action.of("Give in a bottle", "onepiece ship give " + id),
+                            Action.of("Repair nearest", "onepiece ship repair"), Action.of("Fire (aboard)", "onepiece ship fire"),
+                            Action.confirmed("Remove nearest", "onepiece ship remove"))));
         }
         return out;
     }

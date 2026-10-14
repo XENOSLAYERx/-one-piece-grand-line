@@ -1,0 +1,29 @@
+{
+  "display_name": {
+    "translate": "ship.grandline.thousand_sunny"
+  },
+  "description": {
+    "translate": "ship.grandline.thousand_sunny.desc"
+  },
+  "length": 15,
+  "width": 5.5,
+  "hull_height": 2.2,
+  "draft": 0.9,
+  "masts": 2,
+  "mast_height": 11,
+  "castle": true,
+  "max_health": 650,
+  "max_speed": 0.4,
+  "acceleration": 0.008,
+  "turn_rate": 2.6,
+  "burst": true,
+  "cannons": 2,
+  "cannon_reload": 50,
+  "cannon_damage": 22,
+  "crew": 8,
+  "storage_rows": 6,
+  "sail": "straw_hat",
+  "hull_color": 14200944,
+  "trim_color": 3832378,
+  "sail_color": 16053488
+}

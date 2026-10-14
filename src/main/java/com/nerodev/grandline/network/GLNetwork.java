@@ -7,6 +7,7 @@ import com.nerodev.grandline.ability.AbilityState;
 import com.nerodev.grandline.ability.GLAbilities;
 import com.nerodev.grandline.client.ClientPayloads;
 import com.nerodev.grandline.combat.CombatManager;
+import com.nerodev.grandline.ship.ShipEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -34,6 +35,16 @@ public final class GLNetwork {
         registrar.playToServer(GuardPayload.TYPE, GuardPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) {
                 CombatManager.setGuard(player, payload.down());
+            }
+        });
+
+        registrar.playToServer(ShipActionPayload.TYPE, ShipActionPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player && player.getVehicle() instanceof ShipEntity ship) {
+                if (payload.action() == ShipActionPayload.FIRE) {
+                    ship.fire(player);
+                } else if (payload.action() == ShipActionPayload.BURST) {
+                    ship.burst(player);
+                }
             }
         });
 

@@ -1,0 +1,28 @@
+{
+  "display_name": {
+    "translate": "ship.grandline.caravel"
+  },
+  "description": {
+    "translate": "ship.grandline.caravel.desc"
+  },
+  "length": 12,
+  "width": 4.5,
+  "hull_height": 1.8,
+  "draft": 0.8,
+  "masts": 2,
+  "mast_height": 9,
+  "castle": true,
+  "max_health": 260,
+  "max_speed": 0.3,
+  "acceleration": 0.006,
+  "turn_rate": 2.4,
+  "cannons": 2,
+  "cannon_reload": 70,
+  "cannon_damage": 16,
+  "crew": 6,
+  "storage_rows": 3,
+  "sail": "pirate",
+  "hull_color": 8018490,
+  "trim_color": 2763310,
+  "sail_color": 3026482
+}

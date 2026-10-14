@@ -30,10 +30,13 @@ import com.nerodev.grandline.client.render.ProjectileVisuals;
 import com.nerodev.grandline.client.render.RaceLayer;
 import com.nerodev.grandline.client.render.TransformationLayer;
 import com.nerodev.grandline.client.render.TransformationRenderer;
+import com.nerodev.grandline.client.ship.ShipHud;
+import com.nerodev.grandline.client.ship.ShipRenderer;
 import com.nerodev.grandline.client.visual.ClientVisuals;
 import com.nerodev.grandline.client.visual.StatusVisuals;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.entity.GLEntities;
+import com.nerodev.grandline.ship.GLShips;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.neoforged.api.distmarker.Dist;
@@ -59,8 +62,11 @@ public final class GrandLineClient {
         modBus.addListener(GLParticleProviders::register);
         modBus.addListener(RegisterClientReloadListenersEvent.class,
                 event -> event.registerReloadListener(AnimationLoader.INSTANCE));
-        modBus.addListener(EntityRenderersEvent.RegisterRenderers.class,
-                event -> event.registerEntityRenderer(GLEntities.ABILITY_PROJECTILE.get(), AbilityProjectileRenderer::new));
+        modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
+            event.registerEntityRenderer(GLEntities.ABILITY_PROJECTILE.get(), AbilityProjectileRenderer::new);
+            event.registerEntityRenderer(GLShips.SHIP.get(), ShipRenderer::new);
+        });
+        modBus.addListener(ShipHud::register);
         modBus.addListener(TransformationModels::registerLayers);
         modBus.addListener(EntityRenderersEvent.AddLayers.class, GrandLineClient::addLayers);
 
@@ -104,6 +110,7 @@ public final class GrandLineClient {
             HakiClient.clear();
             StatusVisuals.clear();
             ClientCombat.reset();
+            ShipRenderer.clearMeshes();
         });
     }
 
