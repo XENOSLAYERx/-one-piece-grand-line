@@ -228,7 +228,8 @@ public final class NpcTests {
     /** What an islander's AI is up to, for failure messages. */
     private static String describe(NpcEntity npc) {
         return "tick " + npc.tickCount + ", goals " + npc.goalSelector.getAvailableGoals().size() + "/" + npc.targetSelector.getAvailableGoals().size()
-                + ", running " + npc.goalSelector.getRunningGoals().map(g -> g.getGoal().getClass().getSimpleName()).toList()
+                + ", running " + npc.goalSelector.getAvailableGoals().stream().filter(g -> g.isRunning())
+                        .map(g -> g.getGoal().getClass().getSimpleName()).toList()
                 + ", target " + npc.getTarget() + ", path " + (npc.getNavigation().getPath() == null ? "none" : npc.getNavigation().getPath().getNodeCount() + " nodes")
                 + ", at " + npc.blockPosition() + ", ground " + npc.onGround() + ", noAi " + npc.isNoAi() + ", removed " + npc.isRemoved()
                 + ", speed " + npc.getSpeed() + ", effectiveAi " + npc.isEffectiveAi();
