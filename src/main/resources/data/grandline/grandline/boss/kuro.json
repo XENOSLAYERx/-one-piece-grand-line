@@ -28,7 +28,8 @@
       },
       "moves": {
         "claw_rake": 4,
-        "silent_step": 2
+        "silent_step": 2,
+        "guard": 1
       },
       "pace": 1.0
     },

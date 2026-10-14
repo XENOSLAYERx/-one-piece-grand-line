@@ -109,7 +109,7 @@ BOSSES = {
         "faction": "grandline:pirate",
         "aggressive": False,
         "phases": [
-            {"name": "Klahadore the Butler", "moves": {"claw_rake": 4, "silent_step": 2}, "pace": 1.0},
+            {"name": "Klahadore the Butler", "moves": {"claw_rake": 4, "silent_step": 2, "guard": 1}, "pace": 1.0},
             {"threshold": 0.6, "name": "Captain Kuro", "pace": 1.2,
              "moves": {"claw_rake": 3, "silent_step": 3, "shakushi": 1},
              "line": "Three years of planning, and you would ruin it?"},
