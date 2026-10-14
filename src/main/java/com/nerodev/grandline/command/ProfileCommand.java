@@ -1,9 +1,11 @@
 package com.nerodev.grandline.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.data.UnlockCategory;
+import com.nerodev.grandline.network.OpenGuidePayload;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
@@ -22,14 +24,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * {@code /onepiece profile}: text profile. The Profile screen (Milestone 9) shows the same data graphically.
+ * {@code /onepiece profile}: text profile. {@code /onepiece guide}: the Guide screen, whose Profile page shows the same
+ * data graphically.
  */
 final class ProfileCommand {
     static final List<HelpEntry> HELP = List.of(
             new HelpEntry("/onepiece profile", "Show your race, faction and bounty", PermissionTier.PLAYER),
-            new HelpEntry("/onepiece profile <player>", "Show another player's profile", PermissionTier.MODERATOR));
+            new HelpEntry("/onepiece profile <player>", "Show another player's profile", PermissionTier.MODERATOR),
+            new HelpEntry("/onepiece guide", "Open the Guide: your profile and everything in the mod", PermissionTier.PLAYER));
 
     private ProfileCommand() {}
 
@@ -39,6 +44,18 @@ final class ProfileCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .requires(source -> Permissions.has(source, PermissionTier.MODERATOR))
                         .executes(ctx -> sendProfile(ctx.getSource(), EntityArgument.getPlayer(ctx, "player")))));
+        root.then(Commands.literal("guide").executes(ctx -> openGuide(ctx.getSource().getPlayerOrException())));
+    }
+
+    /** Opens the Guide, telling the client what only the server knows: creator rights and the player's crew. */
+    static int openGuide(ServerPlayer player) {
+        boolean creator = Permissions.has(player, PermissionTier.CREATOR);
+        OpenGuidePayload payload = Crews.of(player)
+                .map(crew -> new OpenGuidePayload(creator, crew.name(), crew.members().getOrDefault(crew.captain(), "?"),
+                        crew.members().size(), Crews.totalBounty(player.server, crew)))
+                .orElseGet(() -> new OpenGuidePayload(creator, "", "", 0, 0L));
+        PacketDistributor.sendToPlayer(player, payload);
+        return 1;
     }
 
     static int sendProfile(CommandSourceStack source, ServerPlayer player) {

@@ -71,6 +71,9 @@ import net.neoforged.neoforge.common.NeoForgeMod;
  * rebuilt from the definition's {@link NpcRole} whenever the definition is set.
  */
 public class NpcEntity extends PathfinderMob implements Merchant {
+    /** Chance an islander drops each piece of the gear their definition gives them. */
+    public static final float EQUIPMENT_DROP_CHANCE = 0.06f;
+
     private static final EntityDataAccessor<String> NPC = SynchedEntityData.defineId(NpcEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<String> SKIN = SynchedEntityData.defineId(NpcEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> AIMING = SynchedEntityData.defineId(NpcEntity.class, EntityDataSerializers.BOOLEAN);
@@ -229,7 +232,7 @@ public class NpcEntity extends PathfinderMob implements Merchant {
         if (def != null) {
             for (Map.Entry<EquipmentSlot, Item> entry : def.equipment().entrySet()) {
                 setItemSlot(entry.getKey(), new ItemStack(entry.getValue()));
-                setDropChance(entry.getKey(), 0.06f);
+                setDropChance(entry.getKey(), EQUIPMENT_DROP_CHANCE);
             }
             setLeftHanded(false);
         }

@@ -35,12 +35,19 @@ styles, ships, islands, factions, bosses and crews. Built for both RPG players (
 | `Left Alt` | Dodge in the direction you are moving |
 | `B` (hold) | Guard; time it as a blow lands to parry |
 | `K` | Quest journal and the islands your Log Pose has recorded |
+| `U` | Guide: your profile, and every fruit, Haki, style, race, weapon, ship, faction, boss and island, with how to get it |
 | `H` / `J` | Aboard a ship: fire a broadside / Coup de Burst |
 | `N` | Creator Menu (players with the CREATOR permission) |
 
 All keys can be rebound under Controls > One Piece: Grand Line.
 
-**Devil Fruits** are eaten (one per body; a second one kills). Using a fruit trains its mastery (0-100), which
+The **Guide** (`U` or `/onepiece guide`) is the in-game encyclopedia: your profile (race, faction, bounty, crew,
+fruit, Haki training, mastery, journey) beside your character, then every system's pages with what each thing does,
+what it costs, what counters it and how to get it in survival play, read from the game's own recipes, merchants and
+bosses. Creators also see buttons that grant each thing at once.
+
+**Devil Fruits** are hidden in island treasure (buried treasure holds one about 1 time in 12) and eaten (one per
+body; a second one kills). Using a fruit trains its mastery (0-100), which
 unlocks stronger techniques; at 100 the fruit awakens. Any water drains fruit powers, and so does Seastone.
 
 Every fruit has five techniques and two awakened ones, designed from what it does in canon. Logia users turn
@@ -61,18 +68,22 @@ its level, which widens Observation, strengthens Armament and lets Conqueror's f
 **Fighting styles** (Brawler, Black Leg, Fish-Man Karate, Swordsman with up to three swords, Polearm, Gunslinger)
 and the six **Rokushiki** are learned from technique scrolls. **Weapons** run from cutlasses and muskets to the
 legendary blades (Wado Ichimonji, Shusui, Enma, Kikoku, Yoru and more), each with its own special; Seastone cuffs,
-nets, bullets and the jitte suppress Devil Fruit users. **Races**: Human, Fish-Man, Mink (Electro, and Sulong under
-the full moon), Skypiean, Longarm, Longleg and Giant, each with its own traits and techniques.
+nets, bullets and the jitte suppress Devil Fruit users; the legendary blades turn up very rarely in buried treasure,
+with Sea Kings and with veteran bounty hunters. **Races**: Human, Fish-Man, Mink (Electro, and Sulong under the full
+moon), Skypiean, Longarm, Longleg and Giant, each with its own traits and techniques. Everyone starts Human and may
+choose their race once, in the Guide or with `/onepiece race choose`.
 
-**Ships** come in bottles. Rafts, sloops and caravels are crafted (and sometimes dug up with buried treasure); the
-galleon, Marine warship, Revolutionary ship and Thousand Sunny are, for now, given by creators. Steer from the helm, load the hold with cannonballs and fire broadsides; hulls take damage, burn,
-are repaired with planks, and sink.
+**Ships** come in bottles. Rafts, sloops, caravels and galleons are crafted (sloops and caravels are sometimes dug
+up with buried treasure); the Marine warship, Revolutionary ship and Thousand Sunny are, for now, given by creators.
+Steer from the helm, load the hold with cannonballs and fire broadsides; hulls take damage, burn, are repaired with
+planks, and sink.
 
 **The East Blue** rises out of open ocean as islands, each with its own town and people: Dawn Island's windmill
 village, Shells Town under its Marine base, Orange Town under Buggy's circus tent, Syrup Village below Kaya's
 mansion, and the Conomi Islands in the shadow of Arlong Park. Islanders patrol, trade, flee and fight; how they treat
 you depends on your faction (Pirates, Marines, Revolutionaries, Bounty Hunters) and on your standing, which your
-deeds raise and lower.
+deeds raise and lower. Once a faction trusts you (standing 30) you may join it with `/onepiece faction join`; the
+Marines take no one with a bounty, and walking out costs you their trust.
 
 **Bounties** rise with crimes against the Marines and the townsfolk, and the bigger yours grows the stronger the
 bounty hunters and Marine squads that come for you. Found a **crew**, fly your own Jolly Roger, claim a ship and
@@ -96,6 +107,9 @@ Everything lives under `/onepiece` with tab-completion. `/onepiece help` lists o
 A few highlights:
 
 ```text
+/onepiece guide                           the Guide (anyone)
+/onepiece race choose <race>              choose your race, once (anyone)
+/onepiece faction join <faction> | leave  join a faction that trusts you (anyone)
 /onepiece menu                            the Creator Menu (every system, with unlock/equip/test buttons)
 /onepiece unlock all                      everything, max level
 /onepiece fruit set <fruit>               gain a fruit's power now

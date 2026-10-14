@@ -143,6 +143,7 @@ BOSSES = {
         "lines": {},
         "loot": [("minecraft:heart_of_the_sea", 1, 1), ("minecraft:nautilus_shell", 2, 4), ("minecraft:prismarine_shard", 8, 16),
                  ("minecraft:emerald", 10, 20), ("minecraft:cooked_cod", 12, 24)],
+        "rare": [("grandline:gameplay/legendary_blade", 0.15)],
     },
 }
 
@@ -205,6 +206,11 @@ def loot():
                 entry["functions"] = [{"function": "minecraft:set_count",
                                        "count": {"type": "minecraft:uniform", "min": lo, "max": hi}}]
             pools.append({"rolls": 1, "entries": [entry]})
+        # Rare finds: a nested table drawn with the given chance.
+        for nested, chance in b.get("rare", []):
+            weight = round(chance * 100)
+            pools.append({"rolls": 1, "entries": [{"type": "minecraft:empty", "weight": 100 - weight},
+                                                   {"type": "minecraft:loot_table", "value": nested, "weight": weight}]})
         table = {"type": "minecraft:entity", "pools": pools, "random_sequence": f"grandline:entities/boss/{bid}"}
         with open(f"{LOOT_DIR}/{bid}.json", "w") as f:
             json.dump(table, f, indent=2)

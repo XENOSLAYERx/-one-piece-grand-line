@@ -42,8 +42,26 @@ def item(name, weight, lo=1, hi=1, functions=None):
     return entry
 
 
+# A random Devil Fruit or legendary blade is drawn by a nested table: an expanded tag straight in a chest's pool would
+# give every one of its items the entry's weight, so a pool meant to hold a fruit 1 time in 12 would almost always
+# hold one.
+LEGENDARY_BLADES = ["sandai_kitetsu", "wado_ichimonji", "shusui", "enma", "kikoku", "gryphon", "yoru", "murakumogiri"]
+
+
+def pick_one(name, tag):
+    write(f"{DATA}/loot_table/gameplay/{name}.json", {
+        "type": "minecraft:generic",
+        "pools": [{"rolls": 1, "entries": [{"type": "minecraft:tag", "name": tag, "expand": True}]}],
+        "random_sequence": f"grandline:gameplay/{name}",
+    })
+
+
 def fruit(weight):
-    return {"type": "minecraft:tag", "name": "grandline:devil_fruits", "expand": True, "weight": weight}
+    return {"type": "minecraft:loot_table", "value": "grandline:gameplay/devil_fruit", "weight": weight}
+
+
+def legendary_blade(weight):
+    return {"type": "minecraft:loot_table", "value": "grandline:gameplay/legendary_blade", "weight": weight}
 
 
 def ship(kind, weight):
@@ -60,6 +78,8 @@ def table(name, pools):
 
 
 def loot_tables():
+    pick_one("devil_fruit", "grandline:devil_fruits")
+    pick_one("legendary_blade", "grandline:legendary_blades")
     table("village_house", [
         (3, 6, [
             item("minecraft:bread", 10, 1, 4),
@@ -177,6 +197,10 @@ def loot_tables():
             {"type": "minecraft:empty", "weight": 11},
             fruit(1),
         ]),
+        (1, 1, [
+            {"type": "minecraft:empty", "weight": 39},
+            legendary_blade(1),
+        ]),
     ])
 
 
@@ -229,6 +253,7 @@ def worldgen():
 def tags():
     models = sorted(f[:-5] for f in os.listdir(ASSETS + "/models/item") if f.endswith("_fruit.json"))
     write(f"{DATA}/tags/item/devil_fruits.json", {"values": ["grandline:" + m for m in models]})
+    write(f"{DATA}/tags/item/legendary_blades.json", {"values": ["grandline:" + b for b in LEGENDARY_BLADES]})
     write(ROOT + "/data/minecraft/tags/block/leaves.json", {"values": ["grandline:tangerine_leaves"]})
     write(ROOT + "/data/minecraft/tags/item/leaves.json", {"values": ["grandline:tangerine_leaves"]})
     write(ROOT + "/data/minecraft/tags/block/mineable/hoe.json", {"values": ["grandline:tangerine_leaves"]})

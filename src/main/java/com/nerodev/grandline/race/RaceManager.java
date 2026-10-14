@@ -18,6 +18,7 @@ import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
 import com.nerodev.grandline.registry.GLRegistries;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.core.Holder;
@@ -97,6 +98,31 @@ public final class RaceManager {
     // ---------------------------------------------------------------------------------------------------------
     // Changing race
     // ---------------------------------------------------------------------------------------------------------
+
+    /** Counter set once a player has chosen their race for themselves. */
+    public static final String CHOSEN = "race/chosen";
+
+    /** Whether {@code player} may still choose their race themselves (once, unless a creator resets it). */
+    public static boolean canChoose(Player player) {
+        return GLPlayer.data(player).counter(CHOSEN) == 0;
+    }
+
+    /**
+     * {@code player} chooses to be {@code race}: allowed once, so a body is not swapped at will in survival play.
+     *
+     * @return why not, or empty when it is done
+     */
+    public static Optional<Component> choose(ServerPlayer player, ResourceLocation race) {
+        if (!canChoose(player)) {
+            return Optional.of(Component.literal("You have already chosen your race."));
+        }
+        if (player.level().registryAccess().registry(GLRegistries.RACE).map(r -> r.get(race)).isEmpty()) {
+            return Optional.of(Component.literal("There is no such race."));
+        }
+        setRace(player, race);
+        GLPlayer.edit(player, data -> data.increment(CHOSEN));
+        return Optional.empty();
+    }
 
     /**
      * Makes {@code race} the player's race at once: old race bonuses and running race abilities end, the new bonuses

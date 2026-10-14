@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "grandline:devil_fruits",
+          "expand": true
+        }
+      ]
+    }
+  ],
+  "random_sequence": "grandline:gameplay/devil_fruit"
+}

@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Ability and combat keys. Defaults Z X C V G for the five slots, R for the ability menu, Left Alt to dodge and B to
- * guard; all remappable in Controls.
+ * guard, K for the quest journal, U for the Guide and N for the Creator Menu; all remappable in Controls.
  * The client only reports key edges (down/up). The server decides what happens.
  */
 public final class GLKeys {
@@ -42,6 +42,9 @@ public final class GLKeys {
     /** Opens the quest journal. */
     public static final KeyMapping QUEST_JOURNAL = new KeyMapping("key.grandline.quest_journal", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, CATEGORY);
+    /** Opens the Guide (the server sends what only it knows first). */
+    public static final KeyMapping GUIDE = new KeyMapping("key.grandline.guide", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U, CATEGORY);
     /** Asks the server to open the Creator Menu (it only does for players with the CREATOR permission). */
     public static final KeyMapping CREATOR_MENU = new KeyMapping("key.grandline.creator_menu", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, CATEGORY);
@@ -69,6 +72,7 @@ public final class GLKeys {
         event.register(SHIP_FIRE);
         event.register(SHIP_BURST);
         event.register(QUEST_JOURNAL);
+        event.register(GUIDE);
     }
 
     /** Sends a payload whenever a slot key changes state. Opening any screen counts as releasing every key. */
@@ -118,6 +122,11 @@ public final class GLKeys {
         while (QUEST_JOURNAL.consumeClick()) {
             if (listening) {
                 mc.setScreen(new QuestJournalScreen());
+            }
+        }
+        while (GUIDE.consumeClick()) {
+            if (listening) {
+                mc.player.connection.sendCommand("onepiece guide");
             }
         }
         while (CREATOR_MENU.consumeClick()) {

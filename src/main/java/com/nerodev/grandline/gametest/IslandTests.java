@@ -19,6 +19,9 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -116,6 +119,30 @@ public final class IslandTests {
         }
         LootTable leaves = level.getServer().reloadableRegistries().getLootTable(GLWorldgen.TANGERINE_LEAVES.get().getLootTable());
         helper.assertTrue(leaves != LootTable.EMPTY, "Tangerine leaves have a loot table");
+        helper.succeed();
+    }
+
+    /** Buried treasure holds a Devil Fruit about 1 time in 12 and a legendary blade about 1 time in 40, never more. */
+    @GameTest(template = TEMPLATE)
+    public static void treasureIsRare(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
+                .create(LootContextParamSets.CHEST);
+        LootTable table = level.getServer().reloadableRegistries().getLootTable(GLWorldgen.BURIED_TREASURE);
+        TagKey<Item> fruitTag = TagKey.create(Registries.ITEM, GrandLine.id("devil_fruits"));
+        TagKey<Item> bladeTag = TagKey.create(Registries.ITEM, GrandLine.id("legendary_blades"));
+        int chests = 1200;
+        int fruits = 0;
+        int blades = 0;
+        for (int i = 0; i < chests; i++) {
+            List<ItemStack> loot = table.getRandomItems(params);
+            int chestFruits = (int) loot.stream().filter(stack -> stack.is(fruitTag)).count();
+            helper.assertTrue(chestFruits <= 1, "A chest holds at most one fruit: " + loot);
+            fruits += chestFruits;
+            blades += (int) loot.stream().filter(stack -> stack.is(bladeTag)).count();
+        }
+        helper.assertTrue(fruits >= 50 && fruits <= 160, "About 100 fruits in " + chests + " chests, got " + fruits);
+        helper.assertTrue(blades >= 8 && blades <= 60, "About 30 legendary blades in " + chests + " chests, got " + blades);
         helper.succeed();
     }
 

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "name": "grandline:legendary_blades",
+          "expand": true
+        }
+      ]
+    }
+  ],
+  "random_sequence": "grandline:gameplay/legendary_blade"
+}

@@ -1452,6 +1452,31 @@ cmd onepiece event stop
 cmd tp @s 0 -60 0
 wait 10
 
+# ---- Guide: the profile with the player beside it, a fruit's page (abilities, counters, where to find it), a
+# legendary blade's sources, a style learnt from a scroll and a boss's phases and tip
+camera first
+guide Profile|Haki
+wait 10
+shot 188_guide_profile
+close
+guide Devil Fruits|Gum-Gum Fruit
+wait 10
+shot 189_guide_fruit
+close
+guide Weapons|Sandai Kitetsu
+wait 10
+shot 190_guide_weapon
+close
+guide Fighting Styles|Swordsman
+wait 10
+shot 191_guide_style
+close
+guide Bosses|Buggy the Clown
+wait 10
+shot 192_guide_boss
+close
+wait 5
+
 # ---- Creator Menu
 camera first
 cmd onepiece menu

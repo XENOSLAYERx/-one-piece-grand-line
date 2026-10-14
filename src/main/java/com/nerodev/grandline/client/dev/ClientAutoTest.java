@@ -3,9 +3,11 @@ package com.nerodev.grandline.client.dev;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.client.quest.QuestJournalScreen;
 import com.nerodev.grandline.client.screen.AbilityScreen;
+import com.nerodev.grandline.client.screen.GuideScreen;
 import com.nerodev.grandline.network.AbilityKeyPayload;
 import com.nerodev.grandline.network.DodgePayload;
 import com.nerodev.grandline.network.GuardPayload;
+import com.nerodev.grandline.network.OpenGuidePayload;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +43,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * jump
  * attack                     # left-click whatever is under the crosshair
  * menu / close               # ability screen
+ * guide Haki|Armament Haki    # the Guide on a category (and entry), as a creator
  * shot name                  # screenshots/name.png
  * quit
  * </pre>
@@ -157,6 +160,11 @@ public final class ClientAutoTest {
             }
             case "menu" -> mc.setScreen(new AbilityScreen());
             case "journal" -> mc.setScreen(new QuestJournalScreen());
+            case "guide" -> {
+                String[] page = arg.split("\\|", 2);
+                mc.setScreen(new GuideScreen(new OpenGuidePayload(true, "", "", 0, 0L)).showing(page[0],
+                        page.length > 1 ? page[1] : null));
+            }
             case "close" -> mc.setScreen(null);
             case "shot" -> Screenshot.grab(mc.gameDirectory, arg + ".png", mc.getMainRenderTarget(),
                     message -> GrandLine.LOGGER.info("[autotest] {}", message.getString()));

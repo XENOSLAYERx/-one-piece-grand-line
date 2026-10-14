@@ -12,6 +12,7 @@ import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.haki.HakiManager;
+import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.race.RaceManager;
@@ -32,12 +33,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Creator commands that edit a player's identity: race, faction, bounty, death mode, resets.
- * Every command defaults to the caller and optionally takes target players.
+ * Commands that edit a player's identity: race, faction, bounty, death mode, resets. The creator commands default to
+ * the caller and optionally take target players; players themselves may choose their race once and join or leave a
+ * faction that trusts them.
  */
 final class IdentityCommands {
     static final List<HelpEntry> HELP = List.of(
             new HelpEntry("/onepiece race set <race> [players]", "Change race instantly", PermissionTier.CREATOR),
+            new HelpEntry("/onepiece race choose <race>", "Choose your race (once)", PermissionTier.PLAYER),
+            new HelpEntry("/onepiece faction join <faction>", "Join a faction that trusts you (Friendly standing)", PermissionTier.PLAYER),
+            new HelpEntry("/onepiece faction leave", "Leave your faction (it will think less of you)", PermissionTier.PLAYER),
             new HelpEntry("/onepiece faction set <faction> [players]", "Join a faction", PermissionTier.CREATOR),
             new HelpEntry("/onepiece faction clear [players]", "Leave your faction", PermissionTier.CREATOR),
             new HelpEntry("/onepiece bounty set <amount> [players]", "Set bounty", PermissionTier.CREATOR),
@@ -48,7 +53,10 @@ final class IdentityCommands {
 
     /** What {@code /onepiece reset} can reset. */
     private enum ResetPart {
-        RACE("race", data -> data.setRace(PlayerData.DEFAULT_RACE)),
+        RACE("race", data -> {
+            data.setRace(PlayerData.DEFAULT_RACE);
+            data.setCounter(RaceManager.CHOSEN, 0);
+        }),
         FRUIT("fruit", data -> { }),
         HAKI("haki", data -> { }),
         FACTION("faction", data -> {
@@ -71,16 +79,26 @@ final class IdentityCommands {
     private IdentityCommands() {}
 
     static void register(LiteralArgumentBuilder<CommandSourceStack> root) {
-        root.then(creator("race")
-                .then(Commands.literal("set")
+        // "race" and "faction" are open to everyone: their creator subcommands carry the CREATOR requirement.
+        root.then(Commands.literal("race")
+                .then(creator("set")
                         .then(withTargets(Commands.argument("race", ResourceLocationArgument.id())
-                                .suggests(RegistryArguments.suggest(DefinitionType.RACE)), IdentityCommands::setRace))));
+                                .suggests(RegistryArguments.suggest(DefinitionType.RACE)), IdentityCommands::setRace)))
+                .then(Commands.literal("choose")
+                        .then(Commands.argument("race", ResourceLocationArgument.id())
+                                .suggests(RegistryArguments.suggest(DefinitionType.RACE))
+                                .executes(IdentityCommands::chooseRace))));
 
-        root.then(creator("faction")
-                .then(Commands.literal("set")
+        root.then(Commands.literal("faction")
+                .then(creator("set")
                         .then(withTargets(Commands.argument("faction", ResourceLocationArgument.id())
                                 .suggests(RegistryArguments.suggest(DefinitionType.FACTION)), IdentityCommands::setFaction)))
-                .then(withTargets(Commands.literal("clear"), IdentityCommands::clearFaction)));
+                .then(withTargets(creator("clear"), IdentityCommands::clearFaction))
+                .then(Commands.literal("join")
+                        .then(Commands.argument("faction", ResourceLocationArgument.id())
+                                .suggests(RegistryArguments.suggest(DefinitionType.FACTION))
+                                .executes(IdentityCommands::joinFaction)))
+                .then(Commands.literal("leave").executes(ctx -> leaveFaction(ctx.getSource()))));
 
         root.then(creator("bounty")
                 .then(Commands.literal("set")
@@ -152,6 +170,43 @@ final class IdentityCommands {
         Component name = ProfileCommand.factionName(ctx.getSource().registryAccess(), faction.getKey());
         feedback(ctx.getSource(), targets, p -> Component.literal(p + " joined ").append(name));
         return targets.size();
+    }
+
+    private static int chooseRace(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        Map.Entry<ResourceLocation, RaceDefinition> race = RegistryArguments.get(ctx, "race", DefinitionType.RACE);
+        Optional<Component> refusal = RaceManager.choose(player, race.getKey());
+        if (refusal.isPresent()) {
+            ctx.getSource().sendFailure(refusal.get());
+            return 0;
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal("You are ").append(race.getValue().displayName())
+                .append(Component.literal(" now, for good.")).withStyle(ChatFormatting.GOLD), false);
+        return 1;
+    }
+
+    private static int joinFaction(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        Map.Entry<ResourceLocation, FactionDefinition> faction = RegistryArguments.get(ctx, "faction", DefinitionType.FACTION);
+        Optional<Component> refusal = Factions.join(player, faction.getKey());
+        if (refusal.isPresent()) {
+            ctx.getSource().sendFailure(refusal.get());
+            return 0;
+        }
+        Component name = ProfileCommand.factionName(ctx.getSource().registryAccess(), faction.getKey());
+        ctx.getSource().sendSuccess(() -> Component.literal("You joined the ").append(name).append("."), false);
+        return 1;
+    }
+
+    private static int leaveFaction(CommandSourceStack source) throws CommandSyntaxException {
+        Optional<ResourceLocation> left = Factions.leave(source.getPlayerOrException());
+        if (left.isEmpty()) {
+            source.sendFailure(Component.literal("You belong to no faction."));
+            return 0;
+        }
+        Component name = ProfileCommand.factionName(source.registryAccess(), left.get());
+        source.sendSuccess(() -> Component.literal("You left the ").append(name).append(". They will not forget it."), false);
+        return 1;
     }
 
     private static int clearFaction(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> targets) {

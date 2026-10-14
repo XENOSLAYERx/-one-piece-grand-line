@@ -10,13 +10,11 @@ import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.bounty.BountyHunts;
 import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.crew.JollyRoger;
-import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.Loadout;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.data.UnlockCategory;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
-import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.haki.HakiType;
@@ -31,7 +29,6 @@ import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
 import com.nerodev.grandline.ship.ShipItem;
-import com.nerodev.grandline.style.FightingStyle;
 import com.nerodev.grandline.style.GLStyles;
 import com.nerodev.grandline.transform.GLTransformations;
 import com.nerodev.grandline.transform.Transformation;
@@ -45,21 +42,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.ConfirmScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -71,37 +61,7 @@ import net.minecraft.world.item.Items;
  * buttons on the right unlock, equip, remove, max out or test it. Every button runs the matching /onepiece command,
  * so the server checks the CREATOR permission on every click and the chat shows what happened.
  */
-public class CreatorMenuScreen extends Screen {
-    private static final int CATEGORY_W = 104;
-    private static final int ROW_H = 20;
-    private static final int LIST_W = 170;
-    private static final int ACTION_W = 130;
-
-    /** One button on an entry: its label and the commands it runs (without the slash). */
-    record Action(Component label, List<String> commands, boolean confirm) {
-        static Action of(String label, String... commands) {
-            return new Action(Component.literal(label), List.of(commands), false);
-        }
-
-        static Action confirmed(String label, String... commands) {
-            return new Action(Component.literal(label), List.of(commands), true);
-        }
-    }
-
-    /** One line in the middle list. */
-    record Entry(Component name, List<Component> details, int color, ItemStack icon, BooleanSupplier active, List<Action> actions) {}
-
-    record Category(Component name, Supplier<List<Entry>> entries) {}
-
-    private final List<Category> categories = new ArrayList<>();
-    private final List<Button> actionButtons = new ArrayList<>();
-    private int category;
-    private List<Entry> entries = List.of();
-    private List<Entry> shown = List.of();
-    @Nullable
-    private Entry selected;
-    private int scroll;
-    private EditBox search;
+public class CreatorMenuScreen extends BrowserScreen {
     @Nullable
     private EditBox loadoutName;
 
@@ -129,253 +89,45 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("Debug"), this::debug));
     }
 
-    // ---------------------------------------------------------------------------------------------------------
-    // Layout
-    // ---------------------------------------------------------------------------------------------------------
-
-    private int left() {
-        return Math.max(8, (width - (CATEGORY_W + LIST_W + ACTION_W + 180)) / 2);
-    }
-
-    private int listLeft() {
-        return left() + CATEGORY_W + 8;
-    }
-
-    private int detailLeft() {
-        return listLeft() + LIST_W + 8;
-    }
-
-    private int top() {
-        return 40;
-    }
-
-    private int listTop() {
-        return top() + 24;
-    }
-
-    private int visibleRows() {
-        return Math.max(1, (height - listTop() - 12) / ROW_H);
-    }
-
     @Override
     protected void init() {
-        actionButtons.clear();
-        for (int i = 0; i < categories.size(); i++) {
-            int index = i;
-            addRenderableWidget(Button.builder(categories.get(i).name(), b -> selectCategory(index))
-                    .bounds(left(), top() + i * 21, CATEGORY_W, 20).build());
-        }
+        super.init();
         addRenderableWidget(Button.builder(Component.literal("UNLOCK EVERYTHING").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
                 b -> confirm(Component.literal("Unlock everything?"),
                         Component.literal("Every fruit, ability, style, weapon, transformation, awakening and Haki will be "
                                 + "unlocked for you."),
                         List.of("onepiece unlock all")))
                 .bounds(width - 150, 8, 140, 20).build());
-        search = new EditBox(font, listLeft(), top(), LIST_W, 18, Component.literal("Search"));
-        search.setHint(Component.literal("Search...").withStyle(ChatFormatting.DARK_GRAY));
-        search.setResponder(text -> filter());
-        addRenderableWidget(search);
-        selectCategory(category);
     }
 
-    private void selectCategory(int index) {
-        category = index;
-        entries = categories.get(index).entries().get();
-        scroll = 0;
-        selected = null;
-        if (search != null) {
-            search.setValue("");
-        }
-        filter();
-        rebuildActions();
-    }
-
-    private void filter() {
-        String query = search == null ? "" : search.getValue().toLowerCase(Locale.ROOT).trim();
-        shown = query.isEmpty() ? entries
-                : entries.stream().filter(e -> e.name().getString().toLowerCase(Locale.ROOT).contains(query)).toList();
-        scroll = Math.min(scroll, Math.max(0, shown.size() - visibleRows()));
-    }
-
-    private void rebuildActions() {
-        actionButtons.forEach(this::removeWidget);
-        actionButtons.clear();
-        if (loadoutName != null) {
-            removeWidget(loadoutName);
-            loadoutName = null;
-        }
-        int x = detailLeft();
-        int y = height - 12;
-        if (categories.get(category).name().getString().equals("Loadouts")) {
-            loadoutName = new EditBox(font, x, listTop() + 120, ACTION_W, 18, Component.literal("Name"));
-            loadoutName.setHint(Component.literal("new loadout name").withStyle(ChatFormatting.DARK_GRAY));
-            loadoutName.setMaxLength(24);
-            addRenderableWidget(loadoutName);
-            Button save = Button.builder(Component.literal("Save current build"), b -> {
-                String name = loadoutName.getValue().toLowerCase(Locale.ROOT).trim();
-                if (Loadout.validName(name)) {
-                    run(List.of("onepiece loadout save " + name));
-                    loadoutName.setValue("");
-                }
-            }).bounds(x, listTop() + 142, ACTION_W, 20).build();
-            actionButtons.add(addRenderableWidget(save));
-        }
-        if (selected == null) {
+    @Override
+    protected void addCategoryWidgets(int x) {
+        loadoutName = null;
+        if (!categoryName().equals("Loadouts")) {
             return;
         }
-        List<Action> actions = selected.actions();
-        y -= actions.size() * 22;
-        for (Action action : actions) {
-            Button button = Button.builder(action.label(), b -> {
-                if (action.confirm()) {
-                    confirm(Component.literal(action.label().getString() + "?"), selected.name(), action.commands());
-                } else {
-                    run(action.commands());
-                }
-            }).bounds(x, y, ACTION_W, 20).build();
-            actionButtons.add(addRenderableWidget(button));
-            y += 22;
-        }
-    }
-
-    private void run(List<String> commands) {
-        LocalPlayer player = minecraft == null ? null : minecraft.player;
-        if (player != null) {
-            commands.forEach(player.connection::sendCommand);
-        }
-    }
-
-    private void confirm(Component title, Component message, List<String> commands) {
-        if (minecraft == null) {
-            return;
-        }
-        minecraft.setScreen(new ConfirmScreen(yes -> {
-            if (yes) {
-                run(commands);
+        loadoutName = addEntryWidget(new EditBox(font, x, listTop() + 120, ACTION_W, 18, Component.literal("Name")));
+        loadoutName.setHint(Component.literal("new loadout name").withStyle(ChatFormatting.DARK_GRAY));
+        loadoutName.setMaxLength(24);
+        EditBox name = loadoutName;
+        addEntryWidget(Button.builder(Component.literal("Save current build"), b -> {
+            String value = name.getValue().toLowerCase(Locale.ROOT).trim();
+            if (Loadout.validName(value)) {
+                run(List.of("onepiece loadout save " + value));
+                name.setValue("");
             }
-            minecraft.setScreen(this);
-        }, title, message));
-    }
-
-    // ---------------------------------------------------------------------------------------------------------
-    // Drawing and input
-    // ---------------------------------------------------------------------------------------------------------
-
-    @Override
-    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        super.render(g, mouseX, mouseY, partialTick);
-        g.drawCenteredString(font, title, width / 2, 12, 0xFFFFD27A);
-        g.drawString(font, categories.get(category).name().copy().withStyle(ChatFormatting.BOLD), detailLeft(), top() + 4, 0xFFFFFFFF);
-
-        int rows = visibleRows();
-        for (int row = 0; row < rows && row + scroll < shown.size(); row++) {
-            Entry entry = shown.get(row + scroll);
-            int y = listTop() + row * ROW_H;
-            boolean hover = mouseX >= listLeft() && mouseX < listLeft() + LIST_W && mouseY >= y && mouseY < y + ROW_H - 2;
-            int background = entry == selected ? 0xC0405070 : hover ? 0x80303848 : 0x60181C24;
-            g.fill(listLeft(), y, listLeft() + LIST_W, y + ROW_H - 2, background);
-            g.fill(listLeft(), y, listLeft() + 2, y + ROW_H - 2, 0xFF000000 | entry.color());
-            if (!entry.icon().isEmpty()) {
-                g.renderItem(entry.icon(), listLeft() + 4, y + 1);
-            }
-            int textX = listLeft() + (entry.icon().isEmpty() ? 6 : 22);
-            String name = font.plainSubstrByWidth(entry.name().getString(), LIST_W - (textX - listLeft()) - 12);
-            g.drawString(font, name, textX, y + 5, entry.active().getAsBoolean() ? 0xFF8CF08C : 0xFFE0E4EC);
-            if (entry.active().getAsBoolean()) {
-                g.drawString(font, "✔", listLeft() + LIST_W - 10, y + 5, 0xFF8CF08C);
-            }
-        }
-        if (shown.isEmpty()) {
-            g.drawString(font, Component.literal("Nothing here").withStyle(ChatFormatting.GRAY), listLeft() + 4, listTop() + 4, 0xFFFFFFFF);
-        }
-        if (shown.size() > rows) {
-            int barHeight = Math.max(10, rows * ROW_H * rows / shown.size());
-            int barTop = listTop() + (rows * ROW_H - barHeight) * scroll / Math.max(1, shown.size() - rows);
-            g.fill(listLeft() + LIST_W + 2, barTop, listLeft() + LIST_W + 4, barTop + barHeight, 0xA0FFFFFF);
-        }
-
-        if (selected != null) {
-            int y = listTop();
-            g.drawString(font, selected.name(), detailLeft(), y, 0xFF000000 | selected.color());
-            y += 14;
-            int wrap = Math.max(120, width - detailLeft() - 12);
-            for (Component line : selected.details()) {
-                for (FormattedCharSequence part : font.split(line, wrap)) {
-                    if (y > height - 30 - selected.actions().size() * 22) {
-                        break;
-                    }
-                    g.drawString(font, part, detailLeft(), y, 0xFFC8CCD8);
-                    y += 10;
-                }
-                y += 3;
-            }
-        } else if (loadoutName == null) {
-            g.drawWordWrap(font, Component.literal("Pick an entry to see what you can do with it.").withStyle(ChatFormatting.GRAY),
-                    detailLeft(), listTop(), Math.max(120, width - detailLeft() - 12), 0xFFFFFFFF);
-        }
+        }).bounds(x, listTop() + 142, ACTION_W, 20).build());
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (mouseX >= listLeft() && mouseX < listLeft() + LIST_W && mouseY >= listTop()) {
-            int row = (int) ((mouseY - listTop()) / ROW_H);
-            if (row < visibleRows() && row + scroll < shown.size()) {
-                selected = shown.get(row + scroll);
-                rebuildActions();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (mouseX >= listLeft() && mouseX < listLeft() + LIST_W + 6) {
-            scroll = (int) Math.max(0, Math.min(Math.max(0, shown.size() - visibleRows()), scroll - Math.signum(scrollY)));
-            return true;
-        }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-    }
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
+    @Nullable
+    protected Component emptyHint() {
+        return loadoutName != null ? null : Component.literal("Pick an entry to see what you can do with it.").withStyle(ChatFormatting.GRAY);
     }
 
     // ---------------------------------------------------------------------------------------------------------
     // Categories
     // ---------------------------------------------------------------------------------------------------------
-
-    @Nullable
-    private PlayerData data() {
-        return minecraft == null || minecraft.player == null ? null : GLPlayer.data(minecraft.player);
-    }
-
-    private static Component line(String label, Component value) {
-        return Component.literal(label + ": ").withStyle(ChatFormatting.GRAY).append(value.copy().withStyle(ChatFormatting.WHITE));
-    }
-
-    private static Component names(List<Ability> abilities) {
-        return Component.literal(abilities.isEmpty() ? "-"
-                : String.join(", ", abilities.stream().map(a -> a.displayName().getString()).toList()));
-    }
-
-    private static String title(String path) {
-        StringBuilder out = new StringBuilder();
-        for (String word : path.split("_")) {
-            if (!word.isEmpty()) {
-                out.append(out.isEmpty() ? "" : " ").append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
-            }
-        }
-        return out.toString();
-    }
-
-    private static ItemStack stack(@Nullable Item item) {
-        return item == null ? ItemStack.EMPTY : new ItemStack(item);
-    }
 
     private List<Entry> fruits() {
         List<Entry> out = new ArrayList<>();

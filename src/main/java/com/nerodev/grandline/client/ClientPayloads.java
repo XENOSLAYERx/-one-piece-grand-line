@@ -4,9 +4,11 @@ import com.nerodev.grandline.client.anim.PlayerAnimator;
 import com.nerodev.grandline.client.combat.ClientCombat;
 import com.nerodev.grandline.client.fx.ClientEffects;
 import com.nerodev.grandline.client.screen.CreatorMenuScreen;
+import com.nerodev.grandline.client.screen.GuideScreen;
 import com.nerodev.grandline.network.AnimationPayload;
 import com.nerodev.grandline.network.CombatSyncPayload;
 import com.nerodev.grandline.network.FxPayload;
+import com.nerodev.grandline.network.OpenGuidePayload;
 import net.minecraft.client.Minecraft;
 
 /** Client-side handlers for server payloads. Only ever loaded on the physical client. */
@@ -23,6 +25,10 @@ public final class ClientPayloads {
 
     public static void onOpenCreatorMenu() {
         Minecraft.getInstance().setScreen(new CreatorMenuScreen());
+    }
+
+    public static void onOpenGuide(OpenGuidePayload payload) {
+        Minecraft.getInstance().setScreen(new GuideScreen(payload));
     }
 
     public static void onCombatSync(CombatSyncPayload payload) {

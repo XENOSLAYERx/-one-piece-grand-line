@@ -85,6 +85,20 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 85
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "grandline:gameplay/legendary_blade",
+          "weight": 15
+        }
+      ]
     }
   ],
   "random_sequence": "grandline:entities/boss/lord_of_the_coast"

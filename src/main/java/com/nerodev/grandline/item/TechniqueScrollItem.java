@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -45,6 +46,11 @@ public class TechniqueScrollItem extends Item {
 
     public static TechniqueScrollItem technique(Supplier<? extends Ability> technique) {
         return new TechniqueScrollItem(null, technique);
+    }
+
+    /** Whether reading this scroll teaches {@code id} (a fighting style's or a technique's). */
+    public boolean teaches(ResourceLocation id) {
+        return style != null ? style.get().id().equals(id) : technique.get().id().equals(id);
     }
 
     Component teaches() {

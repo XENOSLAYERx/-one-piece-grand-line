@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -129,6 +130,48 @@ public final class Factions {
             }
         });
         alarm(npc, player);
+    }
+
+    /**
+     * {@code player} asks to join {@code faction} of their own accord. A faction only takes someone it already
+     * trusts (standing at least {@link #FRIENDLY}); the Marines also turn away anyone with a price on their head.
+     *
+     * @return why not, or empty when they joined
+     */
+    public static Optional<Component> join(ServerPlayer player, ResourceLocation faction) {
+        RegistryAccess access = player.level().registryAccess();
+        Optional<FactionDefinition> definition = definition(access, faction);
+        if (definition.isEmpty()) {
+            return Optional.of(Component.literal("There is no such faction."));
+        }
+        Component name = definition.get().displayName();
+        PlayerData data = GLPlayer.data(player);
+        if (member(player, faction)) {
+            return Optional.of(Component.literal("You already belong to the ").append(name).append("."));
+        }
+        if (data.faction().isPresent()) {
+            return Optional.of(Component.literal("Leave your faction first: /onepiece faction leave"));
+        }
+        int standing = data.reputation(faction);
+        if (standing < FRIENDLY) {
+            return Optional.of(Component.literal("The ").append(name).append(" do not trust you yet (standing " + standing + " of "
+                    + FRIENDLY + "). Fight their enemies and help their people."));
+        }
+        if (faction.equals(MARINES) && data.bounty() > 0) {
+            return Optional.of(Component.literal("The Marines will not enlist anyone with a bounty."));
+        }
+        GLPlayer.edit(player, d -> d.setFaction(Optional.of(faction)));
+        return Optional.empty();
+    }
+
+    /** {@code player} walks out on their faction, which thinks less of them for it. @return the faction they left */
+    public static Optional<ResourceLocation> leave(ServerPlayer player) {
+        Optional<ResourceLocation> faction = GLPlayer.data(player).faction();
+        faction.ifPresent(left -> GLPlayer.edit(player, data -> {
+            data.setFaction(Optional.empty());
+            data.addReputation(left, -FRIENDLY);
+        }));
+        return faction;
     }
 
     /** A completed trade warms a merchant's people to the customer a little. */

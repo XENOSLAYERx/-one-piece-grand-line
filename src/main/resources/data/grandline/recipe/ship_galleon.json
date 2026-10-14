@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WBW",
+    "IGI",
+    "LCL"
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "B": {
+      "item": "minecraft:glass_bottle"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "L": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "result": {
+    "id": "grandline:ship_in_a_bottle",
+    "count": 1,
+    "components": {
+      "grandline:ship_type": "grandline:galleon"
+    }
+  }
+}

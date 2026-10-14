@@ -132,9 +132,8 @@
           "weight": 19
         },
         {
-          "type": "minecraft:tag",
-          "name": "grandline:devil_fruits",
-          "expand": true,
+          "type": "minecraft:loot_table",
+          "value": "grandline:gameplay/devil_fruit",
           "weight": 1
         }
       ]

@@ -9,12 +9,14 @@ import com.nerodev.grandline.data.DeathModeHandler;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.data.UnlockCategory;
+import com.nerodev.grandline.npc.Factions;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -123,6 +125,41 @@ public final class PlayerDataTests {
     }
 
     @GameTest(template = TEMPLATE)
+    public static void playersChooseARaceOnceAndJoinFactionsThatTrustThem(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        ServerPlayer player = newPlayer(helper);
+        CommandSourceStack source = server.createCommandSourceStack().withSuppressedOutput()
+                .withPermission(0).withEntity(player);
+        PlayerData data = GLPlayer.data(player);
+
+        helper.assertTrue(result(helper, server, source, "onepiece race choose mink") == 1, "A player should choose their race");
+        helper.assertTrue(data.race().equals(GrandLine.id("mink")), "Race should be mink: " + data.race());
+        helper.assertTrue(result(helper, server, source, "onepiece race choose fishman") == 0, "A race is chosen only once");
+        helper.assertTrue(data.race().equals(GrandLine.id("mink")), "Race must stay mink: " + data.race());
+
+        ResourceLocation marines = GrandLine.id("marine");
+        helper.assertTrue(result(helper, server, source, "onepiece faction join grandline:marine") == 0,
+                "The Marines must not take a stranger");
+        data.addReputation(marines, Factions.FRIENDLY);
+        data.setBounty(1000);
+        helper.assertTrue(result(helper, server, source, "onepiece faction join grandline:marine") == 0,
+                "The Marines must not take a wanted player");
+        data.setBounty(0);
+        helper.assertTrue(result(helper, server, source, "onepiece faction join grandline:marine") == 1,
+                "The Marines should take a trusted player");
+        helper.assertTrue(data.faction().equals(Optional.of(marines)), "Faction: " + data.faction());
+        helper.assertTrue(result(helper, server, source, "onepiece faction join grandline:pirate") == 0,
+                "A member must leave before joining another faction");
+
+        helper.assertTrue(result(helper, server, source, "onepiece faction leave") == 1, "A member should be able to leave");
+        helper.assertTrue(data.faction().isEmpty(), "Faction should be empty after leaving");
+        helper.assertTrue(data.reputation(marines) == 0, "Leaving should cost standing: " + data.reputation(marines));
+        helper.assertTrue(result(helper, server, source, "onepiece faction leave") == 0, "Nothing to leave");
+        assertFails(helper, server, source, "onepiece faction set grandline:pirate");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE)
     public static void unknownRaceIsRejected(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
         ServerPlayer player = newPlayer(helper);
@@ -178,6 +215,15 @@ public final class PlayerDataTests {
             server.getCommands().getDispatcher().execute(command, source);
         } catch (CommandSyntaxException e) {
             helper.fail("/" + command + " failed: " + e.getMessage());
+        }
+    }
+
+    private static int result(GameTestHelper helper, MinecraftServer server, CommandSourceStack source, String command) {
+        try {
+            return server.getCommands().getDispatcher().execute(command, source);
+        } catch (CommandSyntaxException e) {
+            helper.fail("/" + command + " failed: " + e.getMessage());
+            return 0;
         }
     }
 
