@@ -17,8 +17,8 @@ public enum IslandType implements StringRepresentable {
     DAWN_ISLAND(46, 16, Flora.OAK, List.of(
             Site.of(Site.Kind.WINDMILL, 8, -15, 7, 7),
             Site.of(Site.Kind.BAR, -6, 6, 11, 8),
-            Site.of(Site.Kind.HOUSE, -16, -2, 7, 6),
-            Site.of(Site.Kind.HOUSE, -12, 13, 7, 7),
+            Site.of(Site.Kind.HOUSE, -17, -3, 7, 6),
+            Site.of(Site.Kind.HOUSE, -15, 16, 7, 7),
             Site.of(Site.Kind.HOUSE, 6, 16, 6, 6),
             Site.of(Site.Kind.HOUSE, 13, 6, 7, 6),
             Site.of(Site.Kind.HOUSE, 15, -4, 6, 7)), 90, 225),

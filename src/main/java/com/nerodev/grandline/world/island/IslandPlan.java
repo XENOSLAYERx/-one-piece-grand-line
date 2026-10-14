@@ -118,14 +118,18 @@ public final class IslandPlan {
         this.noise = new SimplexNoise(new LegacyRandomSource(seed));
         this.shapeOffset = (seed & 1023) * 0.37;
         for (IslandType.Site site : type.sites()) {
+            // Turn the footprint's corners (not its centre), so a building covers exactly the same ground at any turn.
+            int lx0 = site.x() - site.width() / 2;
+            int lz0 = site.z() - site.depth() / 2;
+            int[] a = turn(lx0, lz0);
+            int[] b = turn(lx0 + site.width() - 1, lz0 + site.depth() - 1);
             int[] at = turn(site.x(), site.z());
-            boolean swap = rotation % 2 == 1;
-            int w = swap ? site.depth() : site.width();
-            int d = swap ? site.width() : site.depth();
-            int x0 = cx + at[0] - w / 2;
-            int z0 = cz + at[1] - d / 2;
-            int ground = Math.max(sea + 1, (int) Math.floor(rawHeight(cx + at[0], cz + at[1])));
-            buildings.add(new Placed(site.kind(), x0, z0, x0 + w - 1, z0 + d - 1, ground, doorToward(at[0], at[1])));
+            int x0 = cx + Math.min(a[0], b[0]);
+            int z0 = cz + Math.min(a[1], b[1]);
+            int x1 = cx + Math.max(a[0], b[0]);
+            int z1 = cz + Math.max(a[1], b[1]);
+            int ground = Math.max(sea + 1, (int) Math.floor(rawHeight((x0 + x1) / 2, (z0 + z1) / 2)));
+            buildings.add(new Placed(site.kind(), x0, z0, x1, z1, ground, doorToward(at[0], at[1])));
         }
         this.pier = makePier();
         this.treasure = type.treasureAngle() < 0 ? null : coast(Math.toRadians(type.treasureAngle() + rotation * 90), 1);
