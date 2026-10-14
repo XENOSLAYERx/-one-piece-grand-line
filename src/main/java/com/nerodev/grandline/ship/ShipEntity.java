@@ -6,6 +6,7 @@ import com.nerodev.grandline.crew.JollyRoger;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
+import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.registry.GLRegistries;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
@@ -76,12 +78,17 @@ public class ShipEntity extends Entity {
     /** The Jolly Roger of the crew that owns this ship, or "" for the ship's own colours. */
     private static final EntityDataAccessor<String> CREW_FLAG = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.STRING);
 
+    /** How fast a cannonball leaves the muzzle, in blocks per tick. */
+    static final double CANNON_SPEED = 2.2;
     /** Ticks between two Coups de Burst. */
     public static final int BURST_COOLDOWN = 600;
 
     private final ShipPart[] parts = new ShipPart[MAX_PARTS];
     private final SimpleContainer cargo = new SimpleContainer(MAX_CARGO);
     private Optional<UUID> crew = Optional.empty();
+    /** Commands the ship when islanders crew it (server only); null for a ship sailed by players. */
+    @Nullable
+    private ShipCaptain captain;
     private double speed;
     private int burstTicks;
     /** Yaw the ship turned this tick, passed on to the crew. */
@@ -332,13 +339,26 @@ public class ShipEntity extends Entity {
     private void serverTick(ShipDefinition def) {
         float forwardInput = 0;
         float turnInput = 0;
-        if (helmsman() instanceof LivingEntity helm) {
+        if (helmsman() instanceof Player helm) {
             forwardInput = Mth.clamp(helm.zza, -1, 1);
             turnInput = Mth.clamp(helm.xxa, -1, 1);
+        } else if (captain != null) {
+            if (captain.crew().isEmpty()) {
+                abandoned(def);
+            } else if (captain.lonely()) {
+                sailAway();
+                return;
+            } else {
+                ShipCaptain.Helm helm = captain.steer(def);
+                forwardInput = helm.forward();
+                turnInput = helm.turn();
+            }
         }
         double surface = waterSurface(def);
         boolean afloat = !Double.isNaN(surface);
-        float max = def.maxSpeed() * (burstTicks > 0 ? 2.6f : 1f);
+        boolean storm = afloat && level().isThundering()
+                && level().isRainingAt(BlockPos.containing(getX(), surface + def.hullHeight() + 2, getZ()));
+        float max = def.maxSpeed() * (burstTicks > 0 ? 2.6f : storm ? 0.85f : 1f);
         if (afloat || burstTicks > 0) {
             if (forwardInput > 0.01f) {
                 speed += def.acceleration() * forwardInput;
@@ -358,13 +378,19 @@ public class ShipEntity extends Entity {
 
         float turnFactor = 0.3f + 0.7f * Math.min(1f, (float) Math.abs(speed) / def.maxSpeed() * 1.5f);
         float turn = afloat ? -turnInput * def.turnRate() * turnFactor : 0;
+        if (storm) {
+            // Gusts push the bow about.
+            turn += Mth.sin(tickCount * 0.031f + getId()) * 0.45f;
+        }
         setYRot(Mth.wrapDegrees(getYRot() + turn));
         yawDelta = turn;
 
         Vec3 horizontal = forward(getYRot()).scale(speed);
         double vy = getDeltaMovement().y;
         if (afloat && burstTicks < 30) {
-            double target = surface - def.draft() + Math.sin(tickCount * 0.07) * 0.04;
+            double swell = storm ? Math.sin(tickCount * 0.12 + getId()) * 0.32 + Math.sin(tickCount * 0.05) * 0.18
+                    : Math.sin(tickCount * 0.07) * 0.04;
+            double target = surface - def.draft() + swell;
             vy = Mth.clamp((target - getY()) * 0.3, -0.25, 0.25);
         } else {
             vy = Math.max(vy - 0.06, -2);
@@ -388,6 +414,9 @@ public class ShipEntity extends Entity {
         int hurt = entityData.get(HURT);
         if (hurt > 0) {
             entityData.set(HURT, hurt - 1);
+        }
+        if (storm && tickCount % 40 == 0 && random.nextFloat() < 0.004f) {
+            strikeMast(def);
         }
         int burning = burning();
         if (burning > 0) {
@@ -536,6 +565,13 @@ public class ShipEntity extends Entity {
         }
         ItemStack stack = player.getItemInHand(hand);
         boolean client = level().isClientSide;
+        if (captain != null && !captain.crew().isEmpty()) {
+            if (!client) {
+                player.displayClientMessage(Component.literal("Her crew will not let you aboard: clear the deck first")
+                        .withStyle(ChatFormatting.RED), true);
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
         if (player.isSecondaryUseActive()) {
             if (stack.is(Items.GLASS_BOTTLE)) {
                 if (!client) {
@@ -663,6 +699,9 @@ public class ShipEntity extends Entity {
         }
         setHealth(health() - scaled);
         entityData.set(HURT, 10);
+        if (captain != null) {
+            captain.attackedBy(attacker);
+        }
         if (health() <= 0) {
             sink(source);
         }
@@ -687,6 +726,9 @@ public class ShipEntity extends Entity {
                 killer.displayClientMessage(Component.literal("You sank the ").append(name).withStyle(ChatFormatting.GOLD), false);
                 if (def.sail() == SailStyle.MARINE) {
                     Bounties.crime(killer, Bounties.MARINE_SHIP_SUNK, false, "sinking a Marine ship");
+                }
+                if (captain != null) {
+                    Factions.onShipSunk(killer, captain.faction());
                 }
                 Crews.addRenown(killer, Math.max(1, (long) def.maxHealth() / 20));
             }
@@ -726,7 +768,7 @@ public class ShipEntity extends Entity {
             Vec3 muzzle = toWorld(local);
             Vec3 aim = port.scale(side).add(0, Mth.clamp(look.y, -0.25, 0.5) + 0.06, 0).add(forward(getYRot()).scale(look.dot(
                     forward(getYRot())) * 0.3)).normalize();
-            AbilityProjectile.spawn(gunner, GLShips.CANNONBALL_SHOT, muzzle, aim.scale(2.2).add(getDeltaMovement()), 0.45f, 0x2A2A2E,
+            AbilityProjectile.spawn(gunner, GLShips.CANNONBALL_SHOT, muzzle, aim.scale(CANNON_SPEED).add(getDeltaMovement()), 0.45f, 0x2A2A2E,
                     def.cannonDamage(), 60).withGravity(0.025);
             ServerLevel level = (ServerLevel) level();
             Vfx.impact(level, this, muzzle.add(aim.scale(0.6)), 0xF0C060, 1.2f, Kind.SPARK);
@@ -787,6 +829,94 @@ public class ShipEntity extends Entity {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    // Ships crewed by islanders
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** The captain of the islanders crewing this ship; null for a ship sailed by players (or taken from its crew). */
+    @Nullable
+    public ShipCaptain captain() {
+        return captain;
+    }
+
+    /** Puts the ship under the command of an islander crew of {@code encounter}'s kind, sailing {@code course}. */
+    public void commandBy(Encounter encounter, float course) {
+        captain = new ShipCaptain(this, encounter, course);
+        setCrewFlag(encounter.flag());
+    }
+
+    /**
+     * The crew fires the {@code side} broadside (1 port, -1 starboard) at {@code target}: the guns are laid for the
+     * range, a little wide, and reload more slowly than a player crew's.
+     *
+     * @return how many cannons fired
+     */
+    public int fireAt(LivingEntity gunner, int side, Vec3 target) {
+        ShipDefinition def = definition();
+        long now = level().getGameTime();
+        if (def == null || def.cannons() <= 0 || now < readyAt(side) || !(level() instanceof ServerLevel level)) {
+            return 0;
+        }
+        int fired = 0;
+        for (Vec3 local : def.cannonPositions(side)) {
+            Vec3 muzzle = toWorld(local);
+            Vec3 flat = target.subtract(muzzle).multiply(1, 0, 1);
+            double distance = Math.max(1, flat.length());
+            // Rise enough for the ball to fall onto the target at this range (flight time ~ distance / speed).
+            double ticks = distance / CANNON_SPEED;
+            double rise = (target.y - muzzle.y + 0.5 * 0.025 * ticks * ticks * 1.05) / distance;
+            Vec3 aim = flat.normalize().add(0, rise, 0);
+            ShipShot shot = new ShipShot(level, gunner, this, def.cannonDamage());
+            shot.setPos(muzzle);
+            shot.shoot(aim.x, aim.y, aim.z, (float) CANNON_SPEED, 2.5f);
+            shot.setDeltaMovement(shot.getDeltaMovement().add(getDeltaMovement()));
+            level.addFreshEntity(shot);
+            Vfx.impact(level, this, muzzle.add(flat.normalize().scale(0.6)), 0xF0C060, 1.2f, Kind.SPARK);
+            Vfx.impact(level, this, muzzle.add(flat.normalize().scale(0.9)), 0xD8D8D8, 1.6f, Kind.SMOKE);
+            fired++;
+        }
+        level.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 1.4f, 0.65f);
+        entityData.set(side > 0 ? PORT_READY : STARBOARD_READY, now + def.cannonReload() * 3L / 2);
+        return fired;
+    }
+
+    /** The last of the crew has fallen: the ship drifts, anyone's for the taking. */
+    private void abandoned(ShipDefinition def) {
+        captain = null;
+        if (level() instanceof ServerLevel level) {
+            for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(this) < 48 * 48)) {
+                player.sendSystemMessage(Component.literal("The ").append(def.displayName())
+                        .append(" has lost her crew: she is yours for the taking.").withStyle(ChatFormatting.GOLD));
+            }
+        }
+    }
+
+    /** No one has come near for a long while: the ship and her crew sail off over the horizon. */
+    private void sailAway() {
+        for (Entity passenger : List.copyOf(getPassengers())) {
+            if (!(passenger instanceof Player)) {
+                passenger.discard();
+            }
+        }
+        discard();
+    }
+
+    /** Lightning finds the mast: the ship catches fire and everyone aboard is shaken. */
+    private void strikeMast(ShipDefinition def) {
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level());
+        if (bolt == null) {
+            return;
+        }
+        bolt.moveTo(getX(), getY() + def.hullHeight() + def.mastHeight(), getZ());
+        bolt.setVisualOnly(true);
+        level().addFreshEntity(bolt);
+        setBurning(Math.max(burning(), 200));
+        hurt(damageSources().lightningBolt(), def.maxHealth() * 0.05f);
+        for (Entity passenger : getPassengers()) {
+            passenger.hurt(damageSources().lightningBolt(), 3f);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
     // Saving
     // ---------------------------------------------------------------------------------------------------------
 
@@ -802,6 +932,7 @@ public class ShipEntity extends Entity {
         cargo.fromTag(tag.getList("Cargo", 10), registryAccess());
         crew = tag.hasUUID("Crew") ? Optional.of(tag.getUUID("Crew")) : Optional.empty();
         entityData.set(CREW_FLAG, tag.getString("CrewFlag"));
+        captain = tag.contains("Captain") ? ShipCaptain.load(this, tag.getCompound("Captain")) : null;
     }
 
     @Override
@@ -812,6 +943,9 @@ public class ShipEntity extends Entity {
         tag.put("Cargo", cargo.createTag(registryAccess()));
         crew.ifPresent(id -> tag.putUUID("Crew", id));
         tag.putString("CrewFlag", entityData.get(CREW_FLAG));
+        if (captain != null) {
+            tag.put("Captain", captain.save());
+        }
     }
 
     // ---------------------------------------------------------------------------------------------------------

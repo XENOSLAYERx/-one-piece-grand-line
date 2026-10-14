@@ -6,13 +6,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
+import com.nerodev.grandline.ship.Encounter;
 import com.nerodev.grandline.ship.GLShips;
+import com.nerodev.grandline.ship.SeaEncounters;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
 import com.nerodev.grandline.ship.ShipItem;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -36,7 +39,9 @@ final class ShipCommands {
             new HelpEntry("/onepiece ship spawn <ship>", "Launch a ship right where you look", PermissionTier.CREATOR),
             new HelpEntry("/onepiece ship repair", "Fully repair the ship you are on (or the nearest)", PermissionTier.CREATOR),
             new HelpEntry("/onepiece ship remove", "Remove the nearest ship", PermissionTier.CREATOR),
-            new HelpEntry("/onepiece ship fire|burst", "Fire a broadside or Coup de Burst from the ship you are on", PermissionTier.CREATOR));
+            new HelpEntry("/onepiece ship fire|burst", "Fire a broadside or Coup de Burst from the ship you are on", PermissionTier.CREATOR),
+            new HelpEntry("/onepiece ship encounter <marine_patrol|pirate_raider|merchant>",
+                    "A crewed ship comes over the horizon (or right ahead, if you look at open water)", PermissionTier.CREATOR));
 
     private ShipCommands() {}
 
@@ -53,7 +58,34 @@ final class ShipCommands {
                 .then(creator("repair").executes(ctx -> repair(ctx.getSource(), ctx.getSource().getPlayerOrException())))
                 .then(creator("remove").executes(ctx -> remove(ctx.getSource(), ctx.getSource().getPlayerOrException())))
                 .then(creator("fire").executes(ctx -> fire(ctx.getSource(), ctx.getSource().getPlayerOrException())))
-                .then(creator("burst").executes(ctx -> burst(ctx.getSource(), ctx.getSource().getPlayerOrException()))));
+                .then(creator("burst").executes(ctx -> burst(ctx.getSource(), ctx.getSource().getPlayerOrException())))
+                .then(encounters()));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> encounters() {
+        LiteralArgumentBuilder<CommandSourceStack> node = creator("encounter");
+        for (Encounter kind : Encounter.values()) {
+            node.then(Commands.literal(kind.getSerializedName())
+                    .executes(ctx -> encounter(ctx.getSource(), ctx.getSource().getPlayerOrException(), kind)));
+        }
+        return node;
+    }
+
+    /** A crewed ship of {@code kind}: 24 blocks ahead if there is open water there, else over the horizon. */
+    private static int encounter(CommandSourceStack source, ServerPlayer player, Encounter kind) {
+        ServerLevel level = player.serverLevel();
+        float yaw = player.getYRot();
+        Vec3 ahead = player.position().add(ShipEntity.forward(yaw).scale(24));
+        ShipEntity ship = SeaEncounters.launch(level, kind, ahead, yaw + 90);
+        if (ship == null) {
+            ship = SeaEncounters.launchNear(level, player, kind);
+        }
+        if (ship == null) {
+            source.sendFailure(Component.literal("There is no open water near enough for a ship"));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("A " + kind.title().toLowerCase(Locale.ROOT) + " sets sail"), true);
+        return 1;
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> creator(String name) {

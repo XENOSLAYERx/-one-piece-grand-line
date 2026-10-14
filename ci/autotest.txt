@@ -1401,6 +1401,11 @@ cmd onepiece boss move water_jet
 wait 24
 shot 187_sea_king
 cmd onepiece boss remove 64
+cmd onepiece ship encounter marine_patrol
+wait 40
+shot 193_marine_patrol
+cmd kill @e[type=grandline:ship]
+cmd kill @e[type=grandline:npc]
 cmd kill @e[type=item]
 cmd gamemode survival
 cmd tp @s 0 -60 0

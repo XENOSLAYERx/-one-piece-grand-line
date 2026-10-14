@@ -77,6 +77,7 @@ public final class GrandLineClient {
             event.registerEntityRenderer(GLShips.SHIP.get(), ShipRenderer::new);
             event.registerEntityRenderer(GLNpcs.NPC.get(), NpcRenderer::new);
             event.registerEntityRenderer(GLNpcs.NPC_SHOT.get(), ThrownItemRenderer::new);
+            event.registerEntityRenderer(GLShips.SHIP_SHOT.get(), context -> new ThrownItemRenderer<>(context, 1.6f, false));
             event.registerEntityRenderer(GLBosses.BOSS.get(), BossRenderer::new);
             event.registerEntityRenderer(GLBosses.SEA_KING.get(), SeaKingRenderer::new);
         });

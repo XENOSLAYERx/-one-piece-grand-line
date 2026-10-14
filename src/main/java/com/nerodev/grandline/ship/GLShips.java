@@ -54,6 +54,14 @@ public final class GLShips {
                     .updateInterval(1)
                     .build("ship"));
 
+    /** A cannonball fired by a ship crewed by islanders. */
+    public static final Supplier<EntityType<ShipShot>> SHIP_SHOT = ENTITIES.register("ship_shot",
+            () -> EntityType.Builder.<ShipShot>of(ShipShot::new, MobCategory.MISC)
+                    .sized(0.45f, 0.45f)
+                    .clientTrackingRange(8)
+                    .updateInterval(2)
+                    .build("ship_shot"));
+
     /** The kind of ship in a bottle. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> SHIP_TYPE = COMPONENTS.register(
             "ship_type", () -> DataComponentType.<ResourceLocation>builder().persistent(ResourceLocation.CODEC)
@@ -92,6 +100,7 @@ public final class GLShips {
         ITEMS.register(modBus);
         TABS.register(modBus);
         ProjectileBehavior.Registry.register(CANNONBALL_SHOT, new Cannonball());
+        SeaEncounters.register();
     }
 
     /** True if {@code entity} belongs to (or is aboard) the ship {@code shooter} is on. */

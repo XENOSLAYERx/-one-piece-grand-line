@@ -1,6 +1,7 @@
 package com.nerodev.grandline.npc;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.definition.FactionDefinition;
@@ -111,25 +112,37 @@ public final class Factions {
 
     /** {@code player} killed {@code npc}: the victim's people resent it and their enemies approve. */
     public static void onKill(ServerPlayer player, NpcEntity npc) {
-        Optional<ResourceLocation> faction = npc.faction();
-        RegistryAccess access = player.level().registryAccess();
-        GLPlayer.edit(player, data -> {
-            if (faction.isPresent()) {
-                data.addReputation(faction.get(), -KILL_PENALTY);
-                Optional<Registry<FactionDefinition>> registry = access.registry(GLRegistries.FACTION);
-                registry.ifPresent(r -> {
-                    for (Map.Entry<ResourceKey<FactionDefinition>, FactionDefinition> e : r.entrySet()) {
-                        if (enemies(access, Optional.of(e.getKey().location()), faction)) {
-                            data.addReputation(e.getKey().location(), KILL_REWARD);
-                        }
-                    }
-                });
-            } else {
-                data.addReputation(CIVILIANS, -MURDER_PENALTY);
-                data.addReputation(MARINES, -MURDER_PENALTY / 2);
+        GLPlayer.edit(player, data -> wronged(player.level().registryAccess(), data, npc.faction(), 1));
+        alarm(npc, player);
+    }
+
+    /**
+     * {@code player} sank a ship crewed by {@code faction}'s people (townsfolk, if empty): it counts as killing one of
+     * them twice over, and sinking a merchant is piracy.
+     */
+    public static void onShipSunk(ServerPlayer player, Optional<ResourceLocation> faction) {
+        GLPlayer.edit(player, data -> wronged(player.level().registryAccess(), data, faction, 2));
+        if (faction.isEmpty()) {
+            Bounties.crime(player, Bounties.CIVILIAN_KILL, false, "sinking a merchant ship");
+        }
+    }
+
+    /** {@code times} deaths among {@code faction}'s people (or the townsfolk) on a player's account. */
+    private static void wronged(RegistryAccess access, PlayerData data, Optional<ResourceLocation> faction, int times) {
+        if (faction.isEmpty()) {
+            data.addReputation(CIVILIANS, -MURDER_PENALTY * times);
+            data.addReputation(MARINES, -MURDER_PENALTY / 2 * times);
+            return;
+        }
+        data.addReputation(faction.get(), -KILL_PENALTY * times);
+        Optional<Registry<FactionDefinition>> registry = access.registry(GLRegistries.FACTION);
+        registry.ifPresent(r -> {
+            for (Map.Entry<ResourceKey<FactionDefinition>, FactionDefinition> e : r.entrySet()) {
+                if (enemies(access, Optional.of(e.getKey().location()), faction)) {
+                    data.addReputation(e.getKey().location(), KILL_REWARD * times);
+                }
             }
         });
-        alarm(npc, player);
     }
 
     /**

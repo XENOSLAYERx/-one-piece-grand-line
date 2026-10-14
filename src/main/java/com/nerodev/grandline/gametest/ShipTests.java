@@ -3,11 +3,17 @@ package com.nerodev.grandline.gametest;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.entity.AbilityProjectile;
+import com.nerodev.grandline.npc.NpcEntity;
+import com.nerodev.grandline.ship.Encounter;
 import com.nerodev.grandline.ship.GLShips;
+import com.nerodev.grandline.ship.SeaEncounters;
+import com.nerodev.grandline.ship.ShipCaptain;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
 import com.nerodev.grandline.ship.ShipItem;
+import com.nerodev.grandline.ship.ShipShot;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
@@ -184,6 +190,58 @@ public final class ShipTests {
         run(helper, server, source, "onepiece ship remove");
         helper.assertTrue(ships.get(0).isRemoved(), "ship remove");
         helper.succeed();
+    }
+
+    @GameTest(template = POOL)
+    public static void crewedShipsFireOnWantedSailors(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ShipEntity ship = launch(helper, "sloop");
+        ship.commandBy(Encounter.MARINE_PATROL, 0);
+        SeaEncounters.man(level, ship, Encounter.MARINE_PATROL);
+        SeaEncounters.stock(level, ship, Encounter.MARINE_PATROL);
+        ShipCaptain captain = ship.captain();
+        helper.assertTrue(captain != null && captain.crew().size() == 4, "Four Marines crew the sloop: "
+                + (captain == null ? 0 : captain.crew().size()));
+        helper.assertTrue(!ship.cargo().isEmpty(), "Her hold is stocked");
+
+        ServerPlayer outlaw = sailor(helper);
+        GLPlayer.data(outlaw).setBounty(30_000_000L);
+        ServerPlayer honest = sailor(helper);
+        helper.assertTrue(captain.hostileTo(outlaw), "Marines go after a wanted pirate");
+        helper.assertFalse(captain.hostileTo(honest), "and leave honest sailors be");
+
+        Vec3 abeam = ship.position().add(ShipEntity.port(ship.getYRot()).scale(12));
+        helper.assertTrue(ship.fireAt(captain.officer(), 1, abeam) == 1, "The port gun fires");
+        List<ShipShot> shots = level.getEntitiesOfClass(ShipShot.class, new AABB(ship.blockPosition()).inflate(12));
+        helper.assertTrue(shots.size() == 1, "One cannonball in flight, found " + shots.size());
+        helper.assertTrue(ship.fireAt(captain.officer(), 1, abeam) == 0, "and needs to reload");
+        shots.forEach(ShipShot::discard);
+        captain.crew().forEach(NpcEntity::discard);
+        ship.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = POOL)
+    public static void crewlessShipsCanBeTaken(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ShipEntity ship = launch(helper, "sloop");
+        ship.commandBy(Encounter.PIRATE_RAIDER, 0);
+        SeaEncounters.man(level, ship, Encounter.PIRATE_RAIDER);
+        helper.assertTrue(ship.crewFlag().isPresent(), "Pirates fly the Jolly Roger");
+        ServerPlayer boarder = sailor(helper);
+        ship.interact(boarder, InteractionHand.MAIN_HAND);
+        helper.assertFalse(boarder.isPassenger(), "Her crew keeps boarders off");
+        ShipCaptain captain = ship.captain();
+        helper.assertTrue(captain != null, "Pirates command her");
+        captain.crew().forEach(NpcEntity::discard);
+        helper.runAfterDelay(2, () -> {
+            helper.assertTrue(ship.captain() == null, "With her crew gone, so is her captain");
+            ship.interact(boarder, InteractionHand.MAIN_HAND);
+            helper.assertTrue(boarder.getVehicle() == ship, "and anyone may take her helm");
+            boarder.stopRiding();
+            ship.discard();
+            helper.succeed();
+        });
     }
 
     // ---------------------------------------------------------------------------------------------------------

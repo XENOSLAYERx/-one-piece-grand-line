@@ -74,7 +74,8 @@ moon), Skypiean, Longarm, Longleg and Giant, each with its own traits and techni
 choose their race once, in the Guide or with `/onepiece race choose`.
 
 **Ships** come in bottles. Rafts, sloops, caravels and galleons are crafted (sloops and caravels are sometimes dug
-up with buried treasure); the Marine warship, Revolutionary ship and Thousand Sunny are, for now, given by creators.
+up with buried treasure); a Marine warship can be taken from its crew at sea; the Revolutionary ship and Thousand Sunny are, for now, given
+by creators.
 Steer from the helm, load the hold with cannonballs and fire broadsides; hulls take damage, burn, are repaired with
 planks, and sink.
 
@@ -98,6 +99,12 @@ fought by a party, everyone who fought it shares the credit, and island bosses r
 quests the islanders offer. Chapters grant **titles**, worn before your name in chat and in the player list
 (`/onepiece title`). The **Log Pose** records every island you reach and its needle points the way to the
 next one, whose name stays a mystery until you arrive.
+
+**The sea** has its own life: sailors meet Marine patrols that run down anyone wanted, pirate raiders that attack
+anyone they don't count as a friend, and merchant ships heavy with cargo that flee when attacked. Each is crewed by
+islanders who sail, keep their broadside to their quarry and fire when the guns bear. Sink one and its hold spills;
+kill its crew and the ship is yours to sail or bottle (the only way to own a Marine warship outside creator tools).
+Storms make the sea heave and push the bow about, and lightning finds masts.
 
 **World events** befall players now and then: pirate, Marine and Fish-Man raids, bands of bounty hunters, and Sea
 Kings at sea. Creators can mark out **arenas** where players fight round after round of ever harder enemies.
@@ -123,6 +130,7 @@ A few highlights:
 /onepiece teleport <island>               /onepiece island place <island>
 /onepiece quest [list|accept|complete|reset]   /onepiece logpose [next|set|record]
 /onepiece event start <event>             /onepiece arena create|join|next
+/onepiece ship encounter <marine_patrol|pirate_raider|merchant>   a crewed ship comes into sight
 /onepiece crew create <name>              /onepiece bounty set <amount>
 /onepiece reset <race|fruit|haki|faction|bounty|mastery|all> confirm
 ```

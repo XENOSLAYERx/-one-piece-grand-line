@@ -140,10 +140,13 @@ public abstract class BrowserScreen extends Screen {
 
     /** Picks an entry of the current category by name (the autotest uses it). */
     protected void select(String name) {
-        for (Entry entry : entries) {
+        for (int i = 0; i < shown.size(); i++) {
+            Entry entry = shown.get(i);
             if (entry.name().getString().equalsIgnoreCase(name)) {
                 selected = entry;
                 detailScroll = 0;
+                // Bring it into view, a few rows from the top.
+                scroll = Math.max(0, Math.min(i - 2, shown.size() - visibleRows()));
                 rebuildActions();
                 return;
             }

@@ -181,6 +181,49 @@ def loot_tables():
             item("minecraft:gold_ingot", 3, 1, 3),
         ]),
     ])
+    # The holds of ships met at sea (Encounter.cargo).
+    table("ship_marine_patrol", [
+        (3, 6, [
+            item("grandline:cannonball", 10, 4, 12),
+            item("grandline:iron_bullet", 8, 4, 12),
+            item("minecraft:bread", 8, 2, 6),
+            item("minecraft:iron_ingot", 6, 2, 5),
+            item("grandline:raw_seastone", 4, 1, 3),
+            item("grandline:seastone_bullet", 3, 2, 4),
+            item("grandline:seastone_cuffs", 1),
+            item("minecraft:emerald", 4, 2, 5),
+        ]),
+    ])
+    table("ship_pirate_raider", [
+        (4, 7, [
+            item("minecraft:gold_ingot", 10, 2, 6),
+            item("minecraft:gold_nugget", 8, 4, 16),
+            item("minecraft:emerald", 8, 2, 6),
+            item("grandline:cannonball", 8, 4, 10),
+            item("minecraft:honey_bottle", 4, 1, 3),
+            item("grandline:cutlass", 2),
+            item("grandline:flintlock", 1),
+            item("minecraft:map", 3),
+        ]),
+        (1, 1, [
+            {"type": "minecraft:empty", "weight": 29},
+            fruit(1),
+        ]),
+    ])
+    table("ship_merchant", [
+        (5, 9, [
+            item("minecraft:emerald", 10, 3, 8),
+            item("minecraft:gold_ingot", 6, 2, 5),
+            item("minecraft:diamond", 2, 1, 2),
+            item("minecraft:leather", 6, 2, 6),
+            item("minecraft:paper", 6, 3, 9),
+            item("minecraft:sugar", 6, 3, 9),
+            item("grandline:tangerine", 6, 3, 8),
+            item("minecraft:cocoa_beans", 4, 2, 6),
+            item("minecraft:white_wool", 5, 2, 6),
+            item("minecraft:glass_bottle", 4, 2, 4),
+        ]),
+    ])
     table("buried_treasure", [
         (4, 7, [
             item("minecraft:gold_ingot", 10, 2, 6),

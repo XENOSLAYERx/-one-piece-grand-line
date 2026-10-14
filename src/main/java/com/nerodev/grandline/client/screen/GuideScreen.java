@@ -179,8 +179,8 @@ public class GuideScreen extends BrowserScreen {
             facts.add(String.format(Locale.ROOT, "mastery %.0f", p.requiredMastery()));
         }
         return Component.literal("- ").append(ability.displayName().copy().withStyle(ChatFormatting.WHITE))
-                .append(Component.literal("  " + String.join(", ", facts)).withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.literal("\n").append(ability.description().copy().withStyle(ChatFormatting.GRAY)));
+                .append(Component.literal("  " + String.join(", ", facts)).withStyle(ChatFormatting.GRAY))
+                .append(Component.literal("\n")).append(ability.description());
     }
 
     private static String percent(double mastery) {
@@ -466,7 +466,10 @@ public class GuideScreen extends BrowserScreen {
                         + "toward the side you look at. Planks repair the hull, a water bucket puts out a fire."),
                 text("Sneak-right-click opens the hold; sneak-right-click with an empty bottle (with no one aboard) bottles "
                         + "the ship up again."),
-                text("The sea is not empty: pirate and Marine raids, bounty hunters, and Sea Kings that ram ships.")), 0x8B5A2B,
+                text("The sea is not empty. Sailors meet Marine patrols (which run down anyone wanted), pirate raiders (which "
+                        + "attack anyone they do not count as a friend) and merchant ships heavy with cargo that flee when attacked. "
+                        + "Sink one and its hold spills; kill its crew and the ship is yours to sail or bottle."),
+                text("Storms make the sea heave and push the bow about, and lightning finds masts. Sea Kings ram ships.")), 0x8B5A2B,
                 ShipItem.of(ShipEntity.DEFAULT_TYPE, 1f), () -> false, List.of()));
 
         out.add(new Entry(Component.literal("Islands and the Log Pose"), List.of(
@@ -750,9 +753,9 @@ public class GuideScreen extends BrowserScreen {
             for (int i = 0; i < boss.phases().size(); i++) {
                 BossDefinition.Phase phase = boss.phases().get(i);
                 List<String> moves = phase.moves().keySet().stream().filter(m -> !m.equals("roar") && !m.equals("guard"))
-                        .map(BrowserScreen::title).toList();
+                        .map(GuideScreen::moveName).toList();
                 details.add(Component.literal((i + 1) + ". ").append(phase.name().copy().withStyle(ChatFormatting.WHITE))
-                        .append(Component.literal(" - " + String.join(", ", moves)).withStyle(ChatFormatting.DARK_GRAY)));
+                        .append(Component.literal(" - " + String.join(", ", moves)).withStyle(ChatFormatting.GRAY)));
             }
             String tip = "boss.grandline." + id.getPath() + ".tip";
             if (Language.getInstance().has(tip)) {
@@ -775,6 +778,12 @@ public class GuideScreen extends BrowserScreen {
                     creator(Action.of("Spawn here", "onepiece boss spawn " + id))));
         }
         return out;
+    }
+
+    /** A boss move's name ("bossmove.grandline.<id>"), or its id in words. */
+    private static String moveName(String id) {
+        String key = "bossmove.grandline." + id;
+        return Language.getInstance().has(key) ? Language.getInstance().getOrDefault(key) : title(id);
     }
 
     private List<Entry> islands() {

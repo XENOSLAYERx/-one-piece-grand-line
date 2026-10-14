@@ -55,6 +55,8 @@ public final class GLServerConfig {
     public static final ModConfigSpec.BooleanValue WORLD_EVENTS;
     public static final ModConfigSpec.IntValue BOSS_RESPAWN_MINUTES;
     public static final ModConfigSpec.DoubleValue WORLD_EVENT_CHANCE;
+    public static final ModConfigSpec.BooleanValue SEA_ENCOUNTERS;
+    public static final ModConfigSpec.DoubleValue SEA_ENCOUNTER_CHANCE;
 
     public static final ModConfigSpec SPEC;
 
@@ -180,6 +182,13 @@ public final class GLServerConfig {
         BOSS_RESPAWN_MINUTES = BUILDER
                 .comment("Minutes after an island's boss falls before it returns to its post (once no one is near). 0 = never.")
                 .defineInRange("bossRespawnMinutes", 20, 0, 10080);
+        SEA_ENCOUNTERS = BUILDER
+                .comment("If true, players sailing the ocean now and then meet ships crewed by islanders: Marine patrols, pirate "
+                        + "raiders and merchants.")
+                .define("seaEncounters", true);
+        SEA_ENCOUNTER_CHANCE = BUILDER
+                .comment("Chance every 30 seconds of sailing that a ship comes over the horizon (never while another is near).")
+                .defineInRange("seaEncounterChance", 0.15, 0.0, 1.0);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
@@ -251,6 +260,14 @@ public final class GLServerConfig {
 
     public static int bossRespawnMinutes() {
         return value(BOSS_RESPAWN_MINUTES);
+    }
+
+    public static boolean seaEncounters() {
+        return value(SEA_ENCOUNTERS);
+    }
+
+    public static double seaEncounterChance() {
+        return value(SEA_ENCOUNTER_CHANCE);
     }
 
     public static double cooldownMultiplier() {

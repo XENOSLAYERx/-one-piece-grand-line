@@ -26,6 +26,7 @@ import com.nerodev.grandline.quest.QuestDefinition;
 import com.nerodev.grandline.quest.QuestObjective;
 import com.nerodev.grandline.quest.Quests;
 import com.nerodev.grandline.registry.GLRegistries;
+import com.nerodev.grandline.ship.Encounter;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
 import com.nerodev.grandline.ship.ShipItem;
@@ -404,6 +405,15 @@ public class CreatorMenuScreen extends BrowserScreen {
                             + type.renown() + " renown each"))), type.color().getColor() == null ? 0xE0E0E0 : type.color().getColor(),
                     new ItemStack(Items.GOAT_HORN), () -> false, List.of(Action.of("Start on me", "onepiece event start " + type.getSerializedName()),
                             Action.of("Events under way", "onepiece event list"), Action.confirmed("Stop all events", "onepiece event stop"))));
+        }
+        for (Encounter kind : Encounter.values()) {
+            List<String> crew = kind.crew().stream().map(this::npcName).toList();
+            Integer color = kind.color().getColor();
+            out.add(new Entry(Component.literal("At sea: " + kind.title()), List.of(Component.literal(kind.warning())
+                    .withStyle(ChatFormatting.GRAY), line("Crew", Component.literal(String.join(", ", crew))),
+                    Component.literal("Comes 24 blocks ahead if you look at open water, else over the horizon. Kill her crew and she "
+                            + "is yours.")), color == null ? 0xE0E0E0 : color, new ItemStack(Items.OAK_BOAT), () -> false,
+                    List.of(Action.of("Bring one in sight", "onepiece ship encounter " + kind.getSerializedName()))));
         }
         return out;
     }
