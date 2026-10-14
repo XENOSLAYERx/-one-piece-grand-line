@@ -1,6 +1,7 @@
 package com.nerodev.grandline.npc;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.crew.Crews;
@@ -95,7 +96,10 @@ public final class GLNpcs {
         if (victim.level().isClientSide || !(event.getSource().getEntity() instanceof ServerPlayer player) || victim.getTags().contains(Battles.TAG)) {
             return;
         }
-        Quests.onKill(player, victim);
+        if (!(victim instanceof BossEntity)) {
+            // Bosses share their credit among everyone who fought them (see BossEntity#die).
+            Quests.onKill(player, victim);
+        }
         if (victim instanceof NpcEntity npc) {
             boolean wasHostile = npc.reactionTo(player) == Reaction.HOSTILE;
             Factions.onKill(player, npc);

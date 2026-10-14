@@ -52,6 +52,7 @@ public final class GLBosses {
         ENTITIES.register(modBus);
         ITEMS.register(modBus);
         modBus.addListener(GLBosses::onAttributes);
+        BossRespawns.register();
     }
 
     private static void onAttributes(EntityAttributeCreationEvent event) {

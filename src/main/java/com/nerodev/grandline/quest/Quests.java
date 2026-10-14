@@ -13,11 +13,14 @@ import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.ship.ShipEntity;
 import com.nerodev.grandline.world.island.IslandType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
@@ -337,10 +340,35 @@ public final class Quests {
                     advance(player, QuestObjective.Kind.DEFEAT_NPC, kind, 1);
                 }
                 npc.faction().ifPresent(faction -> advance(player, QuestObjective.Kind.DEFEAT_FACTION, faction, 1));
-            } else if (victim instanceof BossEntity boss && boss.bossId() != null) {
-                advance(player, QuestObjective.Kind.DEFEAT_BOSS, boss.bossId(), 1);
-                boss.faction().ifPresent(faction -> advance(player, QuestObjective.Kind.DEFEAT_FACTION, faction, 1));
             }
+        }
+    }
+
+    /**
+     * {@code boss} fell: everyone who fought it nearby, and the victor's crewmates, are credited for defeating it.
+     */
+    public static void onBossDefeated(BossEntity boss, @Nullable ServerPlayer killer, Collection<ServerPlayer> fighters) {
+        ResourceLocation id = boss.bossId();
+        if (id == null) {
+            return;
+        }
+        Set<ServerPlayer> credited = new LinkedHashSet<>();
+        if (killer != null) {
+            credited.add(killer);
+            for (ServerPlayer other : killer.serverLevel().players()) {
+                if (other != killer && other.distanceTo(boss) < SHARE_RANGE && Crews.crewmates(killer, other)) {
+                    credited.add(other);
+                }
+            }
+        }
+        for (ServerPlayer fighter : fighters) {
+            if (!fighter.hasDisconnected() && fighter.level() == boss.level() && fighter.distanceTo(boss) < SHARE_RANGE) {
+                credited.add(fighter);
+            }
+        }
+        for (ServerPlayer player : credited) {
+            advance(player, QuestObjective.Kind.DEFEAT_BOSS, id, 1);
+            boss.faction().ifPresent(faction -> advance(player, QuestObjective.Kind.DEFEAT_FACTION, faction, 1));
         }
     }
 

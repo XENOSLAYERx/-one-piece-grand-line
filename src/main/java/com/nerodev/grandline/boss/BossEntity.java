@@ -1,5 +1,6 @@
 package com.nerodev.grandline.boss;
 
+import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.combat.AbilityDamage;
 import com.nerodev.grandline.creator.Battles;
@@ -11,6 +12,7 @@ import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.npc.Reaction;
+import com.nerodev.grandline.quest.Quests;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.weapon.WeaponItem;
 import com.nerodev.grandline.weapon.WeaponKind;
@@ -53,6 +55,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -88,6 +91,10 @@ public class BossEntity extends Monster {
     private static final EntityDataAccessor<Long> MOVE_START = SynchedEntityData.defineId(BossEntity.class, EntityDataSerializers.LONG);
     private static final EntityDataAccessor<Integer> PHASE = SynchedEntityData.defineId(BossEntity.class, EntityDataSerializers.INT);
 
+    /** The most a party can multiply a boss's health by. */
+    private static final float MAX_PARTY_SCALE = 3f;
+    private static final ResourceLocation PARTY_SCALING = GrandLine.id("party_scaling");
+
     /** How long without a fight before the boss walks home and recovers. */
     private static final int CALM_TICKS = 600;
     private static final int GRUDGE_TICKS = 2400;
@@ -113,6 +120,9 @@ public class BossEntity extends Monster {
     private int dodgeCooldown;
     private boolean engaged;
     private final Map<UUID, Long> grudges = new HashMap<>();
+    /** Players who have struck the boss in this fight: they all share the credit when it falls. */
+    private final Map<UUID, ServerPlayer> fighters = new HashMap<>();
+    private float partyScale = 1f;
     private final List<UUID> summons = new ArrayList<>();
     private final Deque<String> history = new ArrayDeque<>();
 
@@ -358,6 +368,18 @@ public class BossEntity extends Monster {
         }
         if (engaged && now - lastCombat > CALM_TICKS && move == null) {
             engaged = false;
+            fighters.clear();
+            scaleForParty(1f);
+        }
+        if (engaged && tickCount % 100 == 0) {
+            // A boss fought by a party grows tougher: half again its health for each fighter after the first.
+            int party = level().getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(32),
+                    player -> player.isAlive() && !player.isCreative() && !player.isSpectator()).size();
+            party = Math.max(party, (int) fighters.values().stream().filter(p -> !p.hasDisconnected() && p.isAlive()).count());
+            float wantedScale = Math.min(MAX_PARTY_SCALE, 1f + 0.5f * Math.max(0, party - 1));
+            if (wantedScale > partyScale) {
+                scaleForParty(wantedScale);
+            }
         }
         if (!engaged && getHealth() < getMaxHealth() && tickCount % 10 == 0) {
             heal(getMaxHealth() * 0.02f);
@@ -471,6 +493,26 @@ public class BossEntity extends Monster {
             }
         }
         updateBarName();
+    }
+
+    /** Sets the boss's health to {@code scale} times its own, keeping how hurt it is. */
+    void scaleForParty(float scale) {
+        if (scale == partyScale) {
+            return;
+        }
+        float fraction = getHealth() / getMaxHealth();
+        var health = getAttribute(Attributes.MAX_HEALTH);
+        health.removeModifier(PARTY_SCALING);
+        if (scale > 1f) {
+            health.addTransientModifier(new AttributeModifier(PARTY_SCALING, scale - 1f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        }
+        partyScale = scale;
+        setHealth(fraction * getMaxHealth());
+    }
+
+    /** How much a party has toughened the boss (1 when fought alone). */
+    public float partyScale() {
+        return partyScale;
     }
 
     /** Starts {@code next} at once against the current target or the nearest player (for commands and tests). */
@@ -622,6 +664,9 @@ public class BossEntity extends Monster {
             }
             lastCombat = level().getGameTime();
             grudges.put(living.getUUID(), level().getGameTime() + GRUDGE_TICKS);
+            if (living instanceof ServerPlayer player) {
+                fighters.put(player.getUUID(), player);
+            }
             BossDefinition def = definition();
             if (def != null && def.bladeproof() && cutBy(source, living)) {
                 // The Chop-Chop body comes apart around the blade; only Armament Haki finds something to cut.
@@ -752,6 +797,12 @@ public class BossEntity extends Monster {
             return;
         }
         shout(def.lines().defeat());
+        if (!getTags().contains(Battles.TAG)) {
+            Quests.onBossDefeated(this, source.getEntity() instanceof ServerPlayer killer ? killer : null, fighters.values());
+            if (getTags().contains(BossRespawns.RESIDENT_TAG) && level() instanceof ServerLevel level && hasRestriction() && bossId() != null) {
+                BossRespawns.schedule(level, bossId(), getRestrictCenter());
+            }
+        }
         if (source.getEntity() instanceof ServerPlayer victor && !getTags().contains(Battles.TAG)) {
             BossDefinition.Rewards rewards = def.rewards();
             if (rewards.bounty() > 0) {

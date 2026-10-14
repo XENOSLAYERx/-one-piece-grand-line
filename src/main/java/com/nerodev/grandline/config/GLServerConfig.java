@@ -53,6 +53,7 @@ public final class GLServerConfig {
     public static final ModConfigSpec.IntValue MAX_RECRUITS;
     public static final ModConfigSpec.BooleanValue CREW_FRIENDLY_FIRE;
     public static final ModConfigSpec.BooleanValue WORLD_EVENTS;
+    public static final ModConfigSpec.IntValue BOSS_RESPAWN_MINUTES;
     public static final ModConfigSpec.DoubleValue WORLD_EVENT_CHANCE;
 
     public static final ModConfigSpec SPEC;
@@ -176,6 +177,9 @@ public final class GLServerConfig {
         WORLD_EVENT_CHANCE = BUILDER
                 .comment("Chance each minute that an event befalls a given player (each player has at most one per 20 minutes).")
                 .defineInRange("worldEventChance", 0.04, 0.0, 1.0);
+        BOSS_RESPAWN_MINUTES = BUILDER
+                .comment("Minutes after an island's boss falls before it returns to its post (once no one is near). 0 = never.")
+                .defineInRange("bossRespawnMinutes", 20, 0, 10080);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
@@ -243,6 +247,10 @@ public final class GLServerConfig {
 
     public static double worldEventChance() {
         return value(WORLD_EVENT_CHANCE);
+    }
+
+    public static int bossRespawnMinutes() {
+        return value(BOSS_RESPAWN_MINUTES);
     }
 
     public static double cooldownMultiplier() {

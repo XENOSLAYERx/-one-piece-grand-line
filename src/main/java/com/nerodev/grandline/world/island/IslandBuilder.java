@@ -1,6 +1,7 @@
 package com.nerodev.grandline.world.island;
 
 import com.nerodev.grandline.boss.BossEntity;
+import com.nerodev.grandline.boss.BossRespawns;
 import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.npc.GLNpcs;
 import com.nerodev.grandline.npc.NpcEntity;
@@ -330,7 +331,10 @@ final class IslandBuilder {
                 double dx = b.worldX(faceX, faceZ) - x;
                 double dz = b.worldZ(faceX, faceZ) - z;
                 float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90f;
-                BossEntity.spawn(level, boss, new BlockPos(x, y, z), yaw, MobSpawnType.STRUCTURE);
+                BossEntity spawned = BossEntity.spawn(level, boss, new BlockPos(x, y, z), yaw, MobSpawnType.STRUCTURE);
+                if (spawned != null) {
+                    spawned.addTag(BossRespawns.RESIDENT_TAG);
+                }
             }
         }
 

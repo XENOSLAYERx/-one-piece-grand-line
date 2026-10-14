@@ -5,6 +5,7 @@ import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.boss.BossMove;
 import com.nerodev.grandline.boss.BossMoves;
+import com.nerodev.grandline.boss.BossRespawns;
 import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
@@ -196,6 +197,28 @@ public final class BossTests {
         helper.assertTrue(drops.stream().anyMatch(item -> item.getItem().is(GLWeapons.MORGANS_AXE.get())), "Morgan drops his axe: "
                 + drops.stream().map(item -> item.getItem().toString()).toList());
         drops.forEach(ItemEntity::discard);
+        helper.succeed();
+    }
+
+    @GameTest(template = ARENA)
+    public static void islandBossesReturn(GameTestHelper helper) {
+        MinecraftServer server = helper.getLevel().getServer();
+        BossEntity morgan = spawn(helper, GLBosses.MORGAN, 8, 8);
+        morgan.addTag(BossRespawns.RESIDENT_TAG);
+        BlockPos home = morgan.getRestrictCenter();
+        ServerPlayer player = NpcTests.newPlayer(helper);
+        Vec3 at = helper.absoluteVec(new Vec3(1, 2, 1));
+        player.setPos(at.x, at.y, at.z);
+        int waiting = BossRespawns.get(server).pending().size();
+        morgan.hurt(player.damageSources().playerAttack(player), 100_000f);
+        helper.assertTrue(BossRespawns.get(server).pending().size() == waiting + 1, "A fallen island boss is waiting to return");
+        BossRespawns.get(server).returnAll(server);
+        List<BossEntity> back = helper.getLevel().getEntitiesOfClass(BossEntity.class, new AABB(home).inflate(3),
+                boss -> GLBosses.MORGAN.equals(boss.bossId()) && boss.isAlive());
+        helper.assertTrue(back.size() == 1 && back.getFirst().getTags().contains(BossRespawns.RESIDENT_TAG),
+                "Morgan is back at his post, still holding the island");
+        back.forEach(BossEntity::discard);
+        helper.getLevel().getEntitiesOfClass(ItemEntity.class, new AABB(home).inflate(6)).forEach(ItemEntity::discard);
         helper.succeed();
     }
 

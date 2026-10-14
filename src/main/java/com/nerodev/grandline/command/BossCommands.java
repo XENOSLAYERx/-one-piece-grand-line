@@ -9,6 +9,7 @@ import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.boss.BossMove;
 import com.nerodev.grandline.boss.BossMoves;
+import com.nerodev.grandline.boss.BossRespawns;
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.permission.PermissionTier;
@@ -40,7 +41,8 @@ final class BossCommands {
             new HelpEntry("/onepiece boss spawn <boss|random>", "Spawn a boss where you look; it guards that spot", PermissionTier.CREATOR),
             new HelpEntry("/onepiece boss move <move>", "Make the nearest boss use a move now", PermissionTier.CREATOR),
             new HelpEntry("/onepiece boss phase <phase>", "Drop the nearest boss into a later phase of its fight", PermissionTier.CREATOR),
-            new HelpEntry("/onepiece boss remove [radius]", "Remove the bosses around you", PermissionTier.CREATOR));
+            new HelpEntry("/onepiece boss remove [radius]", "Remove the bosses around you", PermissionTier.CREATOR),
+            new HelpEntry("/onepiece boss respawn", "Bring fallen island bosses back to their posts now", PermissionTier.CREATOR));
 
     private static final double NEAR = 48;
 
@@ -59,6 +61,14 @@ final class BossCommands {
                         .executes(ctx -> move(ctx.getSource(), StringArgumentType.getString(ctx, "move")))))
                 .then(creator("phase").then(Commands.argument("phase", IntegerArgumentType.integer(1, 9))
                         .executes(ctx -> phase(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "phase")))))
+                .then(creator("respawn").executes(ctx -> {
+                    BossRespawns respawns = BossRespawns.get(ctx.getSource().getServer());
+                    int waiting = respawns.pending().size();
+                    int returned = respawns.returnAll(ctx.getSource().getServer());
+                    ctx.getSource().sendSuccess(() -> Component.literal(returned + " of " + waiting + " fallen island boss(es) returned"
+                            + (returned < waiting ? " (the rest wait for their posts to be loaded and clear)" : "")), true);
+                    return returned;
+                }))
                 .then(creator("remove")
                         .executes(ctx -> remove(ctx.getSource(), 32))
                         .then(Commands.argument("radius", IntegerArgumentType.integer(1, 256))
