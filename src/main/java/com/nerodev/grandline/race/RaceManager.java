@@ -112,8 +112,14 @@ public final class RaceManager {
         }
         GLPlayer.edit(player, data -> data.setRace(race));
         refresh(player);
+        equipUsable(player);
+    }
+
+    /** Puts every race ability the player can use into a free slot. */
+    public static void equipUsable(ServerPlayer player) {
         RaceDefinition definition = definition(player);
         if (definition != null) {
+            AbilityState state = AbilityState.of(player);
             for (ResourceLocation ability : definition.abilities()) {
                 Ability move = GLAbilities.REGISTRY.get(ability);
                 if (move != null && AbilityAccess.canUse(player, move)) {

@@ -3,6 +3,7 @@ package com.nerodev.grandline.client;
 import com.nerodev.grandline.client.anim.PlayerAnimator;
 import com.nerodev.grandline.client.combat.ClientCombat;
 import com.nerodev.grandline.client.fx.ClientEffects;
+import com.nerodev.grandline.client.screen.CreatorMenuScreen;
 import com.nerodev.grandline.network.AnimationPayload;
 import com.nerodev.grandline.network.CombatSyncPayload;
 import com.nerodev.grandline.network.FxPayload;
@@ -18,6 +19,10 @@ public final class ClientPayloads {
 
     public static void onAnimation(AnimationPayload payload) {
         PlayerAnimator.play(payload.entityId(), payload.animation());
+    }
+
+    public static void onOpenCreatorMenu() {
+        Minecraft.getInstance().setScreen(new CreatorMenuScreen());
     }
 
     public static void onCombatSync(CombatSyncPayload payload) {

@@ -42,6 +42,8 @@ public final class GLNetwork {
                 (payload, context) -> ClientPayloads.onAnimation(payload));
         registrar.playToClient(CombatSyncPayload.TYPE, CombatSyncPayload.STREAM_CODEC,
                 (payload, context) -> ClientPayloads.onCombatSync(payload));
+        registrar.playToClient(OpenCreatorMenuPayload.TYPE, OpenCreatorMenuPayload.STREAM_CODEC,
+                (payload, context) -> ClientPayloads.onOpenCreatorMenu());
     }
 
     private static void onAbilityKey(AbilityKeyPayload payload, IPayloadContext context) {

@@ -15,11 +15,14 @@ import com.nerodev.grandline.ability.TestFlag;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.UnlockCategory;
 import com.nerodev.grandline.fruit.FruitManager;
+import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
 import com.nerodev.grandline.style.GLStyles;
 import com.nerodev.grandline.style.StyleManager;
+import com.nerodev.grandline.transform.GLTransformations;
+import com.nerodev.grandline.weapon.GLWeapons;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -215,7 +218,12 @@ final class AbilityCommands {
         for (ServerPlayer player : targets) {
             FruitCommands.unlockAllFruits(player);
             GLStyles.REGISTRY.forEach(style -> StyleManager.learn(player, style));
-            GLPlayer.edit(player, data -> all.keySet().forEach(id -> data.unlock(UnlockCategory.ABILITY, id)));
+            GLPlayer.edit(player, data -> {
+                all.keySet().forEach(id -> data.unlock(UnlockCategory.ABILITY, id));
+                GLWeapons.weapons().values().forEach(item -> data.unlock(UnlockCategory.WEAPON, item.getId()));
+                GLTransformations.REGISTRY.keySet().forEach(id -> data.unlock(UnlockCategory.TRANSFORMATION, id));
+                GLFruits.REGISTRY.keySet().forEach(id -> data.unlock(UnlockCategory.AWAKENING, id));
+            });
             if (FruitManager.hasFruit(player)) {
                 FruitManager.setMastery(player, com.nerodev.grandline.data.PlayerData.MAX_MASTERY);
             }

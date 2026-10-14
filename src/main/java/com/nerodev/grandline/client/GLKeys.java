@@ -30,6 +30,9 @@ public final class GLKeys {
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_ALT, CATEGORY);
     public static final KeyMapping GUARD = new KeyMapping("key.grandline.guard", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, CATEGORY);
+    /** Asks the server to open the Creator Menu (it only does for players with the CREATOR permission). */
+    public static final KeyMapping CREATOR_MENU = new KeyMapping("key.grandline.creator_menu", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, CATEGORY);
 
     static {
         for (int i = 0; i < SLOTS.length; i++) {
@@ -50,6 +53,7 @@ public final class GLKeys {
         event.register(ABILITY_MENU);
         event.register(DODGE);
         event.register(GUARD);
+        event.register(CREATOR_MENU);
     }
 
     /** Sends a payload whenever a slot key changes state. Opening any screen counts as releasing every key. */
@@ -84,6 +88,11 @@ public final class GLKeys {
         while (ABILITY_MENU.consumeClick()) {
             if (listening) {
                 mc.setScreen(new AbilityScreen());
+            }
+        }
+        while (CREATOR_MENU.consumeClick()) {
+            if (listening) {
+                mc.player.connection.sendCommand("onepiece menu");
             }
         }
     }

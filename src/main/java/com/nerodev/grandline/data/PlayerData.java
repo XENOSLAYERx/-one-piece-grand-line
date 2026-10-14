@@ -45,7 +45,8 @@ public final class PlayerData {
             ResourceLocation.CODEC.optionalFieldOf("fruit").forGetter(d -> d.fruit),
             Codec.BOOL.optionalFieldOf("awakened", false).forGetter(d -> d.awakened),
             Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("counters", Map.of()).forGetter(d -> d.counters),
-            ResourceLocation.CODEC.optionalFieldOf("style").forGetter(d -> d.style)
+            ResourceLocation.CODEC.optionalFieldOf("style").forGetter(d -> d.style),
+            Codec.unboundedMap(Codec.STRING, Loadout.CODEC).optionalFieldOf("loadouts", Map.of()).forGetter(d -> d.loadouts)
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -62,15 +63,18 @@ public final class PlayerData {
     private boolean awakened;
     private final Map<String, Integer> counters = new HashMap<>();
     private Optional<ResourceLocation> style;
+    private final Map<String, Loadout> loadouts = new TreeMap<>();
 
     public PlayerData() {
         this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false, Map.of(),
-                Optional.empty());
+                Optional.empty(), Map.of());
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
             Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
-            Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style) {
+            Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style,
+            Map<String, Loadout> loadouts) {
+        this.loadouts.putAll(loadouts);
         this.fruit = fruit;
         this.style = style;
         this.awakened = awakened;
@@ -233,8 +237,25 @@ public final class PlayerData {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    // Loadouts
+    // ---------------------------------------------------------------------------------------------------------
 
-    /** Copies every field from {@code other}. Used by loadouts and full resets. */
+    /** Saved builds by name, in name order. */
+    public Map<String, Loadout> loadouts() {
+        return Collections.unmodifiableMap(loadouts);
+    }
+
+    public void saveLoadout(String name, Loadout loadout) {
+        loadouts.put(name, loadout);
+    }
+
+    public boolean deleteLoadout(String name) {
+        return loadouts.remove(name) != null;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Copies every field from {@code other}. Used by respawn copies and full resets. */
     public void copyFrom(PlayerData other) {
         this.race = other.race;
         this.faction = other.faction;
@@ -249,6 +270,8 @@ public final class PlayerData {
         this.counters.clear();
         this.counters.putAll(other.counters);
         this.style = other.style;
+        this.loadouts.clear();
+        this.loadouts.putAll(other.loadouts);
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {

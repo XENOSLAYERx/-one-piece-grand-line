@@ -1199,6 +1199,14 @@ cmd onepiece race set grandline:human
 cmd onepiece ability equip 1 grandline:soru
 wait 10
 
+# ---- Creator Menu
+camera first
+cmd onepiece menu
+wait 10
+shot 161_creator_menu
+close
+wait 5
+
 # ---- Menu
 camera first
 menu
