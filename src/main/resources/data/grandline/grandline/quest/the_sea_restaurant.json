@@ -1,0 +1,52 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.the_sea_restaurant"
+  },
+  "description": {
+    "translate": "quest.grandline.the_sea_restaurant.desc"
+  },
+  "category": "main",
+  "order": 6,
+  "island": "baratie",
+  "requires": [
+    "grandline:the_butler_of_syrup_village"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "target": "grandline:baratie"
+    },
+    {
+      "type": "talk",
+      "target": "grandline:baratie_cook"
+    },
+    {
+      "type": "defeat_boss",
+      "target": "grandline:krieg"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 20
+      },
+      {
+        "id": "minecraft:cooked_beef",
+        "count": 16
+      },
+      {
+        "id": "minecraft:cake",
+        "count": 1
+      }
+    ],
+    "renown": 50,
+    "reputation": {
+      "grandline:civilians": 15
+    },
+    "title": "grandline:guest_of_the_baratie"
+  },
+  "lines": {
+    "done": "The Baratie is safe, and its cooks have stocked your hold. The Conomi Islands lie ahead."
+  }
+}

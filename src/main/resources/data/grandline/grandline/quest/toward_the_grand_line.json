@@ -6,14 +6,14 @@
     "translate": "quest.grandline.toward_the_grand_line.desc"
   },
   "category": "main",
-  "order": 7,
+  "order": 9,
   "requires": [
-    "grandline:arlong_park"
+    "grandline:the_town_of_beginnings"
   ],
   "objectives": [
     {
       "type": "discover",
-      "count": 5
+      "count": 7
     },
     {
       "type": "bounty",

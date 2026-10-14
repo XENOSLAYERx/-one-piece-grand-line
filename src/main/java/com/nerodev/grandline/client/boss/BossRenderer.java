@@ -236,6 +236,77 @@ public class BossRenderer extends HumanoidMobRenderer<BossEntity, BossRenderer.M
                     rightArm.yRot = -0.5f * aim;
                     head.xRot = 0.1f * aim;
                 }
+                case "damashi_uchi" -> {
+                    // Hands hidden behind the back, then the coat thrown open: arms wide, the guns in the armour firing.
+                    float open = (a > 0 ? 1f : 0f) * hold;
+                    rightArm.xRot = Mth.lerp(open, 0.7f * ease(w), -0.4f);
+                    leftArm.xRot = Mth.lerp(open, 0.7f * ease(w), -0.4f);
+                    rightArm.zRot = 1.0f * open;
+                    leftArm.zRot = -1.0f * open;
+                    lean(-0.15f * open + (a > 0 && a < 1 ? Mth.sin(ageInTicks * 3f) * 0.04f : 0f));
+                }
+                case "daisensou" -> {
+                    // The great spear couched at the hip and drawn back, then driven forward with the whole body.
+                    boolean thrust = t >= move.windup() && t < move.windup() + move.active();
+                    float drawn = ease(w) * hold;
+                    twist((thrust ? -0.2f : 0.5f * drawn) * hold);
+                    rightArm.xRot = (thrust ? -1.5f : -0.6f * drawn) * hold;
+                    leftArm.xRot = (thrust ? -1.2f : -0.9f * drawn) * hold;
+                    leftArm.yRot += 0.4f * hold;
+                    lean((thrust ? 0.5f : 0.2f * drawn) * hold);
+                }
+                case "mh5" -> {
+                    // A hand at the mask, then the shell hurled overarm.
+                    float up = ease(w) * (1 - strike);
+                    leftArm.xRot = -2.2f * ease(Math.min(1f, t / 6f)) * hold;
+                    leftArm.yRot = 0.6f * hold;
+                    rightArm.xRot = (-2.9f * up - 0.8f * strike) * hold;
+                    lean((0.4f * strike - 0.2f * up) * hold);
+                }
+                case "porcupine_cape" -> {
+                    // Hunched behind the spiked cape, arms drawn in around the body.
+                    float wrap = ease(w) * hold;
+                    lean(0.45f * wrap);
+                    rightArm.xRot = -0.9f * wrap;
+                    rightArm.yRot = -0.8f * wrap;
+                    leftArm.xRot = -0.9f * wrap;
+                    leftArm.yRot = 0.8f * wrap;
+                    head.xRot = -0.2f * wrap;
+                }
+                case "white_blow" -> {
+                    // The fist thrown out (it flies on as smoke), then the arm hauled back to drag the prey in.
+                    float pull = ease(Mth.clamp((t - move.windup() - 2) / 4f, 0f, 1f));
+                    rightArm.xRot = Mth.lerp(pull, -1.6f * ease(w), -0.4f) * hold;
+                    rightArm.yRot = -0.1f * hold;
+                    twist(0.4f * pull * hold);
+                    lean(Mth.lerp(pull, 0.2f * strike, -0.2f) * hold);
+                }
+                case "white_launcher" -> {
+                    // Crouched to spring, then flying feet first as a jet of smoke, fists leading.
+                    boolean flying = t >= move.windup() && t < move.windup() + move.active();
+                    lean((flying ? 0.9f : 0.5f * ease(w)) * hold);
+                    rightArm.xRot = (flying ? -2.6f : 0.8f * ease(w)) * hold;
+                    leftArm.xRot = (flying ? -2.6f : 0.8f * ease(w)) * hold;
+                    rightArm.zRot = leftArm.zRot = 0f;
+                }
+                case "white_out" -> {
+                    // Arms raised and spread as the smoke pours out of him.
+                    float pour = ease(w) * hold;
+                    float drift = Mth.sin(ageInTicks * 0.4f) * 0.1f * pour;
+                    rightArm.xRot = -0.6f * pour + drift;
+                    rightArm.zRot = 1.3f * pour;
+                    leftArm.xRot = -0.6f * pour - drift;
+                    leftArm.zRot = -1.3f * pour;
+                    head.xRot = -0.2f * pour;
+                }
+                case "jitte_strike" -> {
+                    // The jitte raised over the right shoulder, then brought down across.
+                    float back = ease(w) * (1 - strike);
+                    twist((0.5f * back - 0.6f * strike) * hold);
+                    rightArm.xRot = Mth.lerp(strike, -2.8f * ease(w), -0.8f) * hold;
+                    rightArm.yRot += (0.3f * back - 0.6f * strike) * hold;
+                    lean(0.3f * strike * hold);
+                }
                 default -> {
                 }
             }

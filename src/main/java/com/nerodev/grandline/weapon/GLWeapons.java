@@ -122,6 +122,12 @@ public final class GLWeapons {
     /** Dropped by Captain Kuro. */
     public static final DeferredItem<WeaponItem> CAT_CLAWS = weapon("cat_claws",
             legendary(Tiers.DIAMOND, WeaponKind.SWORD, WeaponGrade.SKILLED, 8f, 2.0f).special(WeaponSpecials.NEKO_NO_TE));
+    /** Dropped by Don Krieg. */
+    public static final DeferredItem<WeaponItem> DAISENSOU = weapon("daisensou",
+            legendary(Tiers.DIAMOND, WeaponKind.POLEARM, WeaponGrade.SKILLED, 11f, 0.9f).reach(1f).special(WeaponSpecials.DAISENSOU));
+    /** Dropped by Captain Smoker: a great Seastone jitte. */
+    public static final DeferredItem<WeaponItem> SMOKERS_JITTE = weapon("smokers_jitte",
+            legendary(Tiers.DIAMOND, WeaponKind.CLUB, WeaponGrade.SKILLED, 9f, 1.4f).reach(0.5f).special(WeaponSpecials.SEAL));
     public static final DeferredItem<WeaponItem> MURAKUMOGIRI = weapon("murakumogiri",
             legendary(Tiers.NETHERITE, WeaponKind.POLEARM, WeaponGrade.SUPREME, 12.5f, 0.9f).reach(1.5f)
                     .special(WeaponSpecials.MURAKUMOGIRI));

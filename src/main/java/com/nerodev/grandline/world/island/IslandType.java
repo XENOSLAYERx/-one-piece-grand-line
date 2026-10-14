@@ -11,7 +11,8 @@ import net.minecraft.util.StringRepresentable;
 /**
  * The islands of the East Blue that can rise out of the sea, each with its own shape, plants and settlement:
  * Dawn Island's windmill village, Shells Town under its Marine base, and the Conomi Islands with Arlong Park and
- * the tangerine groves of Cocoyasi, Orange Town under Buggy's circus tent, and Syrup Village below Kaya's mansion.
+ * the tangerine groves of Cocoyasi, Orange Town under Buggy's circus tent, Syrup Village below Kaya's mansion, the
+ * Baratie moored over its reef, and Loguetown, the town of the beginning and the end.
  */
 public enum IslandType implements StringRepresentable {
     DAWN_ISLAND(46, 16, Flora.OAK, List.of(
@@ -52,7 +53,20 @@ public enum IslandType implements StringRepresentable {
             Site.of(Site.Kind.HOUSE, -7, 12, 7, 6),
             Site.of(Site.Kind.HOUSE, 6, 12, 6, 6),
             Site.of(Site.Kind.HOUSE, 17, 3, 6, 7),
-            Site.of(Site.Kind.HOUSE, 13, 22, 6, 6)), 90, 300);
+            Site.of(Site.Kind.HOUSE, 13, 22, 6, 6)), 90, 300),
+    BARATIE(15, 2, Flora.PALM, List.of(
+            Site.of(Site.Kind.BARATIE, 0, 0, 19, 11)), 90, -1),
+    LOGUETOWN(54, 9, Flora.OAK, List.of(
+            Site.of(Site.Kind.MARINE_BASE, -14, -16, 23, 23),
+            Site.of(Site.Kind.SCAFFOLD, 9, -4, 9, 9),
+            Site.of(Site.Kind.SWORD_SHOP, 22, -14, 9, 7),
+            Site.of(Site.Kind.TOWN_HOUSE, -22, 10, 7, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, -11, 12, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 0, 15, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 11, 13, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 22, 6, 6, 7),
+            Site.of(Site.Kind.TOWN_HOUSE, -6, 26, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 9, 26, 7, 6)), 90, 200);
 
     public static final Codec<IslandType> CODEC = StringRepresentable.fromEnum(IslandType::values);
 
@@ -147,7 +161,7 @@ public enum IslandType implements StringRepresentable {
     /** A building on an island: what it is and where, relative to the centre (before turning). */
     public record Site(Kind kind, int x, int z, int width, int depth) {
         public enum Kind {
-            HOUSE, BAR, WINDMILL, TOWN_HOUSE, MARINE_BASE, VILLA, ARLONG_PARK, GROVE, BUGGY_HQ, MANSION
+            HOUSE, BAR, WINDMILL, TOWN_HOUSE, MARINE_BASE, VILLA, ARLONG_PARK, GROVE, BUGGY_HQ, MANSION, BARATIE, SCAFFOLD, SWORD_SHOP
         }
 
         static Site of(Kind kind, int x, int z, int width, int depth) {

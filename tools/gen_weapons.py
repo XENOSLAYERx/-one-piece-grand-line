@@ -171,6 +171,19 @@ def naginata_head(u, q):
     return None
 
 
+def spear_head(u, q):
+    """The Daisensou's head: a broad leaf-shaped blade over a gold socket packed with a blasting charge."""
+    t = u - 9.0
+    if t < 0 or u > LENGTH - 0.6:
+        return None
+    if t < 1.2:
+        return (214, 176, 80) if abs(q) < 1.0 else None
+    half = max(0.35, 1.6 * (1 - abs((t - 3.2) / 3.4))) if t < 6.6 else 0.35
+    if abs(q) <= half:
+        return STEEL[0] if q < -0.3 else STEEL[1] if q < 0.3 else STEEL[2]
+    return None
+
+
 def bisento_head(u, q):
     t = u - 11.0
     if t < -1.4:
@@ -303,16 +316,16 @@ def kanabo():
     return outline(paint(canvas(), fn), (24, 24, 30))
 
 
-def jitte():
+def jitte(grip=((60, 44, 34), (126, 34, 34)), pommel=(196, 160, 72)):
     light, mid, dark = SEASTONE
 
     def fn(u, q, x, y):
         aq = abs(q)
         if u < 0.9 and aq < 0.4:
-            return (196, 160, 72)
+            return pommel
         if u < 5.0:
             if aq < 0.4:
-                return (60, 44, 34) if int(u * 1.4) % 2 == 0 else (126, 34, 34)
+                return grip[0] if int(u * 1.4) % 2 == 0 else grip[1]
             return None
         # The hook: a short prong standing off the upper-left side, pointing toward the tip.
         if 5.0 <= u < 6.4 and -2.2 <= q < 0:
@@ -648,6 +661,8 @@ def items():
         "buggys_knife": (sword(handle=(150, 30, 34), wrap=(232, 200, 70), guard=(212, 176, 70), guard_kind="cross", tip=LENGTH - 5.5),
                          False),
         "cat_claws": (cat_claws(), False),
+        "daisensou": (polearm(spear_head, shaft=((60, 56, 64), (36, 34, 40)), ring=(214, 176, 80), head_from=9.0), True),
+        "smokers_jitte": (jitte(grip=((226, 226, 230), (120, 120, 132)), pommel=(240, 240, 244)), True),
         "flintlock": (flintlock(), False),
         "musket": (musket(), True),
     }

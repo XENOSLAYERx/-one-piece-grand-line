@@ -7,6 +7,8 @@ import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.GLPlayer;
+import com.nerodev.grandline.effect.GLMobEffects;
+import com.nerodev.grandline.fruit.LogiaFruit;
 import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
 import com.nerodev.grandline.haki.HakiManager;
@@ -48,6 +50,8 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -107,6 +111,9 @@ public class BossEntity extends Monster {
     private BossDefinition cachedDefinition;
 
     @Nullable
+    /** Tag on a boss wearing a gas mask (Krieg, once he has thrown his MH5). */
+    public static final String GAS_MASK = "grandline_gas_mask";
+
     private BossMove move;
     private int moveTick;
     @Nullable
@@ -669,6 +676,27 @@ public class BossEntity extends Monster {
                 fighters.put(player.getUUID(), player);
             }
             BossDefinition def = definition();
+            if (def != null && def.intangible() && source.is(AbilityDamage.PHYSICAL) && !LogiaFruit.canTouch(source)) {
+                // A Logia body: the blow passes through smoke unless Armament Haki or Seastone backs it.
+                if (level() instanceof ServerLevel level) {
+                    Vfx.burst(level, this, position().add(0, getBbHeight() * 0.6, 0), 0xE8E8E8, 1.4f, Kind.SMOKE, 0);
+                }
+                if (living instanceof ServerPlayer player) {
+                    player.displayClientMessage(Component.literal("The blow passes through smoke! Only Armament Haki or Seastone can strike a "
+                            + "Logia.").withStyle(ChatFormatting.YELLOW), true);
+                }
+                return false;
+            }
+            if (move == BossMoves.PORCUPINE_CAPE && move.activeAt(moveTick) && source.getDirectEntity() == living) {
+                // The spiked cape: the blow barely reaches him, and the spikes bite whoever struck.
+                amount *= 0.2f;
+                if (distanceTo(living) < 4.5) {
+                    strike(living, 0.5f, AbilityDamage.STRIKE);
+                    living.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 60, 0));
+                    AbilityDamage.knockback(living, position(), 0.8, 0.25);
+                }
+                playSound(SoundEvents.ANVIL_LAND, 0.5f, 1.8f);
+            }
             if (def != null && def.bladeproof() && cutBy(source, living)) {
                 // The Chop-Chop body comes apart around the blade; only Armament Haki finds something to cut.
                 amount *= 0.1f;
@@ -704,6 +732,15 @@ public class BossEntity extends Monster {
             startMove(BossMoves.GUARD, living);
         }
         return hurt;
+    }
+
+    /** Don Krieg's gas mask, put on for his MH5: poison gas and its sickness do not touch him. */
+    @Override
+    public boolean canBeAffected(MobEffectInstance effect) {
+        if (getTags().contains(GAS_MASK) && (effect.is(MobEffects.POISON) || effect.is(MobEffects.CONFUSION))) {
+            return false;
+        }
+        return super.canBeAffected(effect);
     }
 
     /**

@@ -1,0 +1,77 @@
+{
+  "display_name": {
+    "translate": "boss.grandline.smoker"
+  },
+  "title": {
+    "translate": "boss.grandline.smoker.title"
+  },
+  "skin": "smoker",
+  "parts": "smoker",
+  "weapon": "grandline:smokers_jitte",
+  "stats": {
+    "health": 380,
+    "attack": 10,
+    "armor": 6,
+    "speed": 0.3,
+    "scale": 1.1,
+    "dodge": 0.1,
+    "guard": 0.0,
+    "knockback_resistance": 0.6
+  },
+  "bar_color": "white",
+  "faction": "grandline:marine",
+  "aggressive": false,
+  "intangible": true,
+  "phases": [
+    {
+      "name": {
+        "translate": "boss.grandline.smoker.phase1"
+      },
+      "moves": {
+        "jitte_strike": 3,
+        "white_blow": 3,
+        "guard": 1
+      },
+      "pace": 1.0
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.smoker.phase2"
+      },
+      "moves": {
+        "white_blow": 2,
+        "white_launcher": 2,
+        "jitte_strike": 2,
+        "white_out": 2
+      },
+      "pace": 1.15,
+      "threshold": 0.6,
+      "line": "Smoke can't be caught, pirate. But I can catch you."
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.smoker.phase3"
+      },
+      "moves": {
+        "white_out": 3,
+        "white_launcher": 3,
+        "white_blow": 2,
+        "jitte_strike": 2
+      },
+      "pace": 1.3,
+      "threshold": 0.3,
+      "line": "No pirate leaves Loguetown for the Grand Line on my watch!"
+    }
+  ],
+  "rewards": {
+    "bounty": 30000000,
+    "renown": 70,
+    "reputation": {
+      "grandline:marine": -30
+    }
+  },
+  "lines": {
+    "intro": "You there. You smell like a pirate.",
+    "defeat": "Tch... Get going, then. I'll be right behind you."
+  }
+}

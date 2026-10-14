@@ -1,6 +1,8 @@
 package com.nerodev.grandline.gametest;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.ability.AbilityManager.Result;
+import com.nerodev.grandline.ability.AbilityManager;
 import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.boss.BossMove;
@@ -9,6 +11,10 @@ import com.nerodev.grandline.boss.BossRespawns;
 import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
+import com.nerodev.grandline.effect.GLMobEffects;
+import com.nerodev.grandline.haki.HakiAbilities;
+import com.nerodev.grandline.haki.HakiManager;
+import com.nerodev.grandline.haki.HakiType;
 import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.registry.GLRegistries;
@@ -27,6 +33,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -241,6 +249,50 @@ public final class BossTests {
         helper.assertTrue(punched > 10, "A fist lands in full: " + punched + " damage");
         buggy.discard();
         helper.succeed();
+    }
+
+    @GameTest(template = ARENA)
+    public static void smokerIsSmoke(GameTestHelper helper) {
+        BossEntity smoker = spawn(helper, GLBosses.SMOKER, 8, 8);
+        ServerPlayer player = NpcTests.newPlayer(helper);
+        Vec3 at = helper.absoluteVec(new Vec3(1, 2, 1));
+        player.setPos(at.x, at.y, at.z);
+        float before = smoker.getHealth();
+        helper.assertFalse(smoker.hurt(player.damageSources().playerAttack(player), 20f), "A bare fist passes through smoke");
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
+        helper.assertFalse(smoker.hurt(player.damageSources().playerAttack(player), 20f), "So does a plain sword");
+        helper.assertTrue(smoker.getHealth() == before, "Smoker is untouched");
+        HakiManager.unlock(player, HakiType.ARMAMENT, false);
+        helper.assertTrue(AbilityManager.tryStart(player, HakiAbilities.ARMAMENT.get()) == Result.STARTED, "Coating on");
+        smoker.invulnerableTime = 0;
+        smoker.hurt(player.damageSources().playerAttack(player), 20f);
+        helper.assertTrue(smoker.getHealth() < before, "Armament Haki strikes the Logia: " + (before - smoker.getHealth()) + " damage");
+        smoker.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = ARENA, timeoutTicks = 80, batch = "boss_krieg")
+    public static void kriegsCapeAndGas(GameTestHelper helper) {
+        BossEntity krieg = spawn(helper, GLBosses.KRIEG, 8, 8);
+        ServerPlayer player = NpcTests.newPlayer(helper);
+        Vec3 at = helper.absoluteVec(new Vec3(8.5, 2, 6.5));
+        player.setPos(at.x, at.y, at.z);
+        krieg.perform(BossMoves.PORCUPINE_CAPE);
+        helper.runAfterDelay(12, () -> {
+            float before = krieg.getHealth();
+            krieg.invulnerableTime = 0;
+            krieg.hurt(player.damageSources().playerAttack(player), 20f);
+            float taken = before - krieg.getHealth();
+            helper.assertTrue(taken < 4f, "The spiked cape turns the blow: " + taken + " damage");
+            helper.assertTrue(player.hasEffect(GLMobEffects.BLEEDING), "...and its spikes bite the one who struck");
+            krieg.perform(BossMoves.MH5);
+            helper.runAfterDelay(2, () -> {
+                helper.assertTrue(krieg.getTags().contains(BossEntity.GAS_MASK), "Krieg masks up for MH5");
+                helper.assertFalse(krieg.canBeAffected(new MobEffectInstance(MobEffects.POISON, 100)), "His mask keeps out the gas");
+                krieg.discard();
+                helper.succeed();
+            });
+        });
     }
 
     @GameTest(template = ARENA, timeoutTicks = 140, batch = "boss_kuro")

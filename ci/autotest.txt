@@ -1267,6 +1267,20 @@ wait 20
 cmd tp @s 4600 -6 3064 180 30
 wait 80
 shot 184_syrup_village
+cmd tp @s 5000 -45 3000
+wait 20
+cmd onepiece island place baratie 3
+wait 20
+cmd tp @s 5000 -27 3032 180 30
+wait 80
+shot 194_baratie
+cmd tp @s 5400 -45 3000
+wait 20
+cmd onepiece island place loguetown 7
+wait 20
+cmd tp @s 5400 -8 3066 180 30
+wait 80
+shot 195_loguetown
 cmd gamemode survival
 cmd tp @s 0 -60 0
 wait 20
@@ -1390,6 +1404,23 @@ cmd onepiece boss move shakushi
 wait 32
 shot 186_kuro_shakushi
 cmd onepiece boss remove 32
+cmd tp @s 900 -60 900 0 0
+cmd onepiece boss spawn grandline:krieg
+wait 15
+cmd onepiece boss move mh5
+wait 34
+shot 196_krieg_mh5
+cmd onepiece boss remove 32
+cmd kill @e[type=area_effect_cloud]
+cmd effect clear @s
+cmd tp @s 900 -60 900 0 0
+cmd onepiece boss spawn grandline:smoker
+wait 15
+cmd onepiece boss move white_out
+wait 30
+shot 197_smoker_white_out
+cmd onepiece boss remove 32
+cmd effect clear @s
 cmd tp @s 1105 -60 1073 0 10
 wait 20
 cmd fill 1090 -63 1076 1120 -61 1115 water

@@ -455,11 +455,50 @@ def kuro(s):
     belt(s, hexc("101014"))
 
 
+def krieg(s):
+    # Don Krieg: black hair swept back, a hard square jaw, golden Wootz steel armour under a dark coat.
+    skin = SKIN_TONES["light"]
+    head(s, skin, hexc("16161c"), eyes=hexc("2a1a10"), mouth=hexc("6a4a3a"))
+    for x in (2, 5):
+        s.at("head", "front", x, 3, hexc("101014"), 0)
+    armour = hexc("d8b040")
+    torso(s, armour, lambda f, x, y, w, h: hexc("a8862a") if (x + y) % 4 == 0 or y in (4, 8) else armour)
+    arms(s, armour, skin, 12, cuff=hexc("a8862a"))
+    legs(s, hexc("2a2630"), hexc("16141a"), shoe_height=3)
+    belt(s, hexc("16141a"), armour)
+    coat(s, hexc("2a2630"), trim=hexc("a8862a"), length=7)
+
+
+def smoker(s):
+    # Captain Smoker: grey hair swept back, a white Marine jacket open over a bare chest crossed by belts, dark trousers.
+    skin = SKIN_TONES["tan"]
+    head(s, skin, hexc("c8c8cc"), eyes=hexc("3a2a1a"), mouth=hexc("6a4a3a"))
+    s.paint("head", lambda f, x, y, w, h: hexc("c8c8cc") if y < 3 else None, faces=("front",))
+    torso(s, skin, lambda f, x, y, w, h: hexc("5a3a22") if f == "front" and (x == y - 1 or x == 8 - y) else skin)
+    arms(s, WHITE, skin, 12, cuff=hexc("d8d8dc"))
+    legs(s, hexc("2a3040"), hexc("5a3a22"), shoe_height=4)
+    belt(s, hexc("3a2a1a"), GOLD)
+    coat(s, WHITE, trim=hexc("e8e8ec"), length=8)
+
+
+def cook(s):
+    # A cook of the Baratie: a tall white chef's hat, a white double-breasted jacket and an apron.
+    skin = SKIN_TONES["light"]
+    head(s, skin, hexc("4a3020"), eyes=hexc("2a2a2a"))
+    torso(s, WHITE, lambda f, x, y, w, h: hexc("c8c8cc") if f == "front" and x in (2, 5) and y in (2, 5) else WHITE)
+    arms(s, WHITE, skin, 10)
+    legs(s, hexc("2a2a30"), hexc("16161a"), shoe_height=2)
+    belt(s, hexc("e8e8ec"))
+    s.fill("head_", WHITE, faces=("top",))
+    s.paint("head_", lambda f, x, y, w, h: WHITE if y < 3 else None, faces=("front", "back", "left", "right"))
+
+
 SKIN_PAINTERS = {
     "marine": marine, "marine_officer": marine_officer, "pirate": pirate, "pirate_captain": pirate_captain,
     "fishman": fishman, "villager_a": villager_a, "villager_b": villager_b, "barkeeper": barkeeper,
     "merchant": merchant, "revolutionary": revolutionary, "bounty_hunter": bounty_hunter, "farmer": farmer,
     "morgan": morgan, "arlong": arlong, "buggy": buggy, "kuro": kuro,
+    "krieg": krieg, "smoker": smoker, "cook": cook,
 }
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -590,6 +629,22 @@ DEFINITIONS = {
                 trade("minecraft:gold_ingot", 4, "minecraft:emerald", 3, 12),
                 trade("minecraft:emerald", 24, "grandline:swordsman_scroll", 1, 1),
                 trade("minecraft:emerald", 24, "grandline:gunslinger_scroll", 1, 1)]),
+    "baratie_cook": dict(
+        display_name="Baratie Cook", role="guard", skin="cook", health=30, attack=5, speed=0.31, armor=1, equipment={},
+        patrol_radius=6,
+        lines={"friendly": ["Table for one? Right this way!", "Chef Zeff says no one leaves the Baratie hungry."],
+               "neutral": ["Pay your bill and nobody gets kicked.", "The kitchen's busy. Find a seat."],
+               "hostile": ["Nobody makes trouble in the Baratie!", "Time for a lesson from the kitchen!"]}),
+    "sword_dealer": dict(
+        display_name="Sword Dealer", role="merchant", skin="merchant", health=22, attack=1, speed=0.27, armor=0, wander_radius=3,
+        lines={"friendly": ["A swordsman who knows a good blade! Look here.", "This one has a story, if you dare."],
+               "neutral": ["Blades for every hand. Take your time.", "Loguetown's finest swords, here."],
+               "hostile": ["Put that down and get out!"]},
+        trades=[trade("minecraft:emerald", 6, "grandline:cutlass"),
+                trade("minecraft:emerald", 10, "grandline:katana", 1, 4),
+                trade("minecraft:emerald", 10, "grandline:naginata", 1, 3),
+                trade("minecraft:emerald", 24, "grandline:swordsman_scroll", 1, 1),
+                trade("minecraft:emerald", 48, "grandline:sandai_kitetsu", 1, 1, buy_b="minecraft:gold_ingot", buy_b_count=8)]),
     "tangerine_farmer": dict(
         display_name="Tangerine Farmer", role="merchant", skin="farmer", health=22, attack=2, speed=0.28, armor=0, wander_radius=8,
         lines={"friendly": ["Take a tangerine for the road!", "Bell-mere's trees never fail us."],

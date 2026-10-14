@@ -861,6 +861,24 @@ def _(h):
                                            C(3.5, -5, -4.5, 1, 1, 4, "dark")])
 
 
+@boss_parts("krieg", pal(0x2A2630, 0x16141A, 0x3A3640, gold=0xD8B040, metal=0x8A8C94), seed=955)
+def _(h):
+    # Don Krieg's Wootz steel: golden pauldrons over his shoulders and a dark cape studded with spikes down his back.
+    h.add("pauldron_r", anchor="RIGHT_ARM", cubes=[C(-4, -2.5, -3, 6, 3, 6, "gold"), C(-4.5, -2, -2.5, 1, 2, 5, "gold")])
+    h.add("pauldron_l", anchor="LEFT_ARM", cubes=[C(-2, -2.5, -3, 6, 3, 6, "gold"), C(3.5, -2, -2.5, 1, 2, 5, "gold")])
+    spikes = [C(x, y, 3, 1, 1, 2, "metal") for x in (-3, -0.5, 2) for y in (1.5, 5, 8.5)]
+    h.add("cape", anchor="BODY", cubes=[C(-4.5, -0.5, 2, 9, 12.5, 1, "dark")] + spikes)
+
+
+@boss_parts("smoker", pal(0xF2F0EA, 0x8A5A32, 0xFFFFFF, glow=0xF07A2A, dark=0x5A3A22), seed=956)
+def _(h):
+    # Captain Smoker's two lit cigars, and the white fur collar of his Marine jacket.
+    h.add("cigars", anchor="HEAD", cubes=[C(-2.5, -2.4, -6.5, 1, 1, 2, "accent"), C(1.5, -2.4, -6.5, 1, 1, 2, "accent"),
+                                          C(-2.5, -2.4, -7, 1, 1, 0.5, "glow"), C(1.5, -2.4, -7, 1, 1, 0.5, "glow")])
+    h.add("collar", anchor="BODY", cubes=[C(-4.5, -0.5, -2.5, 2, 2, 5, "fur"), C(2.5, -0.5, -2.5, 2, 2, 5, "fur"),
+                                          C(-4.5, -0.5, 1.5, 9, 2, 1, "fur")])
+
+
 BOSS_BODIES = {}
 
 

@@ -105,7 +105,8 @@ public final class IslandTests {
     public static void islandChestsHaveLoot(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         List<ResourceKey<LootTable>> tables = List.of(GLWorldgen.VILLAGE_HOUSE, GLWorldgen.PARTYS_BAR, GLWorldgen.MARINE_ARMORY,
-                GLWorldgen.ARLONG_HOARD, GLWorldgen.BURIED_TREASURE, GLWorldgen.BUGGY_STASH, GLWorldgen.KAYA_MANSION);
+                GLWorldgen.ARLONG_HOARD, GLWorldgen.BURIED_TREASURE, GLWorldgen.BUGGY_STASH, GLWorldgen.KAYA_MANSION, GLWorldgen.BARATIE_PANTRY,
+                GLWorldgen.SWORD_SHOP);
         LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                 .create(LootContextParamSets.CHEST);
         for (ResourceKey<LootTable> key : tables) {
@@ -197,6 +198,8 @@ public final class IslandTests {
                 case CONOMI_ISLANDS -> GLBosses.ARLONG;
                 case ORANGE_TOWN -> GLBosses.BUGGY;
                 case SYRUP_VILLAGE -> GLBosses.KURO;
+                case BARATIE -> GLBosses.KRIEG;
+                case LOGUETOWN -> GLBosses.SMOKER;
                 default -> null;
             };
             helper.assertTrue(ruler == null ? bosses.isEmpty() : bosses.size() == 1 && ruler.equals(bosses.getFirst().bossId()),

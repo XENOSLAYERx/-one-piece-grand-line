@@ -9,6 +9,9 @@ import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
 import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.weapon.WeaponItem.Special;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -227,6 +230,32 @@ final class WeaponSpecials {
                     Vfx.slash(level, attacker, target.getBoundingBox().getCenter(), new Vec3(-look.z, 0, look.x).normalize(), 0xE8ECF4, 1.4f, 5);
                 }
             }
+        }
+    };
+
+    /**
+     * Krieg's Daisensou: a swung blow sets off the blasting charge packed in its tip, throwing back and hurting
+     * everyone around the target. The charge takes two seconds to pack again.
+     */
+    static final Special DAISENSOU = new Special() {
+        private final Map<UUID, Long> armedAt = new HashMap<>();
+
+        @Override
+        public void afterHit(LivingEntity attacker, LivingEntity target, float dealt, boolean swing) {
+            long now = attacker.level().getGameTime();
+            if (!swing || armedAt.getOrDefault(attacker.getUUID(), 0L) > now || !(attacker.level() instanceof ServerLevel level)) {
+                return;
+            }
+            armedAt.put(attacker.getUUID(), now + 40);
+            Vec3 at = target.getBoundingBox().getCenter();
+            for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(2.5),
+                    e -> e != attacker && e.isAlive())) {
+                other.invulnerableTime = 0;
+                other.hurt(level.damageSources().explosion(attacker, attacker), dealt * 0.5f + 2f);
+                AbilityDamage.knockback(other, at, 0.9, 0.35);
+            }
+            Vfx.burst(level, attacker, at, 0xF0A040, 2.5f, Kind.FLAME, Vfx.FLASH | Vfx.SHOCKWAVE);
+            level.playSound(null, at.x, at.y, at.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.9f, 1.3f);
         }
     };
 

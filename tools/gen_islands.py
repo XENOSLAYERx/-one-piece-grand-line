@@ -19,6 +19,10 @@ ISLANDS = {
     "conomi_islands": ("Conomi Islands", "Cocoyasi's villas and tangerine groves, in the shadow of Arlong Park."),
     "orange_town": ("Orange Town", "A port town emptied by the Buggy Pirates, whose captain holds court in the tavern under a circus tent."),
     "syrup_village": ("Syrup Village", "A quiet village of the Gecko Islands, a mansion on its hill and a slope down to the sea."),
+    "baratie": ("Baratie", "The sea restaurant: a ship-shaped dining hall moored over a reef, its bow a fish's head, its cooks as quick "
+                "with their feet as with a knife."),
+    "loguetown": ("Loguetown", "The town of the beginning and the end, where the Pirate King was born and died: paved streets, "
+                  "the execution platform in the square, a sword shop and the Marine base of Captain Smoker."),
 }
 
 OCEANS = ["minecraft:ocean", "minecraft:deep_ocean", "minecraft:lukewarm_ocean", "minecraft:deep_lukewarm_ocean",
@@ -215,6 +219,29 @@ def loot_tables():
             item("minecraft:cocoa_beans", 4, 2, 6),
             item("minecraft:white_wool", 5, 2, 6),
             item("minecraft:glass_bottle", 4, 2, 4),
+        ]),
+    ])
+    table("baratie_pantry", [
+        (4, 8, [
+            item("minecraft:cooked_cod", 10, 2, 6),
+            item("minecraft:cooked_salmon", 8, 2, 5),
+            item("minecraft:bread", 8, 2, 6),
+            item("minecraft:cake", 2),
+            item("minecraft:pumpkin_pie", 4, 1, 3),
+            item("minecraft:golden_carrot", 3, 1, 3),
+            item("minecraft:sugar", 5, 2, 6),
+            item("minecraft:emerald", 6, 1, 4),
+            item("grandline:tangerine", 4, 2, 5),
+        ]),
+    ])
+    table("sword_shop", [
+        (2, 4, [
+            item("grandline:katana", 4),
+            item("grandline:cutlass", 5),
+            item("grandline:naginata", 2),
+            item("minecraft:iron_ingot", 6, 2, 6),
+            item("minecraft:emerald", 5, 2, 5),
+            item("grandline:swordsman_scroll", 1),
         ]),
     ])
     table("buried_treasure", [

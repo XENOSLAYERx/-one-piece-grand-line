@@ -1,0 +1,64 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.sword_dealer"
+  },
+  "role": "merchant",
+  "skin": "merchant",
+  "health": 22,
+  "attack": 1,
+  "speed": 0.27,
+  "armor": 0,
+  "wander_radius": 3,
+  "lines": {
+    "friendly": [
+      "A swordsman who knows a good blade! Look here.",
+      "This one has a story, if you dare."
+    ],
+    "neutral": [
+      "Blades for every hand. Take your time.",
+      "Loguetown's finest swords, here."
+    ],
+    "hostile": [
+      "Put that down and get out!"
+    ]
+  },
+  "trades": [
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 6,
+      "sell": "grandline:cutlass",
+      "sell_count": 1,
+      "max_uses": 12
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 10,
+      "sell": "grandline:katana",
+      "sell_count": 1,
+      "max_uses": 4
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 10,
+      "sell": "grandline:naginata",
+      "sell_count": 1,
+      "max_uses": 3
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 24,
+      "sell": "grandline:swordsman_scroll",
+      "sell_count": 1,
+      "max_uses": 1
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 48,
+      "sell": "grandline:sandai_kitetsu",
+      "sell_count": 1,
+      "max_uses": 1,
+      "buy_b": "minecraft:gold_ingot",
+      "buy_b_count": 8
+    }
+  ]
+}

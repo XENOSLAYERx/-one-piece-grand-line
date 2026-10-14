@@ -43,6 +43,10 @@ public final class GLBosses {
     public static final ResourceLocation BUGGY = GrandLine.id("buggy");
     /** Captain Kuro, the butler of Syrup Village's mansion. */
     public static final ResourceLocation KURO = GrandLine.id("kuro");
+    /** Don Krieg, the pirate admiral who came to take the Baratie. */
+    public static final ResourceLocation KRIEG = GrandLine.id("krieg");
+    /** Captain Smoker, the White Hunter of Loguetown, of the Smoke-Smoke Fruit. */
+    public static final ResourceLocation SMOKER = GrandLine.id("smoker");
     /** The Lord of the Coast, the Sea King of the East Blue. */
     public static final ResourceLocation LORD_OF_THE_COAST = GrandLine.id("lord_of_the_coast");
 

@@ -19,6 +19,14 @@
     {
       "structure": "grandline:syrup_village",
       "weight": 1
+    },
+    {
+      "structure": "grandline:baratie",
+      "weight": 1
+    },
+    {
+      "structure": "grandline:loguetown",
+      "weight": 1
     }
   ],
   "placement": {

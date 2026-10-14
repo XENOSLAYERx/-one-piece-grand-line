@@ -81,7 +81,9 @@ planks, and sink.
 
 **The East Blue** rises out of open ocean as islands, each with its own town and people: Dawn Island's windmill
 village, Shells Town under its Marine base, Orange Town under Buggy's circus tent, Syrup Village below Kaya's
-mansion, and the Conomi Islands in the shadow of Arlong Park. Islanders patrol, trade, flee and fight; how they treat
+mansion, the Baratie, a floating restaurant built like a fish, the Conomi Islands in the shadow of Arlong Park,
+and Loguetown, the town of beginnings, with its Marine base, its sword shop and the scaffold where the Pirate King
+died. Islanders patrol, trade, flee and fight; how they treat
 you depends on your faction (Pirates, Marines, Revolutionaries, Bounty Hunters) and on your standing, which your
 deeds raise and lower. Once a faction trusts you (standing 30) you may join it with `/onepiece faction join`; the
 Marines take no one with a bounty, and walking out costs you their trust.
@@ -92,7 +94,8 @@ recruit islanders.
 
 **Bosses** fight in three phases with telegraphed moves you can read and punish, and drop their signature weapons:
 Captain "Axe-Hand" Morgan, Buggy the Clown (blades pass through his Chop-Chop body; Haki doesn't), Captain Kuro,
-Arlong the Saw, and the Lord of the Coast, a Sea King that surfaces beside ships at sea. A boss grows tougher when
+Don Krieg (poison gas, a spiked cape and a spear that explodes), Arlong the Saw, Captain Smoker (a Logia: only
+Armament Haki or Seastone touches him), and the Lord of the Coast, a Sea King that surfaces beside ships at sea. A boss grows tougher when
 fought by a party, everyone who fought it shares the credit, and island bosses return to their posts after a while.
 
 **Quests** tell the East Blue story chapter by chapter, from Romance Dawn to Toward the Grand Line, alongside side

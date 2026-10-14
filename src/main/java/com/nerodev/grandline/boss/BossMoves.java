@@ -23,6 +23,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
@@ -667,6 +668,211 @@ public final class BossMoves {
         }
     }));
 
+    // ---------------------------------------------------------------------------------------------------------
+    // Don Krieg
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Damashi Uchi: Krieg throws open his coat and the guns hidden in his armour fire a volley. */
+    public static final BossMove DAMASHI_UCHI = register(new BossMove("damashi_uchi", 12, 10, 10, 60, 0, 20, false,
+            (boss, target, t) -> {
+                face(boss, target, true);
+                boss.getNavigation().stop();
+                if (t == 0) {
+                    sound(boss, SoundEvents.ARMOR_EQUIP_IRON.value(), 1.2f, 0.6f);
+                }
+                if (target != null && t >= 12 && t < 22 && (t - 12) % 2 == 0 && boss.level() instanceof ServerLevel level) {
+                    Vec3 from = boss.position().add(0, boss.getBbHeight() * 0.6, 0).add(boss.forward().scale(0.7));
+                    Vec3 aim = target.getBoundingBox().getCenter().subtract(from).normalize();
+                    NpcShot shot = new NpcShot(level, boss, boss.attackDamage() * 0.45f);
+                    shot.setPos(from.x, from.y, from.z);
+                    shot.setDeltaMovement(aim.add(boss.getRandom().nextGaussian() * 0.05, boss.getRandom().nextGaussian() * 0.04,
+                            boss.getRandom().nextGaussian() * 0.05).scale(2.2));
+                    level.addFreshEntity(shot);
+                    sound(boss, SoundEvents.GENERIC_EXPLODE.value(), 0.4f, 1.8f);
+                    burst(boss, from, 0xF0C060, 0.5f, Kind.SPARK, 0);
+                }
+            }));
+
+    /** Daisensou: a charging thrust of the great spear, whose tip blows up in whatever it meets. */
+    public static final BossMove DAISENSOU = register(new BossMove("daisensou", 16, 8, 14, 100, 3, 11, false, (boss, target, t) -> {
+        if (t < 16) {
+            boss.getNavigation().stop();
+            if (target != null) {
+                boss.lockDirection(target.position().subtract(boss.position()).multiply(1, 0, 1));
+                boss.getLookControl().setLookAt(target, 30f, 30f);
+            }
+            if (t == 0) {
+                sound(boss, SoundEvents.ARMOR_EQUIP_IRON.value(), 1.4f, 0.5f);
+            }
+            if (t % 3 == 0) {
+                trail(boss, boss.position().add(0, 0.1, 0), boss.position().add(boss.lockedDirection().scale(8)).add(0, 0.1, 0), 0xF0A040);
+            }
+            return;
+        }
+        if (t < 24) {
+            Vec3 dir = boss.lockedDirection();
+            boss.setDeltaMovement(dir.x * 0.9, boss.getDeltaMovement().y, dir.z * 0.9);
+            Vec3 tip = boss.position().add(dir.scale(2.2)).add(0, 1.1, 0);
+            if (t == 23 || boss.horizontalCollision || !boss.targetsAround(tip, 1.4).isEmpty()) {
+                sound(boss, SoundEvents.GENERIC_EXPLODE.value(), 1.4f, 0.9f);
+                burst(boss, tip, 0xF0A040, 3f, Kind.FLAME, Vfx.FLASH | Vfx.SHOCKWAVE | Vfx.HEAVY);
+                burst(boss, tip, 0x505050, 2f, Kind.SMOKE, 0);
+                for (LivingEntity victim : boss.targetsAround(tip, 3)) {
+                    boss.strike(victim, 1.8f, AbilityDamage.BLAST);
+                    AbilityDamage.knockback(victim, tip, 1.3, 0.5);
+                }
+                boss.setDeltaMovement(Vec3.ZERO);
+                boss.skipTo(24);
+            }
+        }
+    }));
+
+    /** MH5: Krieg puts on his gas mask and hurls a poison-gas shell; the cloud lingers where it bursts. */
+    public static final BossMove MH5 = register(new BossMove("mh5", 24, 2, 16, 400, 4, 20, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        face(boss, target, t < 18);
+        if (t == 0) {
+            boss.addTag(BossEntity.GAS_MASK);
+            boss.shout("MH5! Breathe it in!");
+            sound(boss, SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1.2f, 0.8f);
+        }
+        if (t < 24) {
+            if (target != null && t < 18) {
+                boss.lockSpot(target.position());
+            }
+            if (t % 4 == 0) {
+                burst(boss, boss.lockedSpot().add(0, 0.1, 0), 0x7AC83A, 5f, Kind.RING, Vfx.RING);
+            }
+            return;
+        }
+        if (t == 24 && boss.level() instanceof ServerLevel level) {
+            Vec3 spot = boss.lockedSpot();
+            Vfx.trail(level, boss, boss.getEyePosition(), spot.add(0, 0.5, 0), 0x6AA83A, 1f, Kind.SMOKE);
+            AreaEffectCloud cloud = new AreaEffectCloud(level, spot.x, spot.y, spot.z);
+            cloud.setOwner(boss);
+            cloud.setRadius(5f);
+            cloud.setRadiusPerTick(0f);
+            cloud.setWaitTime(0);
+            cloud.setDuration(160);
+            cloud.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 1));
+            cloud.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0));
+            level.addFreshEntity(cloud);
+            level.playSound(null, spot.x, spot.y, spot.z, SoundEvents.SPLASH_POTION_BREAK, SoundSource.HOSTILE, 1.4f, 0.6f);
+            burst(boss, spot.add(0, 1, 0), 0x7AC83A, 4f, Kind.SMOKE, Vfx.HEAVY);
+        }
+    }));
+
+    /** The spiked cape: Krieg wraps himself in it; blows barely reach him and the spikes bite whoever strikes. */
+    public static final BossMove PORCUPINE_CAPE = register(new BossMove("porcupine_cape", 6, 40, 10, 220, 0, 6, false,
+            (boss, target, t) -> {
+                boss.getNavigation().stop();
+                face(boss, target, true);
+                if (t == 0) {
+                    sound(boss, SoundEvents.ARMOR_EQUIP_IRON.value(), 1.4f, 0.5f);
+                }
+                if (t >= 6 && t < 46 && t % 8 == 0) {
+                    burst(boss, boss.position().add(0, 1.2, 0), 0x8A8C94, 1.6f, Kind.SHARD, 0);
+                }
+            }));
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Captain Smoker
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** White Blow: Smoker's fist turns to smoke and shoots out to seize his prey and drag them to him. */
+    public static final BossMove WHITE_BLOW = register(new BossMove("white_blow", 12, 6, 12, 80, 4, 16, false, (boss, target, t) -> {
+        face(boss, target, true);
+        boss.getNavigation().stop();
+        if (t < 12) {
+            if (t % 3 == 0 && target != null) {
+                smoke(boss, boss.getEyePosition(), target.getBoundingBox().getCenter());
+            }
+            return;
+        }
+        if (t == 12 && target != null && boss.distanceTo(target) <= 17 && boss.hasLineOfSight(target)) {
+            smoke(boss, boss.getEyePosition(), target.getBoundingBox().getCenter());
+            boss.strike(target, 0.9f, AbilityDamage.STRIKE);
+            Vec3 pull = boss.position().subtract(target.position()).multiply(1, 0, 1);
+            if (pull.lengthSqr() > 1.0E-4) {
+                pull = pull.normalize().scale(Math.min(1.6, pull.length() * 0.2));
+                target.setDeltaMovement(pull.x, 0.35, pull.z);
+                target.hurtMarked = true;
+            }
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
+            sound(boss, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.2f, 0.7f);
+            burst(boss, target.getBoundingBox().getCenter(), 0xE8E8E8, 1.4f, Kind.SMOKE, 0);
+        }
+    }));
+
+    /** White Launcher: Smoker becomes a jet of smoke and blasts through everything in a line. */
+    public static final BossMove WHITE_LAUNCHER = register(new BossMove("white_launcher", 10, 8, 12, 90, 3, 12, false,
+            (boss, target, t) -> {
+                if (t < 10) {
+                    boss.getNavigation().stop();
+                    if (target != null) {
+                        boss.lockDirection(target.position().subtract(boss.position()).multiply(1, 0, 1));
+                        boss.getLookControl().setLookAt(target, 30f, 30f);
+                    }
+                    if (t % 3 == 0) {
+                        trail(boss, boss.position().add(0, 0.1, 0), boss.position().add(boss.lockedDirection().scale(12)).add(0, 0.1, 0),
+                                0xE8E8E8);
+                    }
+                    return;
+                }
+                if (t < 18) {
+                    Vec3 dir = boss.lockedDirection();
+                    boss.setDeltaMovement(dir.x * 1.3, boss.getDeltaMovement().y, dir.z * 1.3);
+                    burst(boss, boss.position().add(0, 1, 0), 0xE8E8E8, 1f, Kind.SMOKE, 0);
+                    for (LivingEntity victim : boss.targetsAround(boss.position().add(dir.scale(1.2)), 1.8)) {
+                        if (boss.firstHit(victim)) {
+                            boss.strike(victim, 1.3f, AbilityDamage.STRIKE);
+                            AbilityDamage.knockback(victim, boss.position(), 1.4, 0.4);
+                            sound(boss, SoundEvents.PLAYER_ATTACK_STRONG, 1.2f, 0.7f);
+                        }
+                    }
+                }
+            }));
+
+    /** White Out: smoke pours from Smoker and binds everyone around him, choking and blinding them. */
+    public static final BossMove WHITE_OUT = register(new BossMove("white_out", 16, 40, 14, 240, 0, 8, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        if (t == 0) {
+            boss.shout("White Out!");
+            sound(boss, SoundEvents.FIRE_EXTINGUISH, 1.6f, 0.5f);
+        }
+        if (t < 16) {
+            if (t % 4 == 0) {
+                burst(boss, boss.position().add(0, 0.1, 0), 0xE8E8E8, 6f, Kind.RING, Vfx.RING);
+            }
+            return;
+        }
+        if (t < 56 && t % 10 == 6) {
+            burst(boss, boss.position().add(0, 1, 0), 0xE0E0E0, 6f, Kind.SMOKE, Vfx.HEAVY);
+            for (LivingEntity victim : boss.targetsAround(boss.position(), 6)) {
+                boss.strike(victim, 0.3f, AbilityDamage.STRIKE);
+                victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 3));
+                victim.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0));
+            }
+            sound(boss, SoundEvents.FIRE_EXTINGUISH, 0.8f, 0.6f);
+        }
+    }));
+
+    /** A blow of the Seastone jitte: it seals a Devil Fruit user's power for a while. */
+    public static final BossMove JITTE_STRIKE = register(new BossMove("jitte_strike", 8, 3, 10, 50, 0, 4, false, (boss, target, t) -> {
+        face(boss, target, true);
+        if (t == 8) {
+            sound(boss, SoundEvents.PLAYER_ATTACK_STRONG, 1.3f, 0.7f);
+            slash(boss, 3.2f, 0x6AB8B0);
+            for (LivingEntity victim : boss.targetsInArc(3.6, 100)) {
+                boss.strike(victim, 1.3f, AbilityDamage.STRIKE);
+                victim.addEffect(new MobEffectInstance(GLMobEffects.FRUIT_SEALED, 100, 0, false, true, true));
+                if (boss.level() instanceof ServerLevel level) {
+                    Vfx.status(level, victim, Vfx.StatusLook.SEASTONE, 100);
+                }
+            }
+        }
+    }));
+
     private BossMoves() {}
 
     /** The ship to ram: the one the prey is aboard, else the nearest within reach. */
@@ -718,6 +924,13 @@ public final class BossMoves {
     private static void trail(BossEntity boss, Vec3 from, Vec3 to, int color) {
         if (boss.level() instanceof ServerLevel level) {
             Vfx.trail(level, boss, from, to, color, 0.5f, Kind.SPARK);
+        }
+    }
+
+    /** A drifting stream of smoke from {@code from} to {@code to}. */
+    private static void smoke(BossEntity boss, Vec3 from, Vec3 to) {
+        if (boss.level() instanceof ServerLevel level) {
+            Vfx.trail(level, boss, from, to, 0xE8E8E8, 0.9f, Kind.SMOKE);
         }
     }
 

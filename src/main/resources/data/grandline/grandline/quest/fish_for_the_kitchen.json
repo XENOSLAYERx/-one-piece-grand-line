@@ -1,0 +1,39 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.fish_for_the_kitchen"
+  },
+  "description": {
+    "translate": "quest.grandline.fish_for_the_kitchen.desc"
+  },
+  "category": "side",
+  "order": 6,
+  "giver": "grandline:baratie_cook",
+  "island": "baratie",
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "minecraft:cod",
+      "count": 10,
+      "consume": true
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 8
+      },
+      {
+        "id": "minecraft:cooked_beef",
+        "count": 8
+      }
+    ],
+    "reputation": {
+      "grandline:civilians": 6
+    }
+  },
+  "lines": {
+    "offer": "Ten fresh cod and you eat free tonight. Deal?",
+    "done": "Now that's a catch! Sit down, the next plate is on the house."
+  }
+}

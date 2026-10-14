@@ -1,0 +1,48 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.the_town_of_beginnings"
+  },
+  "description": {
+    "translate": "quest.grandline.the_town_of_beginnings.desc"
+  },
+  "category": "main",
+  "order": 8,
+  "island": "loguetown",
+  "requires": [
+    "grandline:arlong_park"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "target": "grandline:loguetown"
+    },
+    {
+      "type": "talk",
+      "target": "grandline:sword_dealer"
+    },
+    {
+      "type": "defeat_boss",
+      "target": "grandline:smoker"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 28
+      },
+      {
+        "id": "minecraft:diamond",
+        "count": 2
+      }
+    ],
+    "renown": 80,
+    "reputation": {
+      "grandline:civilians": 10
+    },
+    "title": "grandline:smoke_chaser"
+  },
+  "lines": {
+    "done": "The White Hunter let you go, this time. Beyond Loguetown lies the Grand Line."
+  }
+}

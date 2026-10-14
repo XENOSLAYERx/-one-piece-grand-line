@@ -17,7 +17,7 @@ NPCS = ROOT + "/data/grandline/grandline/npc"
 BOSSES = ROOT + "/data/grandline/grandline/boss"
 FACTIONS = ROOT + "/data/grandline/grandline/faction"
 ITEM_MODELS = ROOT + "/assets/grandline/models/item"
-ISLANDS = {"dawn_island", "shells_town", "conomi_islands", "orange_town", "syrup_village"}
+ISLANDS = {"dawn_island", "shells_town", "conomi_islands", "orange_town", "syrup_village", "baratie", "loguetown"}
 
 
 def obj(kind, target=None, count=1, consume=False):
@@ -85,23 +85,43 @@ QUEST_LIST = {
                     "reputation": {"grandline:civilians": 10}},
         "lines": {"done": "Captain Kuro's hundred plans came to nothing. Next, the sea restaurant and the Fish-Men beyond it."},
     },
+    "the_sea_restaurant": {
+        "name": "The Sea Restaurant",
+        "desc": "The Baratie feeds every sailor who comes to it, pirate or Marine, and its cooks fight as well as they cook. Now "
+                "Don Krieg and his starving fleet have come to take the ship for their own.",
+        "category": "main", "order": 6, "requires": ["the_butler_of_syrup_village"], "island": "baratie",
+        "objectives": [obj("discover", "grandline:baratie"), obj("talk", "grandline:baratie_cook"), obj("defeat_boss", "grandline:krieg")],
+        "rewards": {"items": items(("minecraft:emerald", 20), ("minecraft:cooked_beef", 16), ("minecraft:cake", 1)), "renown": 50,
+                    "reputation": {"grandline:civilians": 15}},
+        "lines": {"done": "The Baratie is safe, and its cooks have stocked your hold. The Conomi Islands lie ahead."},
+    },
     "arlong_park": {
         "name": "Arlong Park",
         "desc": "Fish-Man pirates hold the Conomi Islands, taxing every villager for the right to live. A tangerine farmer "
                 "there knows the way into Arlong Park.",
-        "category": "main", "order": 6, "requires": ["the_butler_of_syrup_village"], "island": "conomi_islands",
+        "category": "main", "order": 7, "requires": ["the_sea_restaurant"], "island": "conomi_islands",
         "objectives": [obj("discover", "grandline:conomi_islands"), obj("talk", "grandline:tangerine_farmer"),
                        obj("defeat_npc", "grandline:fishman_pirate", 5), obj("defeat_boss", "grandline:arlong")],
         "rewards": {"items": items(("minecraft:emerald", 24), ("minecraft:diamond", 2), ("grandline:tangerine", 16)), "renown": 60,
                     "reputation": {"grandline:civilians": 20}},
         "lines": {"done": "Arlong Park has fallen. The Conomi Islands are free, and your bounty poster is on every wall."},
     },
+    "the_town_of_beginnings": {
+        "name": "The Town of the Beginning and the End",
+        "desc": "Every pirate bound for the Grand Line passes through Loguetown, where the Pirate King was born and died. "
+                "Captain Smoker, the White Hunter, is waiting for them, and blows pass through his smoke like air.",
+        "category": "main", "order": 8, "requires": ["arlong_park"], "island": "loguetown",
+        "objectives": [obj("discover", "grandline:loguetown"), obj("talk", "grandline:sword_dealer"), obj("defeat_boss", "grandline:smoker")],
+        "rewards": {"items": items(("minecraft:emerald", 28), ("minecraft:diamond", 2)), "renown": 80,
+                    "reputation": {"grandline:civilians": 10}},
+        "lines": {"done": "The White Hunter let you go, this time. Beyond Loguetown lies the Grand Line."},
+    },
     "toward_the_grand_line": {
         "name": "Toward the Grand Line",
         "desc": "Your name is known across the East Blue. Chart every island it holds, and earn a bounty worthy of the "
                 "Grand Line.",
-        "category": "main", "order": 7, "requires": ["arlong_park"],
-        "objectives": [obj("discover", count=5), obj("bounty", count=30_000_000)],
+        "category": "main", "order": 9, "requires": ["the_town_of_beginnings"],
+        "objectives": [obj("discover", count=7), obj("bounty", count=30_000_000)],
         "rewards": {"items": items(("minecraft:gold_ingot", 16), ("minecraft:emerald", 32)), "renown": 100},
         "lines": {"done": "The East Blue is behind you. The Grand Line's charts are still being drawn - its islands await."},
     },
@@ -142,6 +162,15 @@ QUEST_LIST = {
         "rewards": {"items": items(("minecraft:emerald", 5), ("minecraft:cooked_beef", 4)), "reputation": {"grandline:civilians": 6}},
         "lines": {"offer": "That old dog won't leave the shop. If only we had something to stock it with... bones, maybe?",
                   "done": "Look at him wag! Thank you, traveller."},
+    },
+    "fish_for_the_kitchen": {
+        "name": "Fish for the Kitchen",
+        "desc": "The Baratie's cooks can never have too much fresh fish. Bring them a catch from the open sea.",
+        "giver": "grandline:baratie_cook", "island": "baratie", "order": 6,
+        "objectives": [obj("collect", "minecraft:cod", 10, consume=True)],
+        "rewards": {"items": items(("minecraft:emerald", 8), ("minecraft:cooked_beef", 8)), "reputation": {"grandline:civilians": 6}},
+        "lines": {"offer": "Ten fresh cod and you eat free tonight. Deal?",
+                  "done": "Now that's a catch! Sit down, the next plate is on the house."},
     },
     "marine_drills": {
         "name": "Marine Drills",
@@ -206,6 +235,8 @@ TITLES = {
     "the_butler_of_syrup_village": ("guardian_of_syrup", "Guardian of Syrup"),
     "arlong_park": ("liberator_of_cocoyasi", "Liberator of Cocoyasi"),
     "toward_the_grand_line": ("grand_line_bound", "Grand Line Bound"),
+    "the_sea_restaurant": ("guest_of_the_baratie", "Guest of the Baratie"),
+    "the_town_of_beginnings": ("smoke_chaser", "Smoke Chaser"),
     "marine_drills": ("marine_cadet", "Marine Cadet"),
 }
 

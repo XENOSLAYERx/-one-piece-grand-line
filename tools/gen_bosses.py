@@ -122,6 +122,57 @@ BOSSES = {
         "loot": [("grandline:cat_claws", 1, 1), ("minecraft:emerald", 10, 18), ("minecraft:gold_ingot", 3, 6),
                  ("minecraft:diamond", 1, 2)],
     },
+    "krieg": {
+        "name": "Don Krieg",
+        "title": "\"Foul Play\", Admiral of the Krieg Pirates' Fifty Ships",
+        "skin": "krieg",
+        "parts": "krieg",
+        "weapon": "grandline:daisensou",
+        "stats": {"health": 360, "attack": 10, "armor": 14, "speed": 0.26, "scale": 1.25, "dodge": 0.0, "guard": 0.15,
+                  "knockback_resistance": 0.9},
+        "bar_color": "yellow",
+        "faction": "grandline:pirate",
+        "aggressive": True,
+        "phases": [
+            {"name": "Admiral of Fifty Ships", "moves": {"damashi_uchi": 3, "daisensou": 2, "guard": 1}, "pace": 1.0},
+            {"threshold": 0.6, "name": "Wootz Steel", "pace": 1.1,
+             "moves": {"daisensou": 3, "porcupine_cape": 2, "damashi_uchi": 2, "mh5": 1},
+             "line": "My armour is Wootz steel! Nothing you have can touch me!"},
+            {"threshold": 0.3, "name": "Foul Play", "pace": 1.3,
+             "moves": {"mh5": 2, "daisensou": 3, "damashi_uchi": 2, "porcupine_cape": 2},
+             "line": "Fair play is for fools! I'll take this ship and everyone on it!"},
+        ],
+        "rewards": {"bounty": 17_000_000, "renown": 50, "reputation": {"grandline:civilians": 30, "grandline:pirate": -25}},
+        "lines": {"intro": "The Baratie is mine now. Anyone who stands in my way dies.", "defeat": "I am... the strongest... in the East..."},
+        "loot": [("grandline:daisensou", 1, 1), ("minecraft:emerald", 10, 18), ("minecraft:gold_ingot", 4, 8),
+                 ("minecraft:golden_apple", 1, 1)],
+    },
+    "smoker": {
+        "name": "Captain Smoker",
+        "title": "\"The White Hunter\", Marine Captain of Loguetown, of the Smoke-Smoke Fruit",
+        "skin": "smoker",
+        "parts": "smoker",
+        "weapon": "grandline:smokers_jitte",
+        "stats": {"health": 380, "attack": 10, "armor": 6, "speed": 0.3, "scale": 1.1, "dodge": 0.1, "guard": 0.0,
+                  "knockback_resistance": 0.6},
+        "bar_color": "white",
+        "faction": "grandline:marine",
+        "aggressive": False,
+        "intangible": True,
+        "phases": [
+            {"name": "The White Hunter", "moves": {"jitte_strike": 3, "white_blow": 3, "guard": 1}, "pace": 1.0},
+            {"threshold": 0.6, "name": "White Out", "pace": 1.15,
+             "moves": {"white_blow": 2, "white_launcher": 2, "jitte_strike": 2, "white_out": 2},
+             "line": "Smoke can't be caught, pirate. But I can catch you."},
+            {"threshold": 0.3, "name": "Plume", "pace": 1.3,
+             "moves": {"white_out": 3, "white_launcher": 3, "white_blow": 2, "jitte_strike": 2},
+             "line": "No pirate leaves Loguetown for the Grand Line on my watch!"},
+        ],
+        "rewards": {"bounty": 30_000_000, "renown": 70, "reputation": {"grandline:marine": -30}},
+        "lines": {"intro": "You there. You smell like a pirate.", "defeat": "Tch... Get going, then. I'll be right behind you."},
+        "loot": [("grandline:smokers_jitte", 1, 1), ("minecraft:emerald", 12, 20), ("minecraft:diamond", 1, 3),
+                 ("minecraft:golden_apple", 1, 1)],
+    },
     "lord_of_the_coast": {
         "name": "Lord of the Coast",
         "title": "Sea King of the East Blue",
@@ -150,7 +201,7 @@ BOSSES = {
 
 def known_moves():
     with open(MOVES_JAVA) as f:
-        return set(re.findall(r'new BossMove\("([a-z_]+)"', f.read()))
+        return set(re.findall(r'new BossMove\("([a-z0-9_]+)"', f.read()))
 
 
 def definitions():
@@ -184,6 +235,8 @@ def definitions():
         data["aggressive"] = b["aggressive"]
         if b.get("bladeproof"):
             data["bladeproof"] = True
+        if b.get("intangible"):
+            data["intangible"] = True
         data.update({"phases": phases, "rewards": b["rewards"], "lines": b["lines"]})
         with open(f"{BOSSES_DIR}/{bid}.json", "w") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)

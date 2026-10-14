@@ -1,0 +1,8 @@
+{
+  "type": "grandline:island",
+  "island": "loguetown",
+  "biomes": "#grandline:has_structure/island",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

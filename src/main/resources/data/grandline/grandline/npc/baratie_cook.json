@@ -1,0 +1,27 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.baratie_cook"
+  },
+  "role": "guard",
+  "skin": "cook",
+  "health": 30,
+  "attack": 5,
+  "speed": 0.31,
+  "armor": 1,
+  "equipment": {},
+  "patrol_radius": 6,
+  "lines": {
+    "friendly": [
+      "Table for one? Right this way!",
+      "Chef Zeff says no one leaves the Baratie hungry."
+    ],
+    "neutral": [
+      "Pay your bill and nobody gets kicked.",
+      "The kitchen's busy. Find a seat."
+    ],
+    "hostile": [
+      "Nobody makes trouble in the Baratie!",
+      "Time for a lesson from the kitchen!"
+    ]
+  }
+}

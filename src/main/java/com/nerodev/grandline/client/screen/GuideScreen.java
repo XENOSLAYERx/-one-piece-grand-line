@@ -72,7 +72,8 @@ import net.minecraft.world.item.TooltipFlag;
 public class GuideScreen extends BrowserScreen {
     /** The boss who holds each island. */
     private static final Map<String, ResourceLocation> ISLAND_BOSSES = Map.of("shells_town", GLBosses.MORGAN,
-            "conomi_islands", GLBosses.ARLONG, "orange_town", GLBosses.BUGGY, "syrup_village", GLBosses.KURO);
+            "conomi_islands", GLBosses.ARLONG, "orange_town", GLBosses.BUGGY, "syrup_village", GLBosses.KURO, "baratie", GLBosses.KRIEG,
+            "loguetown", GLBosses.SMOKER);
 
     private final OpenGuidePayload info;
     @Nullable

@@ -192,7 +192,7 @@ final class IslandBuilder {
 
     /** Shells Town and Orange Town have paved streets; the villages have trodden earth. */
     private BlockState pathBlock(int x, int z) {
-        if (plan.type == IslandType.SHELLS_TOWN || plan.type == IslandType.ORANGE_TOWN) {
+        if (plan.type == IslandType.SHELLS_TOWN || plan.type == IslandType.ORANGE_TOWN || plan.type == IslandType.LOGUETOWN) {
             double roll = plan.hash(x, z, 8);
             return (roll < 0.55 ? Blocks.STONE_BRICKS : roll < 0.8 ? Blocks.COBBLESTONE : Blocks.ANDESITE).defaultBlockState();
         }
@@ -221,6 +221,8 @@ final class IslandBuilder {
             Blocks.SPRUCE_STAIRS, Blocks.SPRUCE_SLAB, Blocks.SPRUCE_DOOR, Blocks.STONE_BRICKS);
     private static final Palette VILLA = new Palette(Blocks.BIRCH_PLANKS, Blocks.SMOOTH_SANDSTONE, Blocks.STRIPPED_BIRCH_LOG,
             Blocks.ACACIA_STAIRS, Blocks.ACACIA_SLAB, Blocks.BIRCH_DOOR, Blocks.SANDSTONE);
+    private static final Palette RESTAURANT = new Palette(Blocks.SPRUCE_PLANKS, Blocks.BIRCH_PLANKS, Blocks.STRIPPED_DARK_OAK_LOG,
+            Blocks.WARPED_STAIRS, Blocks.WARPED_SLAB, Blocks.DARK_OAK_DOOR, Blocks.DARK_OAK_PLANKS);
     private static final Palette MANSION = new Palette(Blocks.DARK_OAK_PLANKS, Blocks.QUARTZ_BLOCK, Blocks.STRIPPED_DARK_OAK_LOG,
             Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DARK_OAK_DOOR, Blocks.STONE_BRICKS);
 
@@ -364,6 +366,9 @@ final class IslandBuilder {
             case GROVE -> grove(f);
             case BUGGY_HQ -> buggyHq(f);
             case MANSION -> mansion(f);
+            case BARATIE -> baratie(f);
+            case SCAFFOLD -> scaffold(f);
+            case SWORD_SHOP -> swordShop(f);
         }
     }
 
@@ -636,8 +641,14 @@ final class IslandBuilder {
         f.resident(GLNpcs.MARINE_RECRUIT, gate, 1, 11);
         f.resident(GLNpcs.MARINE_RIFLEMAN, gate - 2, 1, 3);
         f.resident(GLNpcs.MARINE_RIFLEMAN, gate + 2, 1, 3);
-        // And Captain Morgan himself, before the tower he had built in his own honour.
-        f.boss(GLBosses.MORGAN, tc + 2, 1, tz0 - 2, gate, 0);
+        if (plan.type == IslandType.LOGUETOWN) {
+            // Loguetown's base belongs to Captain Smoker, waiting in the yard for pirates bound for the Grand Line.
+            f.resident(GLNpcs.MARINE_LIEUTENANT, gate + 4, 1, 10);
+            f.boss(GLBosses.SMOKER, gate, 1, tz0 - 3, gate, 0);
+        } else {
+            // And Captain Morgan himself, before the tower he had built in his own honour.
+            f.boss(GLBosses.MORGAN, tc + 2, 1, tz0 - 2, gate, 0);
+        }
     }
 
     /** Arlong Park: sea-stone walls, a pool open to the sea, the hall with Arlong's seat (and Arlong), and the shark-tooth tower. */
@@ -823,6 +834,147 @@ final class IslandBuilder {
         f.boss(GLBosses.KURO, w / 2, 1, d / 2, w / 2, 0);
     }
 
+    /**
+     * The Baratie, the sea restaurant: a ship-shaped dining hall moored over its reef on a hull of dark planks, a fish's
+     * head for a bow and its tail at the stern, the kitchen at the back, the chefs' quarters above, its fighting cooks,
+     * and Don Krieg come to take it.
+     */
+    private void baratie(Frame f) {
+        int w = f.w;
+        int d = f.d;
+        int mid = d / 2;
+        // The hull and the deck around the hall, with a rail.
+        f.foundation(-2, -1, w + 1, d, Blocks.DARK_OAK_PLANKS);
+        for (int lx = -2; lx <= w + 1; lx++) {
+            for (int lz = -1; lz <= d; lz++) {
+                boolean corner = (lx < 0 || lx > w - 1) && (lz < 0 || lz > d - 1);
+                if (!corner) {
+                    f.set(lx, 0, lz, Blocks.SPRUCE_PLANKS);
+                    boolean rail = lx == -2 || lx == w + 1 || lz == -1 || lz == d;
+                    if (rail && Math.abs(lx - w / 2) > 1) {
+                        f.set(lx, 1, lz, lz == -1 || lz == d ? fence(false, true, false, true) : fence(true, false, true, false));
+                    }
+                }
+            }
+        }
+        shell(f, RESTAURANT, 2);
+        // The fish's head for a bow: orange and yellow, with round black eyes and a red mouth.
+        for (int k = 0; k < 4; k++) {
+            int lx = w + 2 + k;
+            int hw = Math.max(1, mid - 1 - k);
+            int hh = Math.max(1, 5 - k);
+            for (int lz = mid - hw; lz <= mid + hw; lz++) {
+                for (int ly = -1; ly <= hh; ly++) {
+                    boolean shell = ly == hh || Math.abs(lz - mid) == hw;
+                    f.set(lx, ly, lz, shell ? Blocks.ORANGE_TERRACOTTA : Blocks.YELLOW_TERRACOTTA);
+                }
+            }
+        }
+        int eyeSide = Math.max(1, mid - 2);
+        f.set(w + 3, 3, mid - eyeSide, Blocks.BLACK_CONCRETE);
+        f.set(w + 3, 3, mid + eyeSide, Blocks.BLACK_CONCRETE);
+        for (int lz = mid - 1; lz <= mid + 1; lz++) {
+            f.set(w + 5, 0, lz, Blocks.RED_TERRACOTTA);
+        }
+        // Its tail at the stern, a fan widening outward.
+        for (int k = 0; k < 3; k++) {
+            for (int ly = -k; ly <= 2 + k; ly++) {
+                f.set(-3 - k, ly, mid, Blocks.ORANGE_TERRACOTTA);
+            }
+        }
+        // The dining room: tables with white cloths and chairs.
+        for (int lx = 3; lx <= w - 6; lx += 4) {
+            for (int lz : new int[] {2, d - 3}) {
+                f.set(lx, 1, lz, Blocks.OAK_FENCE);
+                f.set(lx, 2, lz, Blocks.WHITE_CARPET);
+                f.set(lx - 1, 1, lz, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST));
+                f.set(lx + 1, 1, lz, stairs(Blocks.SPRUCE_STAIRS, Direction.WEST));
+            }
+        }
+        // The kitchen along the far end: stoves, smokers and the pantry.
+        for (int lz = 1; lz <= d - 2; lz++) {
+            boolean pantry = lz == mid;
+            if (pantry) {
+                f.chest(w - 2, 1, lz, Direction.WEST, GLWorldgen.BARATIE_PANTRY);
+            } else {
+                f.set(w - 2, 1, lz, (lz % 2 == 0 ? Blocks.SMOKER : Blocks.FURNACE).defaultBlockState()
+                        .setValue(FurnaceBlock.FACING, Direction.WEST));
+            }
+        }
+        f.container(w - 3, 1, 1, Blocks.BARREL.defaultBlockState(), GLWorldgen.BARATIE_PANTRY);
+        f.set(1, 1, 1, Blocks.LANTERN);
+        f.set(1, 1, d - 2, Blocks.LANTERN);
+        // The chefs' quarters upstairs.
+        f.bed(1, 5, d - 3, Blocks.WHITE_BED);
+        f.chest(3, 5, d - 2, Direction.NORTH, GLWorldgen.BARATIE_PANTRY);
+        f.set(2, 5, 1, Blocks.LANTERN);
+        f.resident(GLNpcs.BARATIE_COOK, w - 4, 1, mid - 1);
+        f.resident(GLNpcs.BARATIE_COOK, w - 4, 1, mid + 1);
+        f.resident(GLNpcs.BARATIE_COOK, 4, 1, mid);
+        f.resident(GLNpcs.TOWNSPERSON, 6, 1, 3);
+        f.resident(GLNpcs.PIRATE_GRUNT, w / 2 - 2, 1, 2);
+        f.resident(GLNpcs.PIRATE_GUNNER, w / 2 + 2, 1, 2);
+        f.boss(GLBosses.KRIEG, w / 2, 1, mid, w / 2, 0);
+    }
+
+    /** Loguetown's execution platform, where Gol D. Roger died: a raised wooden scaffold with steps, posts and a beam. */
+    private void scaffold(Frame f) {
+        int w = f.w;
+        int d = f.d;
+        f.foundation(0, 0, w - 1, d - 1, Blocks.STONE_BRICKS);
+        f.fill(0, 0, 0, w - 1, 0, d - 1, Blocks.STONE_BRICKS);
+        f.fill(0, 1, 0, w - 1, 12, d - 1, AIR);
+        // The platform on its legs, four blocks up.
+        for (int lx = 1; lx <= w - 2; lx++) {
+            for (int lz = 1; lz <= d - 2; lz++) {
+                f.set(lx, 4, lz, Blocks.SPRUCE_PLANKS);
+            }
+        }
+        for (int[] leg : new int[][] {{1, 1}, {w - 2, 1}, {1, d - 2}, {w - 2, d - 2}}) {
+            for (int ly = 1; ly <= 3; ly++) {
+                f.set(leg[0], ly, leg[1], log(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+            }
+        }
+        // Steps up from the front.
+        for (int k = 0; k < 4; k++) {
+            f.set(w / 2, k, -3 + k, stairs(Blocks.SPRUCE_STAIRS, Direction.SOUTH));
+            f.set(w / 2 + 1, k, -3 + k, stairs(Blocks.SPRUCE_STAIRS, Direction.SOUTH));
+        }
+        // The posts and crossbeam at the back of the platform.
+        int back = d - 3;
+        for (int ly = 5; ly <= 10; ly++) {
+            f.set(2, ly, back, log(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+            f.set(w - 3, ly, back, log(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+        }
+        for (int lx = 2; lx <= w - 3; lx++) {
+            f.set(lx, 11, back, log(Blocks.DARK_OAK_LOG, Direction.Axis.X));
+        }
+        f.set(w / 2, 5, back, Blocks.OAK_FENCE);
+        f.set(w / 2, 6, back, Blocks.OAK_FENCE);
+        f.set(2, 5, 1, Blocks.LANTERN);
+        f.set(w - 3, 5, 1, Blocks.LANTERN);
+        f.resident(GLNpcs.TOWNSPERSON, 0, 1, -2);
+        f.resident(GLNpcs.VILLAGER, w - 1, 1, -2);
+    }
+
+    /** A sword shop in Loguetown: racks of blades, a counter and the dealer behind it. */
+    private void swordShop(Frame f) {
+        int w = f.w;
+        int d = f.d;
+        shell(f, TOWN, 1);
+        for (int lx = 1; lx <= w - 2; lx++) {
+            f.set(lx, 1, d - 3, Blocks.SPRUCE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.TOP));
+        }
+        for (int lx = 1; lx <= w - 2; lx += 2) {
+            f.set(lx, 2, d - 2, Blocks.IRON_BARS);
+            f.set(lx, 1, d - 2, Blocks.BARREL);
+        }
+        f.chest(w - 2, 1, 1, Direction.SOUTH, GLWorldgen.SWORD_SHOP);
+        f.set(1, 1, 1, Blocks.LANTERN);
+        f.set(1, 1, d - 2, Blocks.GRINDSTONE);
+        f.resident(GLNpcs.SWORD_DEALER, w / 2, 1, d - 2);
+    }
+
     /** Bell-mère's tangerine grove: rows of small trees behind a fence. */
     private void grove(Frame f) {
         int w = f.w;
@@ -941,6 +1093,8 @@ final class IslandBuilder {
             case CONOMI_ISLANDS -> 0.5;
             case ORANGE_TOWN -> 0.3;
             case SYRUP_VILLAGE -> 0.65;
+            case BARATIE -> 0.15;
+            case LOGUETOWN -> 0.25;
         };
         int gx0 = Math.floorDiv(box.minX() - 4, CELL);
         int gx1 = Math.floorDiv(box.maxX() + 4, CELL);
