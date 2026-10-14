@@ -1,5 +1,7 @@
 package com.nerodev.grandline.world.island;
 
+import com.nerodev.grandline.boss.BossEntity;
+import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.npc.GLNpcs;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.world.GLWorldgen;
@@ -7,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.WorldGenLevel;
@@ -316,6 +319,19 @@ final class IslandBuilder {
             }
         }
 
+        /** A boss holding this ground, facing local (faceX, faceZ) (spawned once, by the chunk that holds the spot). */
+        void boss(ResourceLocation boss, int lx, int ly, int lz, int faceX, int faceZ) {
+            int x = b.worldX(lx, lz);
+            int y = y0 + ly;
+            int z = b.worldZ(lx, lz);
+            if (box.isInside(x, y, z)) {
+                double dx = b.worldX(faceX, faceZ) - x;
+                double dz = b.worldZ(faceX, faceZ) - z;
+                float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90f;
+                BossEntity.spawn(level, boss, new BlockPos(x, y, z), yaw, MobSpawnType.STRUCTURE);
+            }
+        }
+
         /** A flag on a pole: {@code colors} are the rows of the flag from the top. */
         void flag(int lx, int ly, int lz, int height, Block[] colors) {
             for (int i = 0; i < height; i++) {
@@ -612,9 +628,11 @@ final class IslandBuilder {
         f.resident(GLNpcs.MARINE_RECRUIT, gate, 1, 11);
         f.resident(GLNpcs.MARINE_RIFLEMAN, gate - 2, 1, 3);
         f.resident(GLNpcs.MARINE_RIFLEMAN, gate + 2, 1, 3);
+        // And Captain Morgan himself, before the tower he had built in his own honour.
+        f.boss(GLBosses.MORGAN, tc + 2, 1, tz0 - 2, gate, 0);
     }
 
-    /** Arlong Park: sea-stone walls, a pool open to the sea, the hall with Arlong's seat, and the shark-tooth tower. */
+    /** Arlong Park: sea-stone walls, a pool open to the sea, the hall with Arlong's seat (and Arlong), and the shark-tooth tower. */
     private void arlongPark(Frame f) {
         int w = f.w;
         int d = f.d;
@@ -691,7 +709,9 @@ final class IslandBuilder {
         f.resident(GLNpcs.FISHMAN_PIRATE, w - 3, 1, 2);
         f.resident(GLNpcs.FISHMAN_PIRATE, gate - 3, 1, 10);
         f.resident(GLNpcs.FISHMAN_PIRATE, gate + 3, 1, 10);
-        f.resident(GLNpcs.FISHMAN_PIRATE, gate, 1, hz1 - 3);
+        f.resident(GLNpcs.FISHMAN_PIRATE, gate - 3, 1, hz1 - 3);
+        // Arlong waits in his hall, before his seat.
+        f.boss(GLBosses.ARLONG, gate, 1, hz1 - 3, gate, hz0);
     }
 
     /** Bell-mère's tangerine grove: rows of small trees behind a fence. */

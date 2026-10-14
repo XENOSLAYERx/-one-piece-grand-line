@@ -1,0 +1,409 @@
+package com.nerodev.grandline.boss;
+
+import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.combat.AbilityDamage;
+import com.nerodev.grandline.effect.GLMobEffects;
+import com.nerodev.grandline.fx.GLParticles.Kind;
+import com.nerodev.grandline.fx.Vfx;
+import com.nerodev.grandline.npc.NpcEntity;
+import com.nerodev.grandline.npc.NpcShot;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * Every boss move, by id. Each is telegraphed during its windup (a pose, sounds and warning particles in the shape of
+ * what is coming) so a sharp player can dodge, guard or get clear, and each leaves the boss open while it recovers.
+ */
+public final class BossMoves {
+    private static final Map<String, BossMove> MOVES = new LinkedHashMap<>();
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Shared
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Between phases: an untouchable roar that throws everyone back. */
+    public static final BossMove ROAR = register(new BossMove("roar", 0, 34, 0, 0, 0, 64, true, (boss, target, t) -> {
+        if (t == 0) {
+            sound(boss, SoundEvents.RAVAGER_ROAR, 2f, 0.8f);
+            boss.getNavigation().stop();
+        }
+        if (t % 6 == 0) {
+            burst(boss, boss.position().add(0, 0.2, 0), 0xE8E0D0, 3f + t * 0.15f, Kind.RING, Vfx.RING);
+        }
+        if (t == 10) {
+            for (LivingEntity victim : boss.targetsAround(boss.position(), 7)) {
+                AbilityDamage.knockback(victim, boss.position(), 1.4, 0.5);
+                victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
+            }
+            burst(boss, boss.position().add(0, 1, 0), 0xFFFFFF, 6f, Kind.SHOCKWAVE, Vfx.SHOCKWAVE | Vfx.HEAVY);
+        }
+    }));
+
+    /** A raised guard: blows from the front glance off and are answered with a counter. */
+    public static final BossMove GUARD = register(new BossMove("guard", 0, 36, 4, 120, 0, 6, false, (boss, target, t) -> {
+        if (t == 0) {
+            sound(boss, SoundEvents.ARMOR_EQUIP_IRON.value(), 1.2f, 0.7f);
+        }
+        boss.getNavigation().stop();
+        if (target != null) {
+            boss.getLookControl().setLookAt(target, 30f, 30f);
+        }
+    }));
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Captain "Axe-Hand" Morgan
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** A wide axe swing in front of him. */
+    public static final BossMove CLEAVE = register(new BossMove("cleave", 14, 3, 12, 40, 0, 4.5, false, (boss, target, t) -> {
+        face(boss, target, t < 10);
+        if (t < 14 && t % 3 == 0) {
+            telegraphArc(boss, 4.5, 140, 0xE84A3A);
+        }
+        if (t == 14) {
+            sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 1.4f, 0.6f);
+            sound(boss, SoundEvents.IRON_GOLEM_ATTACK, 1.2f, 0.8f);
+            slash(boss, 4.5f, 0xD8DCE6);
+            for (LivingEntity victim : boss.targetsInArc(4.5, 140)) {
+                boss.strike(victim, 1.4f, AbilityDamage.SLASH);
+                AbilityDamage.knockback(victim, boss.position(), 0.9, 0.25);
+            }
+        }
+    }));
+
+    /** The axe brought down overhead: a shockwave rings out across the ground. */
+    public static final BossMove SLAM = register(new BossMove("slam", 18, 8, 18, 90, 0, 6, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        face(boss, target, t < 12);
+        if (t < 18 && t % 4 == 0) {
+            burst(boss, boss.position().add(0, 0.1, 0), 0xE84A3A, 6f, Kind.RING, Vfx.RING);
+        }
+        if (t == 18) {
+            sound(boss, SoundEvents.ANVIL_LAND, 1.6f, 0.5f);
+            sound(boss, SoundEvents.GENERIC_EXPLODE.value(), 1f, 0.8f);
+            Vec3 centre = boss.position().add(boss.forward().scale(1.5));
+            burst(boss, centre.add(0, 0.2, 0), 0x8A7A66, 6f, Kind.SHARD, Vfx.GROUND | Vfx.HEAVY);
+            for (LivingEntity victim : boss.targetsAround(centre, 6)) {
+                float falloff = (float) Math.max(0.35, 1 - victim.distanceTo(boss) / 7);
+                boss.strike(victim, 1.8f * falloff, AbilityDamage.CRUSH);
+                AbilityDamage.knockback(victim, centre, 0.6, 0.7);
+            }
+        }
+        if (t > 18 && t < 26) {
+            burst(boss, boss.position().add(0, 0.1, 0), 0xC8B89A, 2f + (t - 18) * 0.6f, Kind.RING, Vfx.RING);
+        }
+    }));
+
+    /** A head-down charge in a straight line, bowling over anyone in the way. */
+    public static final BossMove CHARGE = register(new BossMove("charge", 14, 16, 22, 140, 5, 16, false, (boss, target, t) -> {
+        if (t < 14) {
+            boss.getNavigation().stop();
+            if (target != null) {
+                boss.lockDirection(target.position().subtract(boss.position()).multiply(1, 0, 1));
+                boss.getLookControl().setLookAt(target, 30f, 30f);
+            }
+            if (t % 3 == 0) {
+                trail(boss, boss.position().add(0, 0.1, 0), boss.position().add(boss.lockedDirection().scale(10)).add(0, 0.1, 0), 0xE84A3A);
+            }
+            if (t == 0) {
+                sound(boss, SoundEvents.RAVAGER_STEP, 1.5f, 0.6f);
+            }
+            return;
+        }
+        if (t < 30) {
+            if (boss.horizontalCollision && t > 15) {
+                sound(boss, SoundEvents.ZOMBIE_ATTACK_IRON_DOOR, 1.5f, 0.6f);
+                burst(boss, boss.position().add(0, 1, 0), 0x8A7A66, 1.5f, Kind.SHARD, Vfx.HEAVY);
+                boss.skipTo(30);
+                return;
+            }
+            Vec3 dir = boss.lockedDirection();
+            boss.setDeltaMovement(dir.x * 0.85, boss.getDeltaMovement().y, dir.z * 0.85);
+            if (t % 2 == 0) {
+                burst(boss, boss.position().add(0, 0.3, 0), 0xB8A890, 0.8f, Kind.SMOKE, 0);
+            }
+            for (LivingEntity victim : boss.targetsAround(boss.position().add(dir.scale(1.2)), 1.8)) {
+                if (boss.firstHit(victim)) {
+                    boss.strike(victim, 1.5f, AbilityDamage.STRIKE);
+                    AbilityDamage.knockback(victim, boss.position(), 1.6, 0.45);
+                    sound(boss, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.4f, 0.7f);
+                }
+            }
+        }
+    }));
+
+    /** A crack of the iron jaw into whoever is closest. */
+    public static final BossMove JAW_BASH = register(new BossMove("jaw_bash", 8, 3, 10, 50, 0, 3, false, (boss, target, t) -> {
+        face(boss, target, true);
+        if (t == 8) {
+            sound(boss, SoundEvents.ANVIL_HIT, 1.4f, 0.6f);
+            for (LivingEntity victim : boss.targetsInArc(3.2, 70)) {
+                boss.strike(victim, 1.2f, AbilityDamage.STRIKE);
+                AbilityDamage.knockback(victim, boss.position(), 1.8, 0.5);
+                victim.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 0));
+                burst(boss, victim.getBoundingBox().getCenter(), 0xC0C4CC, 1.2f, Kind.STAR, Vfx.FLASH);
+            }
+        }
+    }));
+
+    /** Morgan calls his Marines to arms. */
+    public static final BossMove REINFORCEMENTS = register(new BossMove("reinforcements", 20, 1, 10, 600, 0, 40, false,
+            (boss, target, t) -> {
+                boss.getNavigation().stop();
+                if (t == 0) {
+                    sound(boss, SoundEvents.RAID_HORN.value(), 1.5f, 1.2f);
+                    boss.shout("Marines! Seize them!");
+                }
+                if (t == 20 && boss.level() instanceof ServerLevel level) {
+                    for (int i = 0; i < 2; i++) {
+                        double angle = boss.getRandom().nextDouble() * Mth.TWO_PI;
+                        BlockPos at = BlockPos.containing(boss.getX() + Math.cos(angle) * 3, boss.getY(), boss.getZ() + Math.sin(angle) * 3);
+                        NpcEntity marine = NpcEntity.spawn(level, GrandLine.id("marine_recruit"), at, boss.getYRot(), MobSpawnType.MOB_SUMMONED);
+                        if (marine != null) {
+                            boss.summoned(marine);
+                            if (target != null) {
+                                marine.provoke(target);
+                            }
+                            burst(boss, marine.position().add(0, 1, 0), 0x2F63B8, 1f, Kind.SMOKE, 0);
+                        }
+                    }
+                }
+            }));
+
+    /** Spinning with the axe held out: a whirl that follows its prey. */
+    public static final BossMove WHIRLWIND = register(new BossMove("whirlwind", 10, 44, 16, 160, 0, 9, false, (boss, target, t) -> {
+        if (t < 10) {
+            face(boss, target, true);
+            boss.getNavigation().stop();
+            return;
+        }
+        if (t < 54) {
+            if (target != null) {
+                boss.getNavigation().moveTo(target, 0.75);
+            }
+            if (t % 6 == 0) {
+                sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 1.2f, 0.9f + boss.getRandom().nextFloat() * 0.2f);
+                spiral(boss, 3.2f, 0xD8DCE6);
+                for (LivingEntity victim : boss.targetsAround(boss.position(), 3.2)) {
+                    boss.strike(victim, 0.75f, AbilityDamage.SLASH);
+                    AbilityDamage.knockback(victim, boss.position(), 0.5, 0.15);
+                }
+            }
+        } else {
+            boss.getNavigation().stop();
+        }
+    }));
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Arlong the Saw
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** A lunging shark bite that leaves its prey bleeding. */
+    public static final BossMove BITE = register(new BossMove("bite", 10, 6, 10, 40, 0, 6, false, (boss, target, t) -> {
+        face(boss, target, t < 10);
+        if (t == 0) {
+            sound(boss, SoundEvents.EVOKER_FANGS_ATTACK, 1.2f, 0.6f);
+        }
+        if (t == 10 && target != null) {
+            Vec3 lunge = target.position().subtract(boss.position()).normalize();
+            boss.setDeltaMovement(lunge.x * 1.1, 0.25, lunge.z * 1.1);
+        }
+        if (boss.moveIsActive(t) && target != null && boss.distanceTo(target) < 2.4 && boss.firstHit(target)) {
+            boss.strike(target, 1.6f, AbilityDamage.SLASH);
+            target.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 80, 0));
+            sound(boss, SoundEvents.PLAYER_ATTACK_CRIT, 1.3f, 0.6f);
+            burst(boss, target.getBoundingBox().getCenter(), 0xB02828, 1f, Kind.SPARK, Vfx.FLASH);
+        }
+    }));
+
+    /** Kiribachi swept through a wide half circle. */
+    public static final BossMove SAW_SWEEP = register(new BossMove("saw_sweep", 16, 3, 14, 60, 0, 5.5, false, (boss, target, t) -> {
+        face(boss, target, t < 12);
+        if (t < 16 && t % 3 == 0) {
+            telegraphArc(boss, 5.5, 200, 0xE84A3A);
+        }
+        if (t == 16) {
+            sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 1.5f, 0.5f);
+            slash(boss, 5.5f, 0xC8CCD6);
+            for (LivingEntity victim : boss.targetsInArc(5.5, 200)) {
+                boss.strike(victim, 1.5f, AbilityDamage.SLASH);
+                victim.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 100, 0));
+                AbilityDamage.knockback(victim, boss.position(), 0.8, 0.2);
+            }
+        }
+    }));
+
+    /** Shark on Darts: Arlong launches himself nose-first like a torpedo, straight through anything in his path. */
+    public static final BossMove SHARK_ON_DARTS = register(new BossMove("shark_on_darts", 22, 18, 26, 200, 6, 24, false,
+            (boss, target, t) -> {
+                if (t < 22) {
+                    boss.getNavigation().stop();
+                    if (target != null) {
+                        boss.lockDirection(target.getEyePosition().subtract(boss.getEyePosition()));
+                        boss.getLookControl().setLookAt(target, 30f, 30f);
+                    }
+                    if (t % 3 == 0) {
+                        trail(boss, boss.getEyePosition(), boss.getEyePosition().add(boss.lockedDirection().scale(12)), 0x5AA6C8);
+                    }
+                    if (t == 0) {
+                        sound(boss, SoundEvents.ELDER_GUARDIAN_CURSE, 1f, 1.6f);
+                    }
+                    return;
+                }
+                if (t == 22) {
+                    boss.setNoGravity(true);
+                    sound(boss, SoundEvents.TRIDENT_RIPTIDE_3.value(), 1.6f, 0.8f);
+                }
+                if (t < 40) {
+                    if (boss.horizontalCollision || boss.verticalCollision && t > 24) {
+                        boss.setNoGravity(false);
+                        burst(boss, boss.position().add(0, 1, 0), 0x5AA6C8, 2f, Kind.DROP, Vfx.HEAVY);
+                        boss.skipTo(40);
+                        return;
+                    }
+                    double speed = boss.isInWater() ? 2.1 : 1.6;
+                    boss.setDeltaMovement(boss.lockedDirection().scale(speed));
+                    burst(boss, boss.position().add(0, 1, 0), 0x8AC8E8, 0.6f, Kind.DROP, 0);
+                    for (LivingEntity victim : boss.targetsAround(boss.position().add(0, 1, 0), 2.0)) {
+                        if (boss.firstHit(victim)) {
+                            boss.strike(victim, 2.4f, AbilityDamage.STRIKE);
+                            AbilityDamage.knockback(victim, boss.position(), 2.0, 0.6);
+                            sound(boss, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1.6f, 0.5f);
+                        }
+                    }
+                }
+                if (t == 40) {
+                    boss.setNoGravity(false);
+                    boss.setDeltaMovement(boss.getDeltaMovement().scale(0.2));
+                }
+            }));
+
+    /** Tooth Gun: Arlong flicks teeth from his jaw like bullets. */
+    public static final BossMove TOOTH_GUN = register(new BossMove("tooth_gun", 12, 9, 10, 90, 4, 20, false, (boss, target, t) -> {
+        face(boss, target, true);
+        boss.getNavigation().stop();
+        if (target != null && t >= 12 && t < 21 && (t - 12) % 3 == 0 && boss.level() instanceof ServerLevel level) {
+            Vec3 from = boss.getEyePosition().add(boss.forward().scale(0.8));
+            Vec3 aim = target.getEyePosition().subtract(0, 0.4, 0).subtract(from).normalize();
+            NpcShot tooth = new NpcShot(level, boss, boss.attackDamage() * 0.6f);
+            tooth.setItem(new ItemStack(Items.QUARTZ));
+            tooth.setPos(from.x, from.y, from.z);
+            tooth.setDeltaMovement(aim.add(boss.getRandom().nextGaussian() * 0.04, boss.getRandom().nextGaussian() * 0.03,
+                    boss.getRandom().nextGaussian() * 0.04).scale(1.8));
+            level.addFreshEntity(tooth);
+            sound(boss, SoundEvents.ARROW_SHOOT, 1.2f, 1.4f);
+        }
+    }));
+
+    /** In his fury Arlong spins Kiribachi around him, tearing at everything near. */
+    public static final BossMove KIRIBACHI_SPIN = register(new BossMove("kiribachi_spin", 12, 50, 18, 150, 0, 9, false,
+            (boss, target, t) -> {
+                if (t < 12) {
+                    face(boss, target, true);
+                    boss.getNavigation().stop();
+                    return;
+                }
+                if (t < 62) {
+                    if (target != null) {
+                        boss.getNavigation().moveTo(target, 0.85);
+                    }
+                    if (t % 5 == 0) {
+                        sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 1.3f, 0.6f + boss.getRandom().nextFloat() * 0.2f);
+                        spiral(boss, 3.6f, 0xB02828);
+                        for (LivingEntity victim : boss.targetsAround(boss.position(), 3.6)) {
+                            boss.strike(victim, 0.7f, AbilityDamage.SLASH);
+                            victim.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 60, 0));
+                        }
+                    }
+                } else {
+                    boss.getNavigation().stop();
+                }
+            }));
+
+    private BossMoves() {}
+
+    private static BossMove register(BossMove move) {
+        MOVES.put(move.id(), move);
+        return move;
+    }
+
+    @Nullable
+    public static BossMove get(String id) {
+        return MOVES.get(id);
+    }
+
+    public static Collection<BossMove> all() {
+        return Collections.unmodifiableCollection(MOVES.values());
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------------------------------------------
+
+    private static void face(BossEntity boss, @Nullable LivingEntity target, boolean track) {
+        if (target != null && track) {
+            boss.getLookControl().setLookAt(target, 30f, 30f);
+            boss.setYRot(boss.yHeadRot);
+            boss.yBodyRot = boss.yHeadRot;
+        }
+    }
+
+    private static void sound(BossEntity boss, SoundEvent sound, float volume, float pitch) {
+        boss.level().playSound(null, boss.getX(), boss.getY(), boss.getZ(), sound, SoundSource.HOSTILE, volume, pitch);
+    }
+
+    private static void burst(BossEntity boss, Vec3 at, int color, float radius, Kind kind, int flags) {
+        if (boss.level() instanceof ServerLevel level) {
+            Vfx.burst(level, boss, at, color, radius, kind, flags);
+        }
+    }
+
+    private static void trail(BossEntity boss, Vec3 from, Vec3 to, int color) {
+        if (boss.level() instanceof ServerLevel level) {
+            Vfx.trail(level, boss, from, to, color, 0.5f, Kind.SPARK);
+        }
+    }
+
+    private static void slash(BossEntity boss, float size, int color) {
+        if (boss.level() instanceof ServerLevel level) {
+            Vfx.slash(level, boss, boss.position().add(0, boss.getBbHeight() * 0.55, 0).add(boss.forward().scale(size * 0.4)), boss.forward(),
+                    color, size, 3);
+        }
+    }
+
+    private static void spiral(BossEntity boss, float radius, int color) {
+        if (boss.level() instanceof ServerLevel level) {
+            Vfx.spiral(level, boss, boss.position().add(0, 1, 0), color, radius, Kind.STREAK);
+        }
+    }
+
+    /** Warning sparks along the edge of the arc a swing will cover. */
+    private static void telegraphArc(BossEntity boss, double radius, double degrees, int color) {
+        if (!(boss.level() instanceof ServerLevel level)) {
+            return;
+        }
+        double facing = Math.atan2(boss.forward().z, boss.forward().x);
+        double half = Math.toRadians(degrees / 2);
+        for (int i = 0; i <= 8; i++) {
+            double a = facing - half + (2 * half) * i / 8;
+            Vec3 at = boss.position().add(Math.cos(a) * radius, 0.15, Math.sin(a) * radius);
+            Vfx.burst(level, boss, at, color, 0.25f, Kind.SPARK, 0);
+        }
+    }
+}

@@ -191,6 +191,51 @@ def bisento_head(u, q):
     return None
 
 
+def axe_head(u, q):
+    """Morgan's axe: a great half-moon blade on the upper-left of the haft, with a spike on the other side."""
+    t = u - 9.0
+    if t < 0 or u > LENGTH - 0.3:
+        return None
+    if q > 0.4:
+        # Back spike.
+        return STEEL[2] if q < 1.4 - t * 0.12 and 1.0 < t < 3.4 else None
+    reach = 3.3 - 0.32 * (t - 2.6) ** 2
+    if q < -max(0.4, reach):
+        return None
+    if q < -reach + 0.8:
+        return (232, 236, 244)
+    if q < -0.35:
+        return STEEL[0] if t > 1.2 else STEEL[1]
+    return STEEL[1] if q < 0.35 else STEEL[2]
+
+
+def kiribachi():
+    """Arlong's saw-sword: a long, broad blade with a row of teeth on its edge."""
+    blade = ((196, 202, 210), (150, 156, 166), (104, 110, 120))
+
+    def fn(u, q, x, y):
+        aq = abs(q)
+        if u < 3.2:
+            if aq < 0.45:
+                return (62, 44, 30) if int(u * 1.6) % 2 == 0 else (42, 28, 18)
+            return None
+        if u < 3.9:
+            return (172, 140, 60) if aq < 1.6 else None
+        if u > LENGTH - 0.6:
+            return None
+        width = 1.25
+        if q < -width:
+            # Teeth along the edge.
+            return (226, 230, 238) if q > -width - 0.9 and int(u * 1.3) % 2 == 0 else None
+        if q > width:
+            return None
+        if q < -0.5:
+            return blade[0]
+        return blade[1] if q < 0.4 else blade[2]
+
+    return outline(paint(canvas(), fn), (28, 28, 34))
+
+
 def kanabo():
     iron = ((122, 124, 134), (84, 86, 96), (54, 56, 64))
     stud = (196, 198, 206)
@@ -557,6 +602,8 @@ def items():
         "yoru": (sword(blade=BLACK_STEEL, edge=(120, 170, 140), handle=(30, 28, 30), wrap=(200, 170, 60), guard=gold,
                        guard_kind="cross", tip=LENGTH - 0.4), True),
         "murakumogiri": (polearm(bisento_head, shaft=((70, 60, 54), (40, 34, 30)), head_from=11.0), True),
+        "morgans_axe": (polearm(axe_head, shaft=((110, 112, 122), (74, 76, 86)), head_from=9.0), True),
+        "kiribachi": (kiribachi(), True),
         "flintlock": (flintlock(), False),
         "musket": (musket(), True),
     }

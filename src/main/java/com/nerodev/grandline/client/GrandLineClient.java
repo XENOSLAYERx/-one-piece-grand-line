@@ -1,8 +1,10 @@
 package com.nerodev.grandline.client;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.client.anim.AnimationLoader;
 import com.nerodev.grandline.client.anim.PlayerAnimator;
+import com.nerodev.grandline.client.boss.BossRenderer;
 import com.nerodev.grandline.client.combat.ClientCombat;
 import com.nerodev.grandline.client.combat.CombatHud;
 import com.nerodev.grandline.client.dev.ClientAutoTest;
@@ -70,6 +72,7 @@ public final class GrandLineClient {
             event.registerEntityRenderer(GLShips.SHIP.get(), ShipRenderer::new);
             event.registerEntityRenderer(GLNpcs.NPC.get(), NpcRenderer::new);
             event.registerEntityRenderer(GLNpcs.NPC_SHOT.get(), ThrownItemRenderer::new);
+            event.registerEntityRenderer(GLBosses.BOSS.get(), BossRenderer::new);
         });
         modBus.addListener(ShipHud::register);
         modBus.addListener(TransformationModels::registerLayers);

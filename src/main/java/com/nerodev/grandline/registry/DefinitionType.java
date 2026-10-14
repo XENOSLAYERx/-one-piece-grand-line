@@ -2,6 +2,7 @@ package com.nerodev.grandline.registry;
 
 import com.nerodev.grandline.ability.Ability;
 import com.nerodev.grandline.ability.GLAbilities;
+import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.fruit.DevilFruit;
@@ -101,7 +102,20 @@ public record DefinitionType<T>(
                             npc.health(), npc.attack(), npc.armor(), npc.speed()))),
                     line("Trades", Component.literal(String.valueOf(npc.trades().size())))));
 
-    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP, NPC);
+    public static final DefinitionType<BossDefinition> BOSS = new DefinitionType<>(
+            "boss", GLRegistries.BOSS, BossDefinition::displayName,
+            boss -> List.of(
+                    line("Title", boss.title()),
+                    line("Faction", Component.literal(boss.faction().map(ResourceLocation::toString).orElse("-")
+                            + (boss.aggressive() ? ", attacks strangers" : ""))),
+                    line("Stats", Component.literal(String.format(Locale.ROOT, "%.0f health, %.0f attack, %.0f armour, size x%.2f",
+                            boss.stats().health(), boss.stats().attack(), boss.stats().armor(), boss.stats().scale()))),
+                    line("Phases", Component.literal(String.join(" > ", boss.phases().stream()
+                            .map(p -> p.name().getString() + " " + String.join("/", p.moves().keySet())).toList()))),
+                    line("Rewards", Component.literal(String.format(Locale.ROOT, "%,d bounty, %d renown", boss.rewards().bounty(),
+                            boss.rewards().renown())))));
+
+    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP, NPC, BOSS);
 
     public Registry<T> registry(RegistryAccess access) {
         return access.registryOrThrow(key);

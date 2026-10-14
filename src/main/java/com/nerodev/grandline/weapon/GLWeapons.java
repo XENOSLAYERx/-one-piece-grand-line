@@ -110,6 +110,12 @@ public final class GLWeapons {
     public static final DeferredItem<WeaponItem> YORU = weapon("yoru",
             legendary(Tiers.NETHERITE, WeaponKind.SWORD, WeaponGrade.SUPREME, 12f, 1.2f).reach(0.75f).haki(1.3f)
                     .special(WeaponSpecials.YORU));
+    /** Dropped by Captain "Axe-Hand" Morgan. */
+    public static final DeferredItem<WeaponItem> MORGANS_AXE = weapon("morgans_axe",
+            legendary(Tiers.DIAMOND, WeaponKind.CLUB, WeaponGrade.SKILLED, 11f, 0.85f).special(WeaponSpecials.CLEAVE));
+    /** Dropped by Arlong the Saw. */
+    public static final DeferredItem<WeaponItem> KIRIBACHI = weapon("kiribachi",
+            legendary(Tiers.DIAMOND, WeaponKind.POLEARM, WeaponGrade.SKILLED, 10.5f, 1.0f).reach(1f).special(WeaponSpecials.SAW));
     public static final DeferredItem<WeaponItem> MURAKUMOGIRI = weapon("murakumogiri",
             legendary(Tiers.NETHERITE, WeaponKind.POLEARM, WeaponGrade.SUPREME, 12.5f, 0.9f).reach(1.5f)
                     .special(WeaponSpecials.MURAKUMOGIRI));

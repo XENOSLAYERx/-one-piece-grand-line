@@ -17,7 +17,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
@@ -151,6 +153,43 @@ final class WeaponSpecials {
         Vec3 look = player.getLookAngle();
         return new Vec3(-look.z, 0, look.x).normalize();
     }
+
+    /**
+     * Morgan's axe: a swung blow staggers its target, and the swing's weight throws back and slows everyone else
+     * within reach of the blade.
+     */
+    static final Special CLEAVE = new Special() {
+        @Override
+        public void afterHit(LivingEntity attacker, LivingEntity target, float dealt, boolean swing) {
+            if (!swing) {
+                return;
+            }
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 1));
+            for (LivingEntity other : target.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.8),
+                    e -> e != target && e != attacker && e.isAlive())) {
+                AbilityDamage.knockback(other, attacker.position(), 0.6, 0.15);
+                other.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 1));
+            }
+            impact(target, 0xA8A8B0, 1.4f, Kind.SHOCKWAVE);
+        }
+    };
+
+    /** Kiribachi: the saw's teeth open bleeding wounds and chew through armour. */
+    static final Special SAW = new Special() {
+        @Override
+        public void afterHit(LivingEntity attacker, LivingEntity target, float dealt, boolean swing) {
+            target.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, swing ? 100 : 60, 0));
+            if (swing) {
+                for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                    ItemStack armour = target.getItemBySlot(slot);
+                    if (!armour.isEmpty() && armour.isDamageableItem()) {
+                        armour.hurtAndBreak(2, target, slot);
+                    }
+                }
+            }
+            impact(target, 0xB02828, 0.9f, Kind.SPARK);
+        }
+    };
 
     private static void impact(LivingEntity target, int color, float size, Kind kind) {
         if (target.level() instanceof ServerLevel level) {

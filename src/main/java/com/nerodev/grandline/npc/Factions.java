@@ -144,8 +144,12 @@ public final class Factions {
      * civilian is the victim the Marines answer the call, and every civilian around remembers who did it.
      */
     public static void alarm(NpcEntity victim, LivingEntity attacker) {
+        alarm(victim, victim.faction(), attacker);
+    }
+
+    /** Someone attacked {@code victim}, one of {@code faction} (a boss, say): the same call as for an islander. */
+    public static void alarm(LivingEntity victim, Optional<ResourceLocation> faction, LivingEntity attacker) {
         AABB area = victim.getBoundingBox().inflate(ALARM_RANGE);
-        Optional<ResourceLocation> faction = victim.faction();
         for (NpcEntity other : victim.level().getEntitiesOfClass(NpcEntity.class, area, n -> n != victim && n.isAlive())) {
             boolean kin = other.faction().equals(faction);
             boolean law = faction.isEmpty() && other.faction().map(MARINES::equals).orElse(false);

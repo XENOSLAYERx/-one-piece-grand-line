@@ -26,6 +26,8 @@ public final class ZoanLooks {
     private static final Map<ResourceLocation, Hybrid> HYBRIDS = new HashMap<>();
     /** Race features (Mink ears and tail, Fish-Man fins, Skypiean wings) by race id. */
     private static final Map<ResourceLocation, BeastShape> RACE_PARTS = new HashMap<>();
+    /** A boss's own features (Morgan's iron jaw, Arlong's saw nose and fins) by the parts name in its definition. */
+    private static final Map<String, BeastShape> BOSS_PARTS = new HashMap<>();
     private static final Map<BeastShape, BeastModel> MODELS = new HashMap<>();
 
     private ZoanLooks() {}
@@ -40,6 +42,10 @@ public final class ZoanLooks {
             if (id.startsWith("race_") && id.endsWith("_parts")) {
                 String race = id.substring("race_".length(), id.length() - "_parts".length());
                 RACE_PARTS.put(GrandLine.id(race), BeastShape.parse(e.getValue()));
+                continue;
+            }
+            if (id.startsWith("boss_") && id.endsWith("_parts")) {
+                BOSS_PARTS.put(id.substring("boss_".length(), id.length() - "_parts".length()), BeastShape.parse(e.getValue()));
                 continue;
             }
             if (id.endsWith("_parts")) {
@@ -65,6 +71,16 @@ public final class ZoanLooks {
         for (BeastShape parts : RACE_PARTS.values()) {
             event.registerLayerDefinition(parts.layer(), parts::createLayer);
         }
+        for (BeastShape parts : BOSS_PARTS.values()) {
+            event.registerLayerDefinition(parts.layer(), parts::createLayer);
+        }
+    }
+
+    /** A boss's features by the {@code parts} name in its definition, or null if it has none. */
+    @Nullable
+    public static BeastShape bossParts(String parts) {
+        load();
+        return parts.isEmpty() ? null : BOSS_PARTS.get(parts);
     }
 
     /** The features every member of {@code race} wears, or null for races that look human. */

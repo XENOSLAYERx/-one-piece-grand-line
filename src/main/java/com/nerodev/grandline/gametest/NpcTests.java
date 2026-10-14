@@ -231,7 +231,7 @@ public final class NpcTests {
      * Keeps the chunks around the test loaded and ticking (islanders walk beyond the arena), and returns what
      * lets them go again.
      */
-    private static Runnable keepLoaded(GameTestHelper helper) {
+    static Runnable keepLoaded(GameTestHelper helper) {
         BlockPos origin = helper.absolutePos(BlockPos.ZERO);
         int cx = origin.getX() >> 4;
         int cz = origin.getZ() >> 4;
@@ -266,7 +266,7 @@ public final class NpcTests {
         return npc;
     }
 
-    private static void run(GameTestHelper helper, MinecraftServer server, CommandSourceStack source, String command) {
+    static void run(GameTestHelper helper, MinecraftServer server, CommandSourceStack source, String command) {
         try {
             server.getCommands().getDispatcher().execute(command, source);
         } catch (CommandSyntaxException e) {
@@ -274,7 +274,7 @@ public final class NpcTests {
         }
     }
 
-    private static ServerPlayer newPlayer(GameTestHelper helper) {
+    static ServerPlayer newPlayer(GameTestHelper helper) {
         UUID id = UUID.randomUUID();
         return FakePlayerFactory.get(helper.getLevel(), new GameProfile(id, "gl_" + id.toString().substring(0, 8)));
     }

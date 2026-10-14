@@ -1250,7 +1250,7 @@ cmd tp @s 3800 -45 3000
 wait 20
 cmd onepiece island place conomi_islands 11
 wait 20
-cmd tp @s 3800 -14 3074 180 26
+cmd tp @s 3800 -8 3062 180 32
 wait 80
 shot 168_conomi_islands
 cmd gamemode survival
@@ -1318,6 +1318,48 @@ cmd onepiece bounty set 0
 cmd onepiece crew leave
 cmd kill @e[type=grandline:ship]
 cmd kill @e[type=item]
+cmd tp @s 0 -60 0
+wait 10
+
+# ---- Bosses: Morgan at rest, roaring into his second phase, and bringing his axe down; Arlong's Shark on Darts
+# and his last-phase Kiribachi spin (in creative, so the bosses leave the camera alone)
+camera first
+cmd gamemode creative
+cmd tp @s 600 -60 600 0 0
+wait 10
+cmd onepiece boss spawn grandline:morgan
+wait 25
+shot 173_morgan
+cmd onepiece boss phase 2
+wait 10
+shot 174_morgan_roar
+wait 32
+cmd onepiece boss move slam
+wait 20
+shot 175_morgan_slam
+cmd onepiece boss remove 32
+cmd kill @e[type=grandline:npc]
+cmd tp @s 800 -60 795 0 0
+wait 10
+cmd onepiece boss spawn grandline:arlong
+wait 20
+cmd tp @s 790 -58 812 -116 10
+wait 5
+cmd onepiece boss move shark_on_darts
+wait 26
+shot 176_arlong_darts
+cmd onepiece boss remove 64
+cmd tp @s 800 -60 795 0 0
+wait 5
+cmd onepiece boss spawn grandline:arlong
+cmd onepiece boss phase 3
+wait 42
+cmd onepiece boss move kiribachi_spin
+wait 24
+shot 177_arlong_spin
+cmd onepiece boss remove 64
+cmd kill @e[type=item]
+cmd gamemode survival
 cmd tp @s 0 -60 0
 wait 10
 

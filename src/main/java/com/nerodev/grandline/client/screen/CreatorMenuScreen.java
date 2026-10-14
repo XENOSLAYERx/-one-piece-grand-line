@@ -5,6 +5,7 @@ import com.nerodev.grandline.ability.Ability;
 import com.nerodev.grandline.ability.AbilityCategory;
 import com.nerodev.grandline.ability.AbilityState;
 import com.nerodev.grandline.ability.GLAbilities;
+import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.bounty.BountyHunts;
 import com.nerodev.grandline.creator.Battles;
@@ -111,6 +112,7 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("Weapons"), this::weapons));
         categories.add(new Category(Component.literal("Factions"), this::factions));
         categories.add(new Category(Component.literal("NPCs"), this::npcs));
+        categories.add(new Category(Component.literal("Bosses"), this::bosses));
         categories.add(new Category(Component.literal("Crew & Bounty"), this::crewAndBounty));
         categories.add(new Category(Component.literal("Ships"), this::ships));
         categories.add(new Category(Component.literal("Islands"), this::islands));
@@ -568,6 +570,36 @@ public class CreatorMenuScreen extends Screen {
             out.add(new Entry(npc.displayName(), details, color, icon, () -> false,
                     List.of(Action.of("Spawn here", "onepiece npc spawn " + id), Action.of("Spawn 3", "onepiece npc spawn " + id + " 3"),
                             Action.confirmed("Remove nearby", "onepiece npc remove 16"))));
+        }
+        return out;
+    }
+
+    private List<Entry> bosses() {
+        List<Entry> out = new ArrayList<>();
+        for (Map.Entry<ResourceKey<BossDefinition>, BossDefinition> e : sorted(GLRegistries.BOSS)) {
+            ResourceLocation id = e.getKey().location();
+            BossDefinition boss = e.getValue();
+            List<Component> details = new ArrayList<>();
+            details.add(boss.title().copy().withStyle(ChatFormatting.GRAY));
+            details.add(line("Stats", Component.literal(String.format(Locale.ROOT, "%.0f health, %.0f attack, %.0f armour", boss.stats().health(),
+                    boss.stats().attack(), boss.stats().armor()))));
+            for (int i = 0; i < boss.phases().size(); i++) {
+                BossDefinition.Phase phase = boss.phases().get(i);
+                details.add(line("Phase " + (i + 1), phase.name().copy().append(Component.literal(" - " + String.join(", ",
+                        phase.moves().keySet())).withStyle(ChatFormatting.DARK_GRAY))));
+            }
+            details.add(line("Beaten", Component.literal(Bounties.format(boss.rewards().bounty()) + " bounty, " + boss.rewards().renown()
+                    + " renown")));
+            List<Action> actions = new ArrayList<>();
+            actions.add(Action.of("Spawn here", "onepiece boss spawn " + id));
+            actions.add(Action.of("Nearest boss info", "onepiece boss info"));
+            for (int i = 1; i < boss.phases().size(); i++) {
+                actions.add(Action.of("Skip to phase " + (i + 1), "onepiece boss phase " + (i + 1)));
+            }
+            actions.add(Action.confirmed("Remove nearby", "onepiece boss remove 32"));
+            ItemStack icon = boss.weapon().map(ItemStack::new).orElseGet(() -> new ItemStack(Items.WITHER_SKELETON_SKULL));
+            Integer color = boss.barColor().getFormatting().getColor();
+            out.add(new Entry(boss.displayName(), details, color == null ? 0xF2EEDC : color, icon, () -> false, actions));
         }
         return out;
     }

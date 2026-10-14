@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""Generates the boss definitions, their loot tables and their names.
+
+Run from the repository root: python3 tools/gen_bosses.py
+
+Writes
+  src/main/resources/data/grandline/grandline/boss/<id>.json         the boss (see BossDefinition)
+  src/main/resources/data/grandline/loot_table/entities/boss/<id>.json what they drop (their signature weapon always)
+  boss.grandline.* entries in assets/grandline/lang/en_us.json
+The moves named in each phase are code (BossMoves); unknown move ids fail here.
+"""
+import json
+import os
+import re
+
+ROOT = "src/main/resources"
+BOSSES_DIR = ROOT + "/data/grandline/grandline/boss"
+LOOT_DIR = ROOT + "/data/grandline/loot_table/entities/boss"
+MOVES_JAVA = "src/main/java/com/nerodev/grandline/boss/BossMoves.java"
+
+BOSSES = {
+    "morgan": {
+        "name": "Captain Morgan",
+        "title": "\"Axe-Hand\", Marine Captain of Shells Town",
+        "skin": "morgan",
+        "parts": "morgan",
+        "weapon": "grandline:morgans_axe",
+        "stats": {"health": 260, "attack": 9, "armor": 8, "speed": 0.27, "scale": 1.2, "dodge": 0.0, "guard": 0.25,
+                  "knockback_resistance": 0.8},
+        "bar_color": "white",
+        "faction": "grandline:marine",
+        "aggressive": False,
+        "phases": [
+            {"name": "Captain of the Base", "moves": {"cleave": 4, "jaw_bash": 3, "charge": 2, "slam": 1}, "pace": 1.0},
+            {"threshold": 0.6, "name": "Axe-Hand", "pace": 1.15,
+             "moves": {"cleave": 3, "slam": 3, "charge": 2, "jaw_bash": 2, "reinforcements": 2},
+             "line": "Rank is everything! Kneel before your captain!"},
+            {"threshold": 0.3, "name": "The Fallen Captain", "pace": 1.35,
+             "moves": {"whirlwind": 3, "charge": 3, "slam": 2, "cleave": 2},
+             "line": "I'll cut you down myself, and this whole town with you!"},
+        ],
+        "rewards": {"bounty": 8_000_000, "renown": 50, "reputation": {"grandline:civilians": 40, "grandline:marine": -25}},
+        "lines": {"intro": "You dare raise a hand against Captain Morgan? The penalty is death!",
+                  "defeat": "Impossible... I am... a Marine captain..."},
+        "loot": [("grandline:morgans_axe", 1, 1), ("minecraft:emerald", 8, 16), ("minecraft:gold_ingot", 3, 6),
+                 ("minecraft:iron_ingot", 4, 10)],
+    },
+    "arlong": {
+        "name": "Arlong",
+        "title": "\"the Saw\", Captain of the Arlong Pirates",
+        "skin": "arlong",
+        "parts": "arlong",
+        "weapon": "grandline:kiribachi",
+        "stats": {"health": 380, "attack": 11, "armor": 10, "speed": 0.3, "scale": 1.3, "dodge": 0.12, "guard": 0.1,
+                  "knockback_resistance": 0.9},
+        "bar_color": "blue",
+        "faction": "grandline:pirate",
+        "aggressive": True,
+        "phases": [
+            {"name": "Fish-Man Pride", "moves": {"bite": 4, "tooth_gun": 2, "shark_on_darts": 1}, "pace": 1.0},
+            {"threshold": 0.6, "name": "Kiribachi", "pace": 1.15,
+             "moves": {"saw_sweep": 4, "bite": 2, "shark_on_darts": 2, "tooth_gun": 2},
+             "line": "An inferior species dares to stand against me? Then feel my Kiribachi!"},
+            {"threshold": 0.3, "name": "Fury of the Saw", "pace": 1.4,
+             "moves": {"kiribachi_spin": 3, "shark_on_darts": 3, "saw_sweep": 2, "bite": 2},
+             "line": "I'll tear this island apart before I let a human take it!"},
+        ],
+        "rewards": {"bounty": 22_000_000, "renown": 120, "reputation": {"grandline:civilians": 60, "grandline:pirate": -40}},
+        "lines": {"intro": "Shahahaha! A lowly human in Arlong Park? You'll learn your place!",
+                  "defeat": "A human... beat me...?"},
+        "loot": [("grandline:kiribachi", 1, 1), ("minecraft:emerald", 16, 32), ("minecraft:gold_ingot", 6, 12),
+                 ("minecraft:diamond", 1, 3), ("minecraft:prismarine_shard", 4, 10)],
+    },
+}
+
+
+def known_moves():
+    with open(MOVES_JAVA) as f:
+        return set(re.findall(r'new BossMove\("([a-z_]+)"', f.read()))
+
+
+def definitions():
+    moves = known_moves()
+    os.makedirs(BOSSES_DIR, exist_ok=True)
+    lang_path = ROOT + "/assets/grandline/lang/en_us.json"
+    with open(lang_path) as f:
+        lang = json.load(f)
+    for bid, b in BOSSES.items():
+        key = f"boss.grandline.{bid}"
+        phases = []
+        for i, p in enumerate(b["phases"]):
+            unknown = set(p["moves"]) - moves
+            assert not unknown, f"{bid}: unknown moves {unknown}"
+            phase = {"name": {"translate": f"{key}.phase{i + 1}"}, "moves": p["moves"], "pace": p["pace"]}
+            if "threshold" in p:
+                phase["threshold"] = p["threshold"]
+            if p.get("line"):
+                phase["line"] = p["line"]
+            phases.append(phase)
+            lang[f"{key}.phase{i + 1}"] = p["name"]
+        data = {
+            "display_name": {"translate": key},
+            "title": {"translate": key + ".title"},
+            "skin": b["skin"],
+            "parts": b["parts"],
+            "weapon": b["weapon"],
+            "stats": b["stats"],
+            "bar_color": b["bar_color"],
+            "faction": b["faction"],
+            "aggressive": b["aggressive"],
+            "phases": phases,
+            "rewards": b["rewards"],
+            "lines": b["lines"],
+        }
+        with open(f"{BOSSES_DIR}/{bid}.json", "w") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+        lang[key] = b["name"]
+        lang[key + ".title"] = b["title"]
+    lang["entity.grandline.boss"] = "Boss"
+    with open(lang_path, "w") as f:
+        json.dump(lang, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
+def loot():
+    os.makedirs(LOOT_DIR, exist_ok=True)
+    for bid, b in BOSSES.items():
+        pools = []
+        for item, lo, hi in b["loot"]:
+            entry = {"type": "minecraft:item", "name": item}
+            if hi > 1:
+                entry["functions"] = [{"function": "minecraft:set_count",
+                                       "count": {"type": "minecraft:uniform", "min": lo, "max": hi}}]
+            pools.append({"rolls": 1, "entries": [entry]})
+        table = {"type": "minecraft:entity", "pools": pools, "random_sequence": f"grandline:entities/boss/{bid}"}
+        with open(f"{LOOT_DIR}/{bid}.json", "w") as f:
+            json.dump(table, f, indent=2)
+            f.write("\n")
+
+
+if __name__ == "__main__":
+    definitions()
+    loot()
+    print(f"{len(BOSSES)} bosses")

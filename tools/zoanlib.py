@@ -287,6 +287,17 @@ def paint_face(px, rect, face, mat, pal, pattern, rnd):
     elif mat == "glow":
         gc = pal.get("glow", accent)
         fill(px, rect, lambda x, y, w, h: noisy(gc, rnd, 4))
+    elif mat == "metal":
+        mc = pal.get("metal", (150, 156, 166))
+
+        def fn(x, y, w, h):
+            # Brushed steel: a bright band across the upper third, darker below, with rivets at the corners.
+            t = y / max(1, h - 1) if face not in ("top", "bottom") else 0.4
+            c = shade(noisy(mc, rnd, 5), 1.25 - 0.45 * t if t > 0.25 else 1.1 + 0.3 * (0.25 - t))
+            if w > 3 and h > 2 and (x in (1, w - 2)) and (y in (1, h - 2)):
+                c = shade(mc, 0.5)
+            return c
+        fill(px, rect, fn)
     else:
         raise ValueError("unknown material " + mat)
 

@@ -373,10 +373,59 @@ def farmer(s):
     s.paint("head_", lambda f, x, y, w, h: RED if y == 2 else None, faces=("front", "back", "left", "right"))
 
 
+def morgan(s):
+    # Captain "Axe-Hand" Morgan: blond crew cut, scarred brow, a navy suit under a white captain's coat.
+    skin = SKIN_TONES["light"]
+    head(s, skin, hexc("e2c25a"), eyes=hexc("4a2a18"), mouth=hexc("8a6a5a"))
+    for x in (1, 2, 3):
+        s.at("head", "front", x, 2 + (x == 2), hexc("b07a6a"), 0)
+    torso(s, NAVY, lambda f, x, y, w, h: WHITE if f == "front" and x in (3, 4) and y < 6 else (
+        GOLD if f == "front" and x in (3, 4) and y in (7, 9) else NAVY))
+    arms(s, NAVY, skin, 12)
+    legs(s, hexc("232a3e"), BLACK, shoe_height=3)
+    belt(s, BLACK, GOLD)
+    coat(s, WHITE, trim=GOLD, length=8)
+    for x in range(8):
+        if x not in (2, 5):
+            s.at("body_", "back", x, 3, BLACK, 0)
+        if x in (0, 3, 4, 7):
+            s.at("body_", "back", x, 4, BLACK, 0)
+    # Captain's epaulettes on the coat's shoulders.
+    for box in ("rarm_", "larm_"):
+        s.paint(box, lambda f, x, y, w, h: GOLD if (f == "top") or (y == 0 and f in ("front", "back", "left", "right")) else None)
+
+
+def arlong(s):
+    # Arlong the Saw: grey-blue sawshark skin, gills, a mouthful of fangs, a fan of black hair and an open flowered shirt.
+    skin = hexc("86a2b8")
+    head(s, skin, hexc("1a1c24"), style="long", eyes=hexc("c8a020"), mouth=WHITE)
+    for x in range(2, 6):
+        s.at("head", "front", x, 6, WHITE if x % 2 else hexc("d8d4c8"), 0)
+        s.at("head", "front", x, 7, darker(skin, 0.7), 0)
+    for f in ("left", "right"):
+        for y in (5, 6, 7):
+            s.at("head", f, 2 if f == "left" else 5, y, darker(skin, 0.55), 0)
+            s.at("head", f, 3 if f == "left" else 4, y, darker(skin, 0.55), 0)
+    # The fan of hair standing up behind his head, on the hat layer.
+    s.paint("head_", lambda f, x, y, w, h: hexc("1a1c24") if (f == "back" and y < 6) or (f in ("left", "right") and y < 3 and
+            ((x < 3) if f == "left" else (x > 4))) or f == "top" and y > 4 else None)
+    petals = [hexc("f2d23a"), hexc("e8e2c8"), hexc("d94f3a")]
+
+    def shirt(f, x, y, w, h):
+        if f == "front" and 2 <= x <= 5:
+            return skin if 3 <= x <= 4 else hexc("2a6a3a")
+        return petals[(x * 5 + y * 3) % 7 % 3] if (x + 2 * y) % 4 == 0 else hexc("2a6a3a")
+    torso(s, hexc("2a6a3a"), shirt)
+    arms(s, hexc("2a6a3a"), skin, 4)
+    legs(s, hexc("e8e4d8"), hexc("6a4a2a"), shoe_height=1)
+    belt(s, hexc("3a2a1a"), GOLD)
+
+
 SKIN_PAINTERS = {
     "marine": marine, "marine_officer": marine_officer, "pirate": pirate, "pirate_captain": pirate_captain,
     "fishman": fishman, "villager_a": villager_a, "villager_b": villager_b, "barkeeper": barkeeper,
     "merchant": merchant, "revolutionary": revolutionary, "bounty_hunter": bounty_hunter, "farmer": farmer,
+    "morgan": morgan, "arlong": arlong,
 }
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -580,7 +629,7 @@ def skins(preview=None):
         painter(s)
         images.append((name, s.save(name)))
     if preview:
-        sheet = Image.new("RGBA", (64 * 4 * 4, 64 * 4 * 3), (40, 40, 48, 255))
+        sheet = Image.new("RGBA", (64 * 4 * 4, 64 * 4 * ((len(images) + 3) // 4)), (40, 40, 48, 255))
         for i, (name, img) in enumerate(images):
             sheet.paste(img.resize((256, 256), Image.NEAREST), ((i % 4) * 256, (i // 4) * 256), img.resize((256, 256), Image.NEAREST))
         sheet.save(preview)

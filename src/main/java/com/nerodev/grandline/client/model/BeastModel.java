@@ -44,11 +44,16 @@ public class BeastModel extends EntityModel<AbstractClientPlayer> {
     @Override
     public void setupAnim(AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
             float headPitch) {
-        float swing = limbSwing * 0.9f * shape.gait();
-        float amount = Math.min(1f, limbSwingAmount * 1.4f);
         boolean flying = player.getAbilities().flying || (!player.onGround() && !player.isInWater() && player.getDeltaMovement().y < -0.25);
         boolean airborne = !player.onGround() && !player.isInWater() && !player.onClimbable();
-        float fall = (float) player.getDeltaMovement().y;
+        animate(flying, airborne, (float) player.getDeltaMovement().y, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+    }
+
+    /** Poses the parts for any body (players go through {@link #setupAnim}; bosses wear parts too). */
+    public void animate(boolean flying, boolean airborne, float fall, float limbSwing, float limbSwingAmount, float ageInTicks,
+            float netHeadYaw, float headPitch) {
+        float swing = limbSwing * 0.9f * shape.gait();
+        float amount = Math.min(1f, limbSwingAmount * 1.4f);
         float attack = this.attackTime;
         float yaw = netHeadYaw * Mth.DEG_TO_RAD;
         float pitch = headPitch * Mth.DEG_TO_RAD;

@@ -3,6 +3,7 @@ package com.nerodev.grandline;
 import com.mojang.logging.LogUtils;
 import com.nerodev.grandline.ability.AbilityManager;
 import com.nerodev.grandline.ability.GLAbilities;
+import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.bounty.BountyHunts;
 import com.nerodev.grandline.combat.CombatManager;
 import com.nerodev.grandline.command.OnePieceCommand;
@@ -90,6 +91,7 @@ public final class GrandLine {
         GLShips.register(modBus);
         GLWorldgen.register(modBus);
         GLNpcs.register(modBus);
+        GLBosses.register(modBus);
         BountyHunts.register();
         Crews.register();
         FruitManager.register();

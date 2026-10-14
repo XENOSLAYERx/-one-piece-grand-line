@@ -812,6 +812,41 @@ def _(h):
     h_wings(h, span=7, depth=5, mat="feather")
 
 
+BOSSES = {}
+
+
+def boss_parts(bid, palette, seed=1):
+    def wrap(fn):
+        parts = Shape("boss_" + bid + "_parts", palette, "none", "front", 1.0, 1.0, seed)
+        fn(parts)
+        BOSSES[bid] = parts
+        return fn
+    return wrap
+
+
+@boss_parts("morgan", pal(0x9AA0AA, 0x5A606A, 0xC8CCD4, metal=0x9AA0AA), seed=951)
+def _(h):
+    # Captain Morgan's iron jaw: a riveted steel plate over his chin and cheeks with a jutting edge, and the steel cuff
+    # his axe-hand is bolted into.
+    h.add("iron_jaw", anchor="HEAD", cubes=[C(-4.5, -3.5, -5, 9, 4, 2, "metal"), C(-5, -3.5, -4, 1, 4, 6, "metal"),
+                                            C(4, -3.5, -4, 1, 4, 6, "metal"), C(-3, 0.5, -5.5, 6, 1, 2, "metal")])
+    h.add("axe_cuff", anchor="RIGHT_ARM", cubes=[C(-3.5, 6, -2.5, 5, 4, 5, "metal")])
+
+
+@boss_parts("arlong", pal(0x86A2B8, 0x46647A, 0xC8D8E4, tooth=0xF4F2EA), seed=952)
+def _(h):
+    # Arlong the Saw: a sawshark's long serrated nose, a shark's grin, a tall dorsal fin and fins on his forearms.
+    teeth = [C(side, -4.5, -10.5 + i * 1.6, 1, 1, 1, "tooth") for i in range(4) for side in (-2.5, 1.5)]
+    h.add("saw_nose", anchor="HEAD", cubes=[C(-1.5, -4.75, -11, 3, 2, 7, "skin")] + teeth)
+    h.add("grin", anchor="HEAD", cubes=[C(-3, -2, -4.6, 6, 1, 1, "tooth")])
+    h.add("dorsal", anchor="BODY", pivot=(0, 1, 2), rot=(0.35, 0, 0), role="FIN", param=0,
+          cubes=[C(-0.5, 0, 0, 1, 10, 5, "skin")])
+    h.add("fin_r", anchor="RIGHT_ARM", pivot=(-3, 5, 0), rot=(0, 0, 0.3), role="FIN", param=1,
+          cubes=[C(-0.5, 0, 0, 1, 5, 3, "skin")])
+    h.add("fin_l", anchor="LEFT_ARM", pivot=(3, 5, 0), rot=(0, 0, -0.3), role="FIN", param=2,
+          cubes=[C(-0.5, 0, 0, 1, 5, 3, "skin")])
+
+
 def write_java(entries):
     lines = [
         "package com.nerodev.grandline.client.model;",
@@ -872,8 +907,16 @@ def main():
         if preview:
             hp = player_polys() + shape_polys(parts, paint_shape(parts), anchors=PLAYER)
             render(hp, yaw=150, pitch=15, label="race " + rid).save(os.path.join(preview, "race_" + rid + ".png"))
+    for bid, parts in BOSSES.items():
+        parts.pack()
+        paint_shape(parts).save(os.path.join(TEX, "boss_" + bid + "_parts.png"))
+        entries.append(("boss_" + bid + "_parts", parts.encode()))
+        if preview:
+            hp = player_polys() + shape_polys(parts, paint_shape(parts), anchors=PLAYER)
+            render(hp, yaw=150, pitch=15, label="boss " + bid).save(os.path.join(preview, "boss_" + bid + ".png"))
+            render(hp, yaw=-60, pitch=10, label="boss " + bid + " front").save(os.path.join(preview, "boss_" + bid + "_front.png"))
     write_java(entries)
-    print("zoan bodies:", len(SPECIES), "race parts:", len(RACES), file=sys.stderr)
+    print("zoan bodies:", len(SPECIES), "race parts:", len(RACES), "boss parts:", len(BOSSES), file=sys.stderr)
 
 
 if __name__ == "__main__":

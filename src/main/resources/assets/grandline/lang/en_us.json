@@ -2830,5 +2830,20 @@
   "entity.grandline.npc": "Islander",
   "entity.grandline.npc_shot": "Musket Ball",
   "npc.grandline.bounty_hunter_veteran": "Veteran Bounty Hunter",
-  "npc.grandline.marine_captain": "Marine Captain"
+  "npc.grandline.marine_captain": "Marine Captain",
+  "boss.grandline.morgan.phase1": "Captain of the Base",
+  "boss.grandline.morgan.phase2": "Axe-Hand",
+  "boss.grandline.morgan.phase3": "The Fallen Captain",
+  "boss.grandline.morgan": "Captain Morgan",
+  "boss.grandline.morgan.title": "\"Axe-Hand\", Marine Captain of Shells Town",
+  "boss.grandline.arlong.phase1": "Fish-Man Pride",
+  "boss.grandline.arlong.phase2": "Kiribachi",
+  "boss.grandline.arlong.phase3": "Fury of the Saw",
+  "boss.grandline.arlong": "Arlong",
+  "boss.grandline.arlong.title": "\"the Saw\", Captain of the Arlong Pirates",
+  "entity.grandline.boss": "Boss",
+  "item.grandline.morgans_axe": "Morgan's Axe",
+  "item.grandline.morgans_axe.special": "Cleave: a swung blow staggers its target and throws back and slows everyone beside it",
+  "item.grandline.kiribachi": "Kiribachi",
+  "item.grandline.kiribachi.special": "Saw teeth: blows open bleeding wounds, and full swings chew through armour"
 }

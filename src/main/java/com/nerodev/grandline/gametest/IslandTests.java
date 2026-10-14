@@ -1,6 +1,8 @@
 package com.nerodev.grandline.gametest;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.boss.BossEntity;
+import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.world.GLWorldgen;
 import com.nerodev.grandline.world.island.IslandPiece;
@@ -15,6 +17,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -161,6 +164,11 @@ public final class IslandTests {
             List<NpcEntity> residents = level.getEntitiesOfClass(NpcEntity.class, area);
             helper.assertTrue(residents.size() >= plan.buildings.size(), name + " is inhabited, " + residents.size() + " islanders");
             residents.forEach(NpcEntity::discard);
+            List<BossEntity> bosses = level.getEntitiesOfClass(BossEntity.class, area);
+            ResourceLocation ruler = type == IslandType.SHELLS_TOWN ? GLBosses.MORGAN : type == IslandType.CONOMI_ISLANDS ? GLBosses.ARLONG : null;
+            helper.assertTrue(ruler == null ? bosses.isEmpty() : bosses.size() == 1 && ruler.equals(bosses.getFirst().bossId()),
+                    name + " is held by " + ruler + ", found " + bosses.stream().map(BossEntity::bossId).toList());
+            bosses.forEach(BossEntity::discard);
             if (plan.treasure != null) {
                 int h = plan.height(plan.treasure[0], plan.treasure[1]);
                 BlockEntity buried = level.getBlockEntity(new BlockPos(plan.treasure[0], h - 2, plan.treasure[1]));
