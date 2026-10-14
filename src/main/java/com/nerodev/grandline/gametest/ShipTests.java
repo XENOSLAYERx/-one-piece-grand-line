@@ -13,8 +13,12 @@ import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stat;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +40,7 @@ public final class ShipTests {
     @GameTest(template = POOL, timeoutTicks = 100)
     public static void shipsSailWhenSteered(GameTestHelper helper) {
         ShipEntity ship = launch(helper, "raft");
-        ServerPlayer captain = newPlayer(helper);
+        ServerPlayer captain = sailor(helper);
         helper.assertTrue(captain.startRiding(ship), "The captain boards");
         helper.assertTrue(ship.helmsman() == captain, "The first aboard takes the helm");
         Vec3 start = ship.position();
@@ -73,8 +77,8 @@ public final class ShipTests {
     @GameTest(template = POOL)
     public static void cannonsFireAndReload(GameTestHelper helper) {
         ShipEntity ship = launch(helper, "sloop");
-        ServerPlayer gunner = newPlayer(helper);
-        gunner.startRiding(ship);
+        ServerPlayer gunner = sailor(helper);
+        helper.assertTrue(gunner.startRiding(ship), "The gunner boards");
         ship.cargo().addItem(new ItemStack(GLShips.CANNONBALL.get(), 4));
         gunner.setYRot(-90f);
         gunner.setXRot(0f);
@@ -111,9 +115,9 @@ public final class ShipTests {
     @GameTest(template = POOL)
     public static void crewPlacesAreLimited(GameTestHelper helper) {
         ShipEntity raft = launch(helper, "raft");
-        ServerPlayer first = newPlayer(helper);
-        ServerPlayer second = newPlayer(helper);
-        ServerPlayer third = newPlayer(helper);
+        ServerPlayer first = sailor(helper);
+        ServerPlayer second = sailor(helper);
+        ServerPlayer third = sailor(helper);
         helper.assertTrue(raft.interact(first, InteractionHand.MAIN_HAND).consumesAction(), "Right-click boards");
         helper.assertTrue(first.getVehicle() == raft, "The first is aboard");
         helper.assertTrue(second.startRiding(raft), "A raft takes two");
@@ -146,15 +150,15 @@ public final class ShipTests {
     @GameTest(template = POOL)
     public static void coupDeBurstNeedsTheRightShip(GameTestHelper helper) {
         ShipEntity sunny = launch(helper, "thousand_sunny");
-        ServerPlayer helm = newPlayer(helper);
-        helm.startRiding(sunny);
+        ServerPlayer helm = sailor(helper);
+        helper.assertTrue(helm.startRiding(sunny), "The helmsman boards the Sunny");
         helper.assertTrue(sunny.burst(helm), "The Thousand Sunny bursts");
         helper.assertFalse(sunny.burst(helm), "The cola tanks need time to refill");
         helm.stopRiding();
         sunny.discard();
         ShipEntity raft = launch(helper, "raft");
-        ServerPlayer rafter = newPlayer(helper);
-        rafter.startRiding(raft);
+        ServerPlayer rafter = sailor(helper);
+        helper.assertTrue(rafter.startRiding(raft), "The rafter boards");
         helper.assertFalse(raft.burst(rafter), "A raft has no Coup de Burst");
         rafter.stopRiding();
         raft.discard();
@@ -167,7 +171,7 @@ public final class ShipTests {
         ServerPlayer player = newPlayer(helper);
         Vec3 at = helper.absoluteVec(new Vec3(6, 3, 6));
         player.setPos(at.x, at.y, at.z);
-        CommandSourceStack source = server.createCommandSourceStack().withSuppressedOutput().withPermission(4).withEntity(player);
+        CommandSourceStack source = server.createCommandSourceStack().withSuppressedOutput().withPermission(4).withEntity(player).withPosition(at);
         run(helper, server, source, "onepiece ship list");
         run(helper, server, source, "onepiece ship give grandline:galleon");
         helper.assertTrue(player.getInventory().countItem(GLShips.SHIP_ITEM.get()) == 1, "ship give");
@@ -204,6 +208,35 @@ public final class ShipTests {
         } catch (CommandSyntaxException e) {
             helper.fail("/" + command + " failed: " + e.getMessage());
         }
+    }
+
+    /**
+     * A test player that can go aboard. NeoForge's fake players refuse to ride anything, so this is a plain server
+     * player borrowing a fake player's (silent) connection; like a fake player it is never ticked by the server.
+     */
+    private static ServerPlayer sailor(GameTestHelper helper) {
+        ServerPlayer fake = newPlayer(helper);
+        ServerLevel level = helper.getLevel();
+        ServerPlayer sailor = new ServerPlayer(level.getServer(), level, new GameProfile(UUID.randomUUID(), "gl_sailor"),
+                ClientInformation.createDefault()) {
+            @Override
+            public void tick() {}
+
+            @Override
+            public boolean isFakePlayer() {
+                return true;
+            }
+
+            @Override
+            public void displayClientMessage(Component message, boolean actionBar) {}
+
+            @Override
+            public void awardStat(Stat<?> stat, int amount) {}
+        };
+        sailor.connection = fake.connection;
+        Vec3 at = helper.absoluteVec(new Vec3(6, 3, 6));
+        sailor.moveTo(at.x, at.y, at.z, 0, 0);
+        return sailor;
     }
 
     private static ServerPlayer newPlayer(GameTestHelper helper) {
