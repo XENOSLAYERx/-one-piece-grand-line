@@ -10,6 +10,7 @@ import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.boss.BossMove;
 import com.nerodev.grandline.boss.BossMoves;
 import com.nerodev.grandline.bounty.Bounties;
+import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
 import com.nerodev.grandline.registry.DefinitionType;
@@ -130,7 +131,7 @@ final class BossCommands {
     }
 
     private static int spawnRandom(CommandSourceStack source) {
-        List<ResourceLocation> ids = DefinitionType.BOSS.sortedIds(source.registryAccess());
+        List<ResourceLocation> ids = Battles.landBosses(source.getLevel());
         if (ids.isEmpty()) {
             source.sendFailure(Component.literal("There are no bosses"));
             return 0;

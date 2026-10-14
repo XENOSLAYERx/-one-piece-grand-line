@@ -1,0 +1,72 @@
+{
+  "display_name": {
+    "translate": "boss.grandline.lord_of_the_coast"
+  },
+  "title": {
+    "translate": "boss.grandline.lord_of_the_coast.title"
+  },
+  "body": "sea_king",
+  "skin": "",
+  "parts": "sea_king",
+  "stats": {
+    "health": 420,
+    "attack": 13,
+    "armor": 8,
+    "speed": 1.0,
+    "scale": 2.2,
+    "dodge": 0.0,
+    "guard": 0.0,
+    "knockback_resistance": 1.0
+  },
+  "bar_color": "purple",
+  "aggressive": true,
+  "phases": [
+    {
+      "name": {
+        "translate": "boss.grandline.lord_of_the_coast.phase1"
+      },
+      "moves": {
+        "sea_bite": 4,
+        "tail_sweep": 2,
+        "water_jet": 2
+      },
+      "pace": 1.0
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.lord_of_the_coast.phase2"
+      },
+      "moves": {
+        "sea_bite": 3,
+        "water_jet": 2,
+        "capsize": 2,
+        "dive": 2,
+        "tail_sweep": 2
+      },
+      "pace": 1.15,
+      "threshold": 0.6
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.lord_of_the_coast.phase3"
+      },
+      "moves": {
+        "dive": 3,
+        "water_jet": 3,
+        "sea_bite": 3,
+        "capsize": 2,
+        "tail_sweep": 2
+      },
+      "pace": 1.35,
+      "threshold": 0.3
+    }
+  ],
+  "rewards": {
+    "bounty": 0,
+    "renown": 80,
+    "reputation": {
+      "grandline:civilians": 10
+    }
+  },
+  "lines": {}
+}

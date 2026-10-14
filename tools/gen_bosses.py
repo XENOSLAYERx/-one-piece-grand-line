@@ -71,6 +71,28 @@ BOSSES = {
         "loot": [("grandline:kiribachi", 1, 1), ("minecraft:emerald", 16, 32), ("minecraft:gold_ingot", 6, 12),
                  ("minecraft:diamond", 1, 3), ("minecraft:prismarine_shard", 4, 10)],
     },
+    "lord_of_the_coast": {
+        "name": "Lord of the Coast",
+        "title": "Sea King of the East Blue",
+        "body": "sea_king",
+        "skin": "",
+        "parts": "sea_king",
+        "stats": {"health": 420, "attack": 13, "armor": 8, "speed": 1.0, "scale": 2.2, "dodge": 0.0, "guard": 0.0,
+                  "knockback_resistance": 1.0},
+        "bar_color": "purple",
+        "aggressive": True,
+        "phases": [
+            {"name": "Rising from the Deep", "moves": {"sea_bite": 4, "tail_sweep": 2, "water_jet": 2}, "pace": 1.0},
+            {"threshold": 0.6, "name": "Hunger", "pace": 1.15,
+             "moves": {"sea_bite": 3, "water_jet": 2, "capsize": 2, "dive": 2, "tail_sweep": 2}},
+            {"threshold": 0.3, "name": "Frenzy", "pace": 1.35,
+             "moves": {"dive": 3, "water_jet": 3, "sea_bite": 3, "capsize": 2, "tail_sweep": 2}},
+        ],
+        "rewards": {"bounty": 0, "renown": 80, "reputation": {"grandline:civilians": 10}},
+        "lines": {},
+        "loot": [("minecraft:heart_of_the_sea", 1, 1), ("minecraft:nautilus_shell", 2, 4), ("minecraft:prismarine_shard", 8, 16),
+                 ("minecraft:emerald", 10, 20), ("minecraft:cooked_cod", 12, 24)],
+    },
 }
 
 
@@ -98,20 +120,16 @@ def definitions():
                 phase["line"] = p["line"]
             phases.append(phase)
             lang[f"{key}.phase{i + 1}"] = p["name"]
-        data = {
-            "display_name": {"translate": key},
-            "title": {"translate": key + ".title"},
-            "skin": b["skin"],
-            "parts": b["parts"],
-            "weapon": b["weapon"],
-            "stats": b["stats"],
-            "bar_color": b["bar_color"],
-            "faction": b["faction"],
-            "aggressive": b["aggressive"],
-            "phases": phases,
-            "rewards": b["rewards"],
-            "lines": b["lines"],
-        }
+        data = {"display_name": {"translate": key}, "title": {"translate": key + ".title"}}
+        if b.get("body", "humanoid") != "humanoid":
+            data["body"] = b["body"]
+        data.update({"skin": b["skin"], "parts": b["parts"]})
+        if "weapon" in b:
+            data["weapon"] = b["weapon"]
+        data.update({"stats": b["stats"], "bar_color": b["bar_color"]})
+        if "faction" in b:
+            data["faction"] = b["faction"]
+        data.update({"aggressive": b["aggressive"], "phases": phases, "rewards": b["rewards"], "lines": b["lines"]})
         with open(f"{BOSSES_DIR}/{bid}.json", "w") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
             f.write("\n")

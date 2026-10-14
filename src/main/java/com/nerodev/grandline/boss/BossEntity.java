@@ -128,7 +128,12 @@ public class BossEntity extends Monster {
     /** Spawns boss {@code id} at {@code pos}, living there. @return the boss, or null if there is no such boss */
     @Nullable
     public static BossEntity spawn(ServerLevelAccessor level, ResourceLocation id, BlockPos pos, float yaw, MobSpawnType reason) {
-        BossEntity boss = GLBosses.BOSS.get().create(level.getLevel());
+        BossDefinition def = level.registryAccess().registry(GLRegistries.BOSS).map(registry -> registry.get(id)).orElse(null);
+        if (def == null) {
+            return null;
+        }
+        EntityType<? extends BossEntity> type = def.body() == BossDefinition.Body.SEA_KING ? GLBosses.SEA_KING.get() : GLBosses.BOSS.get();
+        BossEntity boss = type.create(level.getLevel());
         if (boss == null) {
             return null;
         }
@@ -581,7 +586,7 @@ public class BossEntity extends Monster {
         if (level().isClientSide) {
             return super.hurt(source, amount);
         }
-        if (move != null && move.shield() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (move != null && move.shield() && moveTick < move.windup() + move.active() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             playSound(SoundEvents.ANVIL_LAND, 0.6f, 1.6f);
             return false;
         }

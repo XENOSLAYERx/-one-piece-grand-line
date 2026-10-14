@@ -4,10 +4,14 @@ import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.arena.ArenaData;
 import com.nerodev.grandline.arena.Arenas;
 import com.nerodev.grandline.boss.BossEntity;
+import com.nerodev.grandline.boss.BossMoves;
+import com.nerodev.grandline.boss.GLBosses;
+import com.nerodev.grandline.boss.SeaKingEntity;
 import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.npc.NpcEntity;
+import com.nerodev.grandline.ship.ShipEntity;
 import com.nerodev.grandline.worldevent.WorldEventType;
 import com.nerodev.grandline.worldevent.WorldEvents;
 import java.util.List;
@@ -19,6 +23,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
@@ -133,6 +139,23 @@ public final class ContentTests {
             helper.assertTrue(Arenas.of(player) == null && Arenas.session(name) == null, "The last one out ends the fight");
             Arenas.delete(server, name);
             release.run();
+        });
+    }
+
+    @GameTest(template = "ship_pool", timeoutTicks = 120, batch = "sea_king")
+    public static void seaKingsSwimAndRamShips(GameTestHelper helper) {
+        BossEntity boss = BossEntity.spawn(helper.getLevel(), GLBosses.LORD_OF_THE_COAST, helper.absolutePos(new BlockPos(3, 2, 3)), 0f,
+                MobSpawnType.COMMAND);
+        helper.assertTrue(boss instanceof SeaKingEntity, "The Lord of the Coast is a Sea King");
+        helper.assertTrue(boss.getNavigation() instanceof WaterBoundPathNavigation && boss.canBreatheUnderwater(), "Sea Kings swim");
+        helper.assertTrue(boss.getBbWidth() > 3f, "and are huge: " + boss.getBbWidth());
+        ShipEntity ship = ShipTests.launch(helper, "sloop");
+        float hull = ship.health();
+        boss.perform(BossMoves.CAPSIZE);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(ship.health() < hull, "The Sea King rams the ship: hull " + ship.health() + " of " + hull);
+            boss.discard();
+            ship.discard();
         });
     }
 

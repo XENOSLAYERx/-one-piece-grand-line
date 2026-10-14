@@ -3,12 +3,14 @@ package com.nerodev.grandline.boss;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.item.Item;
 
@@ -19,7 +21,7 @@ import net.minecraft.world.item.Item;
  * {@code aggressive} boss attacks anyone who comes near unless they stand well with its faction; others fight only
  * those their faction is hostile to, or who strike first.
  */
-public record BossDefinition(Component displayName, Component title, String skin, String parts, Optional<Item> weapon, Stats stats,
+public record BossDefinition(Component displayName, Component title, Body body, String skin, String parts, Optional<Item> weapon, Stats stats,
         BossEvent.BossBarColor barColor, Optional<ResourceLocation> faction, boolean aggressive, List<Phase> phases, Rewards rewards,
         Lines lines) {
     public static final Codec<BossEvent.BossBarColor> BAR_COLOR = Codec.STRING.xmap(BossEvent.BossBarColor::byName,
@@ -28,6 +30,7 @@ public record BossDefinition(Component displayName, Component title, String skin
     public static final Codec<BossDefinition> CODEC = RecordCodecBuilder.create(i -> i.group(
             ComponentSerialization.CODEC.fieldOf("display_name").forGetter(BossDefinition::displayName),
             ComponentSerialization.CODEC.fieldOf("title").forGetter(BossDefinition::title),
+            Body.CODEC.optionalFieldOf("body", Body.HUMANOID).forGetter(BossDefinition::body),
             Codec.STRING.fieldOf("skin").forGetter(BossDefinition::skin),
             Codec.STRING.optionalFieldOf("parts", "").forGetter(BossDefinition::parts),
             BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("weapon").forGetter(BossDefinition::weapon),
@@ -39,6 +42,21 @@ public record BossDefinition(Component displayName, Component title, String skin
             Rewards.CODEC.optionalFieldOf("rewards", Rewards.NONE).forGetter(BossDefinition::rewards),
             Lines.CODEC.optionalFieldOf("lines", Lines.NONE).forGetter(BossDefinition::lines)
     ).apply(i, BossDefinition::new));
+
+    /**
+     * What kind of body the boss has: a person (drawn on the player model with their skin and features) or a Sea King
+     * (a great sea serpent that swims and never leaves the water willingly; its look is its {@code parts} body).
+     */
+    public enum Body implements StringRepresentable {
+        HUMANOID, SEA_KING;
+
+        public static final Codec<Body> CODEC = StringRepresentable.fromEnum(Body::values);
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(Locale.ROOT);
+        }
+    }
 
     /** The phase a boss is in at {@code healthFraction} (phases are ordered by falling threshold). */
     public int phaseAt(float healthFraction) {

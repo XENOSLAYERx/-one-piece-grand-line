@@ -21,10 +21,20 @@ public final class GLBosses {
                     .clientTrackingRange(10)
                     .build("boss"));
 
+    /** Sea Kings: the same bosses' fights in a great sea serpent's body, swimming. */
+    public static final Supplier<EntityType<SeaKingEntity>> SEA_KING = ENTITIES.register("sea_king",
+            () -> EntityType.Builder.<SeaKingEntity>of(SeaKingEntity::new, MobCategory.MONSTER)
+                    .sized(1.6f, 1.4f)
+                    .eyeHeight(1.0f)
+                    .clientTrackingRange(16)
+                    .build("sea_king"));
+
     /** Captain "Axe-Hand" Morgan, who rules Shells Town from the Marine base. */
     public static final ResourceLocation MORGAN = GrandLine.id("morgan");
     /** Arlong the Saw, who holds the Conomi Islands from Arlong Park. */
     public static final ResourceLocation ARLONG = GrandLine.id("arlong");
+    /** The Lord of the Coast, the Sea King of the East Blue. */
+    public static final ResourceLocation LORD_OF_THE_COAST = GrandLine.id("lord_of_the_coast");
 
     private GLBosses() {}
 
@@ -35,5 +45,6 @@ public final class GLBosses {
 
     private static void onAttributes(EntityAttributeCreationEvent event) {
         event.put(BOSS.get(), BossEntity.createAttributes().build());
+        event.put(SEA_KING.get(), BossEntity.createAttributes().build());
     }
 }

@@ -847,6 +847,31 @@ def _(h):
           cubes=[C(-0.5, 0, 0, 1, 5, 3, "skin")])
 
 
+BOSS_BODIES = {}
+
+
+def boss_body(bid, palette, pattern="none", seed=1):
+    def wrap(fn):
+        body = Shape("boss_" + bid + "_body", palette, pattern, "side", 1.0, 1.0, seed)
+        fn(body)
+        BOSS_BODIES[bid] = body
+        return fn
+    return wrap
+
+
+@boss_body("sea_king", pal(0x5A4A8A, 0x2A2050, 0xD8C8A0, spot=0x2A2050, eye=0xF0D040, tooth=0xF4F2EA), pattern="bands", seed=960)
+def _(b):
+    # A Sea King: a great banded sea serpent with a crested head, fangs, whiskers and fins along its back.
+    serpent(b, n=10, seg=(10, 9, 11), taper=0.55, head=(12, 9, 15), lift=(-0.5, 0.25))
+    for i in range(1, 8, 2):
+        b.add("fin%d" % i, "seg%d" % i, pivot=(0, -4.5, 2), rot=(-0.45, 0, 0), cubes=[C(-0.5, -6, 0, 1, 6, 7, "accent")])
+    b.add("fang_l", "head", pivot=(3.5, 2, -13), cubes=[C(-0.5, 0, 0, 1, 3, 1, "tooth")])
+    b.add("fang_r", "head", pivot=(-3.5, 2, -13), cubes=[C(-0.5, 0, 0, 1, 3, 1, "tooth")])
+    b.add("whisker_l", "head", pivot=(6, 0, -12), rot=(0, -0.6, 0.2), cubes=[C(0, -0.5, -0.5, 8, 1, 1, "accent")])
+    b.add("whisker_r", "head", pivot=(-6, 0, -12), rot=(0, 0.6, -0.2), cubes=[C(-8, -0.5, -0.5, 8, 1, 1, "accent")])
+    b.add("crest", "head", pivot=(0, -4.5, -6), rot=(0.3, 0, 0), cubes=[C(-0.5, -5, 0, 1, 5, 8, "accent")])
+
+
 def write_java(entries):
     lines = [
         "package com.nerodev.grandline.client.model;",
@@ -915,8 +940,18 @@ def main():
             hp = player_polys() + shape_polys(parts, paint_shape(parts), anchors=PLAYER)
             render(hp, yaw=150, pitch=15, label="boss " + bid).save(os.path.join(preview, "boss_" + bid + ".png"))
             render(hp, yaw=-60, pitch=10, label="boss " + bid + " front").save(os.path.join(preview, "boss_" + bid + "_front.png"))
+    for bid, body in BOSS_BODIES.items():
+        body.pack()
+        img = paint_shape(body)
+        img.save(os.path.join(TEX, "boss_" + bid + "_body.png"))
+        entries.append(("boss_" + bid + "_body", body.encode()))
+        if preview:
+            render(shape_polys(body, img), yaw=-35, pitch=18, label="boss " + bid).save(os.path.join(preview, "boss_" + bid + "_body.png"))
+            render(shape_polys(body, img), yaw=90, pitch=0, label="boss " + bid + " side").save(
+                os.path.join(preview, "boss_" + bid + "_body_side.png"))
     write_java(entries)
-    print("zoan bodies:", len(SPECIES), "race parts:", len(RACES), "boss parts:", len(BOSSES), file=sys.stderr)
+    print("zoan bodies:", len(SPECIES), "race parts:", len(RACES), "boss parts:", len(BOSSES), "boss bodies:", len(BOSS_BODIES),
+          file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -646,7 +646,7 @@ public class CreatorMenuScreen extends Screen {
     private List<Entry> events() {
         List<Entry> out = new ArrayList<>();
         for (WorldEventType type : WorldEventType.values()) {
-            List<String> band = type.band().stream().map(this::npcName).toList();
+            List<String> band = type.boss() != null ? List.of("a Sea King") : type.band().stream().map(this::npcName).toList();
             out.add(new Entry(Component.literal(type.title()), List.of(Component.literal(type.warning()).withStyle(ChatFormatting.GRAY),
                     line("Raiders", Component.literal(String.join(", ", band))), line("Beaten", Component.literal(type.emeralds() + " emeralds, "
                             + type.renown() + " renown each"))), type.color().getColor() == null ? 0xE0E0E0 : type.color().getColor(),

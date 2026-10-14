@@ -1,5 +1,6 @@
 package com.nerodev.grandline.worldevent;
 
+import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.bounty.BountyHunts;
 import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.crew.Crews;
@@ -25,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
@@ -150,6 +152,9 @@ public final class WorldEvents {
     @Nullable
     public static Active start(ServerPlayer player, WorldEventType type) {
         ServerLevel level = player.serverLevel();
+        if (type.boss() != null) {
+            return surface(player, type);
+        }
         BlockPos origin = BountyHunts.footing(level, player);
         if (origin == null) {
             return null;
@@ -183,6 +188,52 @@ public final class WorldEvents {
         band.get(0).say(player, Reaction.HOSTILE);
         update(event);
         return event;
+    }
+
+    /** A Sea King surfaces in open water near the player. @return the event, or null if there is no deep water near */
+    @Nullable
+    private static Active surface(ServerPlayer player, WorldEventType type) {
+        ServerLevel level = player.serverLevel();
+        BlockPos spot = deepWater(level, player);
+        if (spot == null) {
+            return null;
+        }
+        float yaw = (float) (Mth.atan2(player.getZ() - spot.getZ(), player.getX() - spot.getX()) * Mth.RAD_TO_DEG) - 90f;
+        BossEntity boss = BossEntity.spawn(level, type.boss(), spot, yaw, MobSpawnType.EVENT);
+        if (boss == null) {
+            return null;
+        }
+        Active event = new Active(type, level, player, spot);
+        boss.addTag(TAG);
+        boss.setTarget(player);
+        event.raiders.add(boss.getUUID());
+        ACTIVE.add(event);
+        LAST_EVENT.put(player.getUUID(), level.getGameTime());
+        for (ServerPlayer near : level.getPlayers(p -> p.distanceToSqr(player) < RANGE * RANGE)) {
+            near.sendSystemMessage(Component.literal(type.warning()).withStyle(type.color(), ChatFormatting.BOLD));
+        }
+        level.playSound(null, spot.getX(), spot.getY(), spot.getZ(), SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.HOSTILE, 1.5f, 0.5f);
+        update(event);
+        return event;
+    }
+
+    /** Open water at least four blocks deep, 14 to 22 blocks from the player, a few blocks under the surface. */
+    @Nullable
+    public static BlockPos deepWater(ServerLevel level, ServerPlayer player) {
+        for (int tries = 0; tries < 32; tries++) {
+            double angle = player.getRandom().nextDouble() * Mth.TWO_PI;
+            double distance = 14 + player.getRandom().nextDouble() * 8;
+            BlockPos probe = BlockPos.containing(player.getX() + Math.cos(angle) * distance, player.getY(), player.getZ() + Math.sin(angle) * distance);
+            if (!level.hasChunkAt(probe)) {
+                continue;
+            }
+            BlockPos surface = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, probe);
+            BlockPos floor = level.getHeightmapPos(Heightmap.Types.OCEAN_FLOOR, probe);
+            if (surface.getY() - floor.getY() >= 4 && level.getFluidState(surface.below()).is(FluidTags.WATER)) {
+                return new BlockPos(probe.getX(), Math.max(floor.getY(), surface.getY() - 4), probe.getZ());
+            }
+        }
+        return null;
     }
 
     /** Ends {@code event}: in victory every player taking part is paid; otherwise the raiders still standing leave. */
@@ -273,6 +324,9 @@ public final class WorldEvents {
             return;
         }
         if (player.isInWater() || player.getVehicle() instanceof ShipEntity) {
+            if (player.getRandom().nextFloat() < 0.5f) {
+                start(player, WorldEventType.SEA_KING);
+            }
             return;
         }
         long bounty = GLPlayer.data(player).bounty();

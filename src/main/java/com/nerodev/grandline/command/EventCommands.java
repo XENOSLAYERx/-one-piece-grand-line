@@ -52,7 +52,8 @@ final class EventCommands {
         Text.send(source, Text.header("World events"));
         for (WorldEventType type : WorldEventType.values()) {
             Text.send(source, Component.literal("  ").append(Component.literal(type.title()).withStyle(type.color()))
-                    .append(Component.literal(" (" + type.getSerializedName() + "): " + type.band().size() + " raiders, " + type.emeralds()
+                    .append(Component.literal(" (" + type.getSerializedName() + "): " + (type.boss() != null ? "a Sea King, at sea"
+                            : type.band().size() + " raiders") + ", " + type.emeralds()
                             + " emeralds each for beating them").withStyle(ChatFormatting.GRAY)));
         }
         List<WorldEvents.Active> active = WorldEvents.active();

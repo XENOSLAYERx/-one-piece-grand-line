@@ -7,8 +7,10 @@ import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.npc.NpcShot;
+import com.nerodev.grandline.ship.ShipEntity;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -336,7 +338,173 @@ public final class BossMoves {
                 }
             }));
 
+    // ---------------------------------------------------------------------------------------------------------
+    // Sea Kings
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Jaws wide, the Sea King lunges out of the water at its prey. */
+    public static final BossMove SEA_BITE = register(new BossMove("sea_bite", 12, 6, 14, 40, 0, 9, false, (boss, target, t) -> {
+        face(boss, target, t < 12);
+        if (t == 0) {
+            sound(boss, SoundEvents.RAVAGER_ROAR, 1.4f, 0.5f);
+        }
+        if (t == 12 && target != null) {
+            Vec3 lunge = target.position().subtract(boss.position()).normalize();
+            boss.setDeltaMovement(lunge.x * 1.4, Math.max(0.3, lunge.y * 1.2 + 0.3), lunge.z * 1.4);
+            burst(boss, boss.position().add(0, 1, 0), 0x8AC8E8, 2.5f, Kind.DROP, Vfx.HEAVY);
+        }
+        if (boss.moveIsActive(t)) {
+            Vec3 jaws = boss.position().add(boss.forward().scale(boss.getBbWidth() * 0.8)).add(0, boss.getBbHeight() * 0.5, 0);
+            for (LivingEntity victim : boss.targetsAround(jaws, 2.5)) {
+                if (boss.firstHit(victim)) {
+                    boss.strike(victim, 2.0f, AbilityDamage.SLASH);
+                    victim.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 100, 1));
+                    sound(boss, SoundEvents.EVOKER_FANGS_ATTACK, 1.6f, 0.4f);
+                    burst(boss, victim.getBoundingBox().getCenter(), 0xB02828, 1.4f, Kind.SPARK, Vfx.FLASH);
+                }
+            }
+        }
+    }));
+
+    /** The great tail lashed round in a circle, throwing everything near into the sea. */
+    public static final BossMove TAIL_SWEEP = register(new BossMove("tail_sweep", 14, 3, 16, 80, 0, 8, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        if (t < 14 && t % 4 == 0) {
+            burst(boss, boss.position().add(0, 0.3, 0), 0x5AA6C8, 8f, Kind.RING, Vfx.RING);
+        }
+        if (t == 14) {
+            sound(boss, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, 2f, 0.5f);
+            sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 1.6f, 0.4f);
+            burst(boss, boss.position().add(0, 0.5, 0), 0x8AC8E8, 8f, Kind.DROP, Vfx.RING | Vfx.SHOCKWAVE | Vfx.HEAVY);
+            for (LivingEntity victim : boss.targetsAround(boss.position(), 8)) {
+                boss.strike(victim, 1.3f, AbilityDamage.CRUSH);
+                AbilityDamage.knockback(victim, boss.position(), 1.6, 0.6);
+            }
+        }
+    }));
+
+    /** A jet of sea water spat with the force of a cannon, along a line the Sea King marks first. */
+    public static final BossMove WATER_JET = register(new BossMove("water_jet", 18, 12, 16, 120, 4, 22, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        Vec3 mouth = boss.position().add(boss.forward().scale(boss.getBbWidth() * 0.6)).add(0, boss.getBbHeight() * 0.7, 0);
+        if (t < 18) {
+            if (target != null) {
+                boss.lockDirection(target.getBoundingBox().getCenter().subtract(mouth));
+                boss.getLookControl().setLookAt(target, 30f, 30f);
+            }
+            if (t % 3 == 0) {
+                trail(boss, mouth, mouth.add(boss.lockedDirection().scale(20)), 0x5AA6C8);
+            }
+            if (t == 0) {
+                sound(boss, SoundEvents.ELDER_GUARDIAN_AMBIENT, 1.4f, 0.6f);
+            }
+            return;
+        }
+        if (t < 30 && t % 2 == 0 && boss.level() instanceof ServerLevel level) {
+            Vec3 end = mouth.add(boss.lockedDirection().scale(20));
+            Vfx.beam(level, boss, mouth, end, 0x8AD0F0, 1.2f, Kind.DROP, Vfx.BEAM_PARTICLES);
+            sound(boss, SoundEvents.TRIDENT_RIPTIDE_1.value(), 1.2f, 1.4f);
+            for (LivingEntity victim : boss.targetsAround(mouth.add(boss.lockedDirection().scale(10)), 11)) {
+                Vec3 to = victim.getBoundingBox().getCenter().subtract(mouth);
+                double along = to.dot(boss.lockedDirection());
+                double off = to.subtract(boss.lockedDirection().scale(along)).length();
+                if (along > 0 && along < 20 && off < 1.6 && boss.firstHit(victim)) {
+                    boss.strike(victim, 1.6f, AbilityDamage.CRUSH);
+                    victim.setDeltaMovement(victim.getDeltaMovement().add(boss.lockedDirection().scale(1.4)));
+                    victim.hurtMarked = true;
+                }
+            }
+        }
+    }));
+
+    /** The Sea King rams the nearest ship, staving in its hull and throwing its crew about. */
+    public static final BossMove CAPSIZE = register(new BossMove("capsize", 16, 12, 20, 160, 0, 22, false, (boss, target, t) -> {
+        ShipEntity ship = nearestShip(boss, target);
+        if (t < 16) {
+            boss.getNavigation().stop();
+            Vec3 aim = ship != null ? ship.position() : target != null ? target.position() : boss.position().add(boss.forward());
+            boss.lockDirection(aim.subtract(boss.position()).multiply(1, 0, 1));
+            if (t % 3 == 0) {
+                trail(boss, boss.position().add(0, 0.5, 0), boss.position().add(boss.lockedDirection().scale(12)).add(0, 0.5, 0), 0xE84A3A);
+            }
+            if (t == 0) {
+                sound(boss, SoundEvents.RAVAGER_ROAR, 1.6f, 0.4f);
+            }
+            return;
+        }
+        if (t < 28) {
+            Vec3 dir = boss.lockedDirection();
+            boss.setDeltaMovement(dir.x * 1.2, boss.getDeltaMovement().y, dir.z * 1.2);
+            if (t % 2 == 0) {
+                burst(boss, boss.position().add(0, 0.6, 0), 0xD8F0FF, 1.5f, Kind.DROP, 0);
+            }
+            // The boss's own mark in the move's hit list stands for the ship, so it is rammed once.
+            if (ship != null && boss.distanceTo(ship) < boss.getBbWidth() + 3 && boss.firstHit(boss)) {
+                ship.hurt(boss.damageSources().mobAttack(boss), boss.attackDamage() * 6);
+                for (var passenger : ship.getPassengers()) {
+                    passenger.setDeltaMovement(passenger.getDeltaMovement().add(0, 0.9, 0));
+                    passenger.hurtMarked = true;
+                }
+                sound(boss, SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, 2f, 0.5f);
+                burst(boss, ship.position().add(0, 1, 0), 0x8A6A44, 4f, Kind.SHARD, Vfx.HEAVY | Vfx.SHOCKWAVE);
+                boss.skipTo(28);
+            }
+            for (LivingEntity victim : boss.targetsAround(boss.position().add(boss.lockedDirection().scale(2)), 3)) {
+                if (boss.firstHit(victim)) {
+                    boss.strike(victim, 1.5f, AbilityDamage.STRIKE);
+                    AbilityDamage.knockback(victim, boss.position(), 2.0, 0.8);
+                }
+            }
+        }
+    }));
+
+    /** The Sea King sinks out of reach, then bursts up from the deep beneath its prey. */
+    public static final BossMove DIVE = register(new BossMove("dive", 10, 30, 18, 200, 4, 24, true, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        if (t == 0) {
+            sound(boss, SoundEvents.PLAYER_SPLASH, 2f, 0.4f);
+            burst(boss, boss.position().add(0, 1, 0), 0x8AC8E8, 3f, Kind.DROP, Vfx.RING);
+        }
+        if (t < 10) {
+            boss.setDeltaMovement(0, -0.4, 0);
+            return;
+        }
+        if (t == 30 && target != null) {
+            // Slip beneath the prey, as deep as the water allows.
+            BlockPos under = target.blockPosition();
+            int depth = 0;
+            while (depth < 8 && !boss.level().getFluidState(under.below(depth + 1)).isEmpty()) {
+                depth++;
+            }
+            boss.moveTo(target.getX(), target.getY() - Math.max(2, depth), target.getZ(), boss.getYRot(), 0);
+            boss.setDeltaMovement(Vec3.ZERO);
+        }
+        if (t > 30 && t < 38 && target != null && t % 2 == 0) {
+            burst(boss, target.position().add(0, 0.2, 0), 0xE84A3A, 3f, Kind.RING, Vfx.RING);
+        }
+        if (t == 38) {
+            boss.setDeltaMovement(0, 1.3, 0);
+            sound(boss, SoundEvents.GENERIC_EXPLODE.value(), 1.4f, 0.6f);
+            burst(boss, boss.position().add(0, 2, 0), 0xD8F0FF, 4f, Kind.DROP, Vfx.HEAVY | Vfx.SHOCKWAVE);
+            for (LivingEntity victim : boss.targetsAround(boss.position().add(0, 2, 0), 4)) {
+                boss.strike(victim, 1.9f, AbilityDamage.CRUSH);
+                victim.setDeltaMovement(victim.getDeltaMovement().add(0, 1.1, 0));
+                victim.hurtMarked = true;
+            }
+        }
+    }));
+
     private BossMoves() {}
+
+    /** The ship to ram: the one the prey is aboard, else the nearest within reach. */
+    @Nullable
+    private static ShipEntity nearestShip(BossEntity boss, @Nullable LivingEntity target) {
+        if (target != null && target.getVehicle() instanceof ShipEntity ship) {
+            return ship;
+        }
+        return boss.level().getEntitiesOfClass(ShipEntity.class, boss.getBoundingBox().inflate(22)).stream()
+                .min(Comparator.comparingDouble(boss::distanceToSqr)).orElse(null);
+    }
 
     private static BossMove register(BossMove move) {
         MOVES.put(move.id(), move);

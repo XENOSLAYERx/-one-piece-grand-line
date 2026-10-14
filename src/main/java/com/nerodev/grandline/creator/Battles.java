@@ -1,11 +1,13 @@
 package com.nerodev.grandline.creator;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.boss.BossEntity;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.registry.GLRegistries;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -133,7 +135,7 @@ public final class Battles {
             }
         }
         if (difficulty.boss()) {
-            List<ResourceLocation> bosses = new ArrayList<>(level.registryAccess().registryOrThrow(GLRegistries.BOSS).keySet());
+            List<ResourceLocation> bosses = landBosses(level);
             if (!bosses.isEmpty()) {
                 BlockPos at = ring(level, centre.getX() + 0.5, centre.getY(), centre.getZ() + 0.5, total - 1, total, radius, random);
                 BossEntity boss = BossEntity.spawn(level, bosses.get(random.nextInt(bosses.size())), at, random.nextFloat() * 360f,
@@ -148,10 +150,20 @@ public final class Battles {
         return out;
     }
 
+    /** Bosses who fight on land (Sea Kings stay in the sea). */
+    public static List<ResourceLocation> landBosses(ServerLevel level) {
+        List<ResourceLocation> out = new ArrayList<>();
+        level.registryAccess().registryOrThrow(GLRegistries.BOSS).entrySet().stream()
+                .filter(e -> e.getValue().body() == BossDefinition.Body.HUMANOID)
+                .forEach(e -> out.add(e.getKey().location()));
+        out.sort(Comparator.comparing(ResourceLocation::toString));
+        return out;
+    }
+
     /** Spawns a random boss near the player, already fighting them. @return the boss, or null if there is none */
     @Nullable
     public static BossEntity spawnBoss(ServerPlayer player, int index, int total) {
-        List<ResourceLocation> bosses = new ArrayList<>(player.serverLevel().registryAccess().registryOrThrow(GLRegistries.BOSS).keySet());
+        List<ResourceLocation> bosses = landBosses(player.serverLevel());
         if (bosses.isEmpty()) {
             return null;
         }

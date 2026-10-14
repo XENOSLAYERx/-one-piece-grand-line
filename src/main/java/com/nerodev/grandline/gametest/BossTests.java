@@ -66,7 +66,7 @@ public final class BossTests {
                 helper.assertTrue(phase.moves().keySet().stream().map(BossMoves::get).anyMatch(m -> m.inRange(1.5)),
                         id + " can strike up close in " + phase.name().getString());
             }
-            helper.assertTrue(boss.weapon().isPresent(), id + " carries a signature weapon");
+            helper.assertTrue(boss.weapon().isPresent() || boss.body() == BossDefinition.Body.SEA_KING, id + " carries a signature weapon");
             boss.faction().ifPresent(f -> helper.assertTrue(access.registryOrThrow(GLRegistries.FACTION).containsKey(f), id + " faction exists"));
             ResourceKey<LootTable> loot = ResourceKey.create(Registries.LOOT_TABLE,
                     ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "entities/boss/" + id.getPath()));

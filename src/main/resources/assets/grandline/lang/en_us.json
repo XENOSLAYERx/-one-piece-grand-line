@@ -2872,5 +2872,10 @@
   "quest.grandline.cargo_for_the_grand_line.desc": "A travelling merchant is outfitting a ship bound for the Grand Line and needs iron for her fittings.",
   "quest.grandline.tangerine_harvest": "Tangerine Harvest",
   "quest.grandline.tangerine_harvest.desc": "The grove's trees are heavy with fruit, and the tribute to Arlong is due. Help bring in the harvest.",
-  "key.grandline.quest_journal": "Quest journal"
+  "key.grandline.quest_journal": "Quest journal",
+  "boss.grandline.lord_of_the_coast.phase1": "Rising from the Deep",
+  "boss.grandline.lord_of_the_coast.phase2": "Hunger",
+  "boss.grandline.lord_of_the_coast.phase3": "Frenzy",
+  "boss.grandline.lord_of_the_coast": "Lord of the Coast",
+  "boss.grandline.lord_of_the_coast.title": "Sea King of the East Blue"
 }
