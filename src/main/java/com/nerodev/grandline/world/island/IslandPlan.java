@@ -114,7 +114,8 @@ public final class IslandPlan {
         this.cz = cz;
         this.sea = sea;
         this.seed = seed;
-        this.rotation = (int) Math.floorMod(seed >>> 7, 4L);
+        // The Baratie's hall is a long hull with the fish's head and tail at its ends: its pier must meet the front.
+        this.rotation = type == IslandType.BARATIE ? 0 : (int) Math.floorMod(seed >>> 7, 4L);
         this.noise = new SimplexNoise(new LegacyRandomSource(seed));
         this.shapeOffset = (seed & 1023) * 0.37;
         for (IslandType.Site site : type.sites()) {
