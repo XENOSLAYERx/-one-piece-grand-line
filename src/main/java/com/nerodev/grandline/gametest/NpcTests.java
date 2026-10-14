@@ -207,7 +207,7 @@ public final class NpcTests {
     public static void islanderCommandsWork(GameTestHelper helper) {
         MinecraftServer server = helper.getLevel().getServer();
         ServerPlayer player = newPlayer(helper);
-        Vec3 at = helper.absoluteVec(new Vec3(8, 1, 8));
+        Vec3 at = helper.absoluteVec(new Vec3(8, 2, 8));
         player.setPos(at.x, at.y, at.z);
         CommandSourceStack source = server.createCommandSourceStack().withSuppressedOutput().withPermission(4).withEntity(player)
                 .withPosition(at);
@@ -260,7 +260,7 @@ public final class NpcTests {
     }
 
     private static NpcEntity spawn(GameTestHelper helper, String id, int x, int z) {
-        NpcEntity npc = NpcEntity.spawn(helper.getLevel(), GrandLine.id(id), helper.absolutePos(new BlockPos(x, 1, z)), 0f,
+        NpcEntity npc = NpcEntity.spawn(helper.getLevel(), GrandLine.id(id), helper.absolutePos(new BlockPos(x, 2, z)), 0f,
                 MobSpawnType.COMMAND);
         helper.assertTrue(npc != null, "Spawned " + id);
         return npc;

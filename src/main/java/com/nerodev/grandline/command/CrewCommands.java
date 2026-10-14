@@ -76,7 +76,7 @@ final class CrewCommands {
                         .executes(ctx -> promote(ctx, StringArgumentType.getString(ctx, "member")))))
                 .then(Commands.literal("flag").then(Commands.argument("emblem", StringArgumentType.word()).suggests(EMBLEMS)
                         .executes(ctx -> flag(ctx, null))
-                        .then(Commands.argument("color", StringArgumentType.word())
+                        .then(Commands.argument("color", StringArgumentType.greedyString())
                                 .executes(ctx -> flag(ctx, StringArgumentType.getString(ctx, "color"))))))
                 .then(Commands.literal("ship").executes(ctx -> report(ctx, Crews.claimShip(player(ctx)), "This ship now flies your colours.")))
                 .then(Commands.literal("dismiss").executes(ctx -> report(ctx, Crews.dismiss(player(ctx)), "Your recruits have gone home.")))
