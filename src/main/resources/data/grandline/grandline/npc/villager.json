@@ -1,0 +1,28 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.villager"
+  },
+  "role": "civilian",
+  "skin": "villager_a",
+  "health": 20,
+  "attack": 1,
+  "speed": 0.28,
+  "armor": 0,
+  "wander_radius": 10,
+  "lines": {
+    "friendly": [
+      "Thank you for keeping us safe!",
+      "Lovely day, isn't it?",
+      "Come back anytime!"
+    ],
+    "neutral": [
+      "Hello there, traveller.",
+      "Not many visitors these days.",
+      "The sea's been rough lately."
+    ],
+    "hostile": [
+      "Stay away from me!",
+      "Help! Somebody call the Marines!"
+    ]
+  }
+}

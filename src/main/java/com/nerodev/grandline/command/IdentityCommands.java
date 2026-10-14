@@ -51,7 +51,10 @@ final class IdentityCommands {
         RACE("race", data -> data.setRace(PlayerData.DEFAULT_RACE)),
         FRUIT("fruit", data -> { }),
         HAKI("haki", data -> { }),
-        FACTION("faction", data -> data.setFaction(Optional.empty())),
+        FACTION("faction", data -> {
+            data.setFaction(Optional.empty());
+            data.clearReputation();
+        }),
         BOUNTY("bounty", data -> data.setBounty(0)),
         MASTERY("mastery", PlayerData::clearMastery),
         ALL("all", data -> data.copyFrom(new PlayerData()));

@@ -1,0 +1,29 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.fishman_pirate"
+  },
+  "faction": "grandline:pirate",
+  "role": "guard",
+  "skin": "fishman",
+  "swimmer": true,
+  "health": 40,
+  "attack": 7,
+  "speed": 0.32,
+  "armor": 3,
+  "equipment": {},
+  "patrol_radius": 8,
+  "lines": {
+    "friendly": [
+      "Shahaha! You've got guts, human.",
+      "Arlong Park welcomes you... for now."
+    ],
+    "neutral": [
+      "Lowly human. Don't stand in my way.",
+      "This island belongs to Arlong."
+    ],
+    "hostile": [
+      "Fish-Men are the superior race!",
+      "Humans are no match for us!"
+    ]
+  }
+}

@@ -1,5 +1,9 @@
 {
   "display_name": "Bounty Hunters",
   "description": "Mercenaries who track down wanted criminals for the reward on their heads.",
-  "color": "#F9A825"
+  "color": "#F9A825",
+  "enemies": [
+    "grandline:pirate"
+  ],
+  "wanted_bounty": 10000000
 }

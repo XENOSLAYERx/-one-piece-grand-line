@@ -22,6 +22,7 @@ import com.nerodev.grandline.client.fx.GenericEffects;
 import com.nerodev.grandline.client.haki.HakiClient;
 import com.nerodev.grandline.client.hud.AbilityHud;
 import com.nerodev.grandline.client.model.TransformationModels;
+import com.nerodev.grandline.client.npc.NpcRenderer;
 import com.nerodev.grandline.client.particle.GLParticleProviders;
 import com.nerodev.grandline.client.render.AbilityProjectileRenderer;
 import com.nerodev.grandline.client.render.DisguiseRenderer;
@@ -36,7 +37,9 @@ import com.nerodev.grandline.client.visual.ClientVisuals;
 import com.nerodev.grandline.client.visual.StatusVisuals;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.entity.GLEntities;
+import com.nerodev.grandline.npc.GLNpcs;
 import com.nerodev.grandline.ship.GLShips;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.neoforged.api.distmarker.Dist;
@@ -65,6 +68,8 @@ public final class GrandLineClient {
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
             event.registerEntityRenderer(GLEntities.ABILITY_PROJECTILE.get(), AbilityProjectileRenderer::new);
             event.registerEntityRenderer(GLShips.SHIP.get(), ShipRenderer::new);
+            event.registerEntityRenderer(GLNpcs.NPC.get(), NpcRenderer::new);
+            event.registerEntityRenderer(GLNpcs.NPC_SHOT.get(), ThrownItemRenderer::new);
         });
         modBus.addListener(ShipHud::register);
         modBus.addListener(TransformationModels::registerLayers);

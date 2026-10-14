@@ -22,6 +22,7 @@ import com.nerodev.grandline.haki.HakiAbilities;
 import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.network.GLNetwork;
+import com.nerodev.grandline.npc.GLNpcs;
 import com.nerodev.grandline.race.RaceAbilities;
 import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.registry.GLRegistries;
@@ -86,6 +87,7 @@ public final class GrandLine {
         GLWeapons.register(modBus);
         GLShips.register(modBus);
         GLWorldgen.register(modBus);
+        GLNpcs.register(modBus);
         FruitManager.register();
         TransformationManager.register();
         TempBlocks.register();

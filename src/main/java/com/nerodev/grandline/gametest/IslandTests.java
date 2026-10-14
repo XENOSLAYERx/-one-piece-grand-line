@@ -1,6 +1,7 @@
 package com.nerodev.grandline.gametest;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.world.GLWorldgen;
 import com.nerodev.grandline.world.island.IslandPiece;
 import com.nerodev.grandline.world.island.IslandPlan;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -155,6 +157,10 @@ public final class IslandTests {
                 }
             }
             helper.assertTrue(chests >= 3, name + " has chests of loot, found " + chests);
+            AABB area = new AABB(centre).inflate(reach, 40, reach);
+            List<NpcEntity> residents = level.getEntitiesOfClass(NpcEntity.class, area);
+            helper.assertTrue(residents.size() >= plan.buildings.size(), name + " is inhabited, " + residents.size() + " islanders");
+            residents.forEach(NpcEntity::discard);
             if (plan.treasure != null) {
                 int h = plan.height(plan.treasure[0], plan.treasure[1]);
                 BlockEntity buried = level.getBlockEntity(new BlockPos(plan.treasure[0], h - 2, plan.treasure[1]));

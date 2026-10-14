@@ -1,0 +1,76 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.travelling_merchant"
+  },
+  "role": "merchant",
+  "skin": "merchant",
+  "health": 24,
+  "attack": 1,
+  "speed": 0.3,
+  "armor": 0,
+  "wander_radius": 40,
+  "lines": {
+    "friendly": [
+      "Ah, my favourite customer!",
+      "Rare goods from the Grand Line!"
+    ],
+    "neutral": [
+      "Wares from every sea! Take a look.",
+      "Everything has a price, friend."
+    ],
+    "hostile": [
+      "Business is closed. For you."
+    ]
+  },
+  "trades": [
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 3,
+      "sell": "minecraft:map",
+      "sell_count": 1,
+      "max_uses": 6
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 2,
+      "sell": "minecraft:compass",
+      "sell_count": 1,
+      "max_uses": 6
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 8,
+      "sell": "grandline:ship_in_a_bottle",
+      "sell_count": 1,
+      "max_uses": 2
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 5,
+      "sell": "grandline:raw_seastone",
+      "sell_count": 1,
+      "max_uses": 6
+    },
+    {
+      "buy": "minecraft:gold_ingot",
+      "buy_count": 4,
+      "sell": "minecraft:emerald",
+      "sell_count": 3,
+      "max_uses": 12
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 24,
+      "sell": "grandline:swordsman_scroll",
+      "sell_count": 1,
+      "max_uses": 1
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 24,
+      "sell": "grandline:gunslinger_scroll",
+      "sell_count": 1,
+      "max_uses": 1
+    }
+  ]
+}

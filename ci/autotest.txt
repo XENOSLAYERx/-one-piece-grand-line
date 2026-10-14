@@ -1229,8 +1229,9 @@ shot 165_thousand_sunny
 cmd kill @e[type=grandline:ship]
 wait 5
 
-# ---- Islands: each raised in a sea above the plain, seen from the air
+# ---- Islands: each raised in a sea above the plain, seen from the air (as a spectator, so the camera stays put)
 camera first
+cmd gamemode spectator
 cmd tp @s 3000 -45 3000
 wait 20
 cmd onepiece island place dawn_island 42
@@ -1252,8 +1253,43 @@ wait 20
 cmd tp @s 3800 -14 3074 180 26
 wait 80
 shot 168_conomi_islands
+cmd gamemode survival
 cmd tp @s 0 -60 0
 wait 20
+
+# ---- Islanders: a line-up (frozen in place), then a Marine rifleman and a pirate gunner in a firefight
+camera first
+cmd tp @s 200 -60 219 180 6
+wait 10
+cmd onepiece npc remove 64
+cmd execute positioned 189 -60 210 rotated 180 0 run onepiece npc spawn grandline:marine_lieutenant
+cmd execute positioned 191 -60 210 rotated 180 0 run onepiece npc spawn grandline:marine_recruit
+cmd execute positioned 193 -60 210 rotated 180 0 run onepiece npc spawn grandline:marine_rifleman
+cmd execute positioned 195 -60 210 rotated 180 0 run onepiece npc spawn grandline:pirate_captain
+cmd execute positioned 197 -60 210 rotated 180 0 run onepiece npc spawn grandline:pirate_grunt
+cmd execute positioned 199 -60 210 rotated 180 0 run onepiece npc spawn grandline:fishman_pirate
+cmd execute positioned 201 -60 210 rotated 180 0 run onepiece npc spawn grandline:revolutionary_agent
+cmd execute positioned 203 -60 210 rotated 180 0 run onepiece npc spawn grandline:bounty_hunter
+cmd execute positioned 205 -60 210 rotated 180 0 run onepiece npc spawn grandline:villager
+cmd execute positioned 207 -60 210 rotated 180 0 run onepiece npc spawn grandline:townsperson
+cmd execute positioned 209 -60 210 rotated 180 0 run onepiece npc spawn grandline:barkeeper
+cmd execute positioned 211 -60 210 rotated 180 0 run onepiece npc spawn grandline:travelling_merchant
+wait 4
+cmd execute as @e[type=grandline:npc] run data merge entity @s {NoAI:1b}
+wait 30
+shot 169_islanders
+cmd onepiece npc remove 64
+cmd kill @e[type=item]
+cmd tp @s 200 -60 216 180 4
+cmd execute positioned 193 -60 206 rotated -90 0 run onepiece npc spawn grandline:marine_rifleman
+cmd execute positioned 207 -60 206 rotated 90 0 run onepiece npc spawn grandline:pirate_gunner
+wait 45
+shot 170_firefight
+cmd onepiece npc remove 64
+cmd kill @e[type=grandline:npc_shot]
+cmd kill @e[type=item]
+cmd tp @s 0 -60 0
+wait 10
 
 # ---- Creator Menu
 camera first

@@ -1,0 +1,28 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.bounty_hunter"
+  },
+  "faction": "grandline:bounty_hunter",
+  "role": "guard",
+  "skin": "bounty_hunter",
+  "health": 36,
+  "attack": 6,
+  "speed": 0.33,
+  "armor": 3,
+  "equipment": {
+    "mainhand": "grandline:katana"
+  },
+  "patrol_radius": 10,
+  "lines": {
+    "friendly": [
+      "Business is good. Know any wanted faces?"
+    ],
+    "neutral": [
+      "You're not worth anything to me. Yet."
+    ],
+    "hostile": [
+      "Your bounty is mine!",
+      "Dead or alive, you're coming with me!"
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 package com.nerodev.grandline.client.screen;
 
+import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.ability.Ability;
 import com.nerodev.grandline.ability.AbilityCategory;
 import com.nerodev.grandline.ability.AbilityState;
@@ -16,6 +17,8 @@ import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.haki.HakiType;
 import com.nerodev.grandline.item.GLItems;
+import com.nerodev.grandline.npc.Factions;
+import com.nerodev.grandline.npc.NpcDefinition;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
@@ -27,6 +30,7 @@ import com.nerodev.grandline.transform.Transformation;
 import com.nerodev.grandline.transform.TransformationManager;
 import com.nerodev.grandline.weapon.GLWeapons;
 import com.nerodev.grandline.weapon.WeaponItem;
+import com.nerodev.grandline.world.island.IslandType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -48,6 +52,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -102,7 +107,9 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("Transformations"), this::transformations));
         categories.add(new Category(Component.literal("Weapons"), this::weapons));
         categories.add(new Category(Component.literal("Factions"), this::factions));
+        categories.add(new Category(Component.literal("NPCs"), this::npcs));
         categories.add(new Category(Component.literal("Ships"), this::ships));
+        categories.add(new Category(Component.literal("Islands"), this::islands));
         categories.add(new Category(Component.literal("Battle Test"), this::battleTest));
         categories.add(new Category(Component.literal("Loadouts"), this::loadouts));
         categories.add(new Category(Component.literal("Player Data"), this::playerData));
@@ -516,9 +523,60 @@ public class CreatorMenuScreen extends Screen {
         for (Map.Entry<ResourceKey<FactionDefinition>, FactionDefinition> e : sorted(GLRegistries.FACTION)) {
             ResourceLocation id = e.getKey().location();
             FactionDefinition faction = e.getValue();
-            out.add(new Entry(faction.displayName(), List.of(faction.description()), faction.color().getValue(), ItemStack.EMPTY,
+            List<Component> details = new ArrayList<>();
+            details.add(line("Standing", Component.literal(data() == null ? "-" : String.valueOf(data().reputation(id)))));
+            details.add(line("Enemies", Component.literal(faction.enemies().isEmpty() ? "-"
+                    : String.join(", ", faction.enemies().stream().map(ResourceLocation::getPath).toList()))));
+            faction.wantedBounty().ifPresent(bounty -> details.add(line("Hunts bounties from", Component.literal(String.valueOf(bounty)))));
+            details.add(faction.description());
+            out.add(new Entry(faction.displayName(), details, faction.color().getValue(), ItemStack.EMPTY,
                     () -> data() != null && data().faction().map(id::equals).orElse(false),
-                    List.of(Action.of("Join", "onepiece faction set " + id), Action.of("Leave faction", "onepiece faction clear"))));
+                    List.of(Action.of("Join", "onepiece faction set " + id), Action.of("Leave faction", "onepiece faction clear"),
+                            Action.of("Make friends", "onepiece reputation set " + id + " 60"),
+                            Action.of("Make enemies", "onepiece reputation set " + id + " -60"),
+                            Action.of("Reset standing", "onepiece reputation set " + id + " 0"))));
+        }
+        out.add(new Entry(Component.literal("Townsfolk"), List.of(line("Standing", Component.literal(data() == null ? "-"
+                : String.valueOf(data().reputation(GrandLine.id("civilians"))))), Component.literal("Villagers and merchants of the islands. "
+                + "They remember who helps them and who hurts them.")), 0xF2EEDC, ItemStack.EMPTY, () -> false,
+                List.of(Action.of("Make friends", "onepiece reputation set grandline:civilians 60"),
+                        Action.of("Reset standing", "onepiece reputation set grandline:civilians 0"))));
+        return out;
+    }
+
+    private List<Entry> npcs() {
+        List<Entry> out = new ArrayList<>();
+        for (Map.Entry<ResourceKey<NpcDefinition>, NpcDefinition> e : sorted(GLRegistries.NPC)) {
+            ResourceLocation id = e.getKey().location();
+            NpcDefinition npc = e.getValue();
+            List<Component> details = new ArrayList<>();
+            details.add(line("Faction", Component.literal(npc.faction().map(ResourceLocation::getPath).orElse("townsfolk"))));
+            details.add(line("Role", Component.literal(npc.role().getSerializedName())));
+            details.add(line("Stats", Component.literal(String.format(Locale.ROOT, "%.0f health, %.0f attack, %.0f armour", npc.health(),
+                    npc.attack(), npc.armor()))));
+            if (!npc.trades().isEmpty()) {
+                details.add(line("Sells", Component.literal(npc.trades().size() + " wares")));
+            }
+            int color = minecraft != null && minecraft.level != null
+                    ? Factions.color(minecraft.level.registryAccess(), npc.faction()).getValue() : 0xF2EEDC;
+            ItemStack icon = npc.equipment().containsKey(EquipmentSlot.MAINHAND) ? new ItemStack(npc.equipment().get(EquipmentSlot.MAINHAND))
+                    : npc.trades().isEmpty() ? new ItemStack(Items.PLAYER_HEAD) : new ItemStack(Items.EMERALD);
+            out.add(new Entry(npc.displayName(), details, color, icon, () -> false,
+                    List.of(Action.of("Spawn here", "onepiece npc spawn " + id), Action.of("Spawn 3", "onepiece npc spawn " + id + " 3"),
+                            Action.confirmed("Remove nearby", "onepiece npc remove 16"))));
+        }
+        return out;
+    }
+
+    private List<Entry> islands() {
+        List<Entry> out = new ArrayList<>();
+        for (IslandType island : IslandType.values()) {
+            String name = island.getSerializedName();
+            out.add(new Entry(island.displayName(), List.of(line("Size", Component.literal("about " + island.radius() * 2 + " blocks across")),
+                    line("Buildings", Component.literal(String.valueOf(island.sites().size()))),
+                    Component.translatable("island.grandline." + name + ".desc")), 0x6FAF5A, new ItemStack(Items.GRASS_BLOCK), () -> false,
+                    List.of(Action.of("Locate", "onepiece island locate " + name), Action.of("Teleport", "onepiece island teleport " + name),
+                            Action.confirmed("Raise one here", "onepiece island place " + name))));
         }
         return out;
     }

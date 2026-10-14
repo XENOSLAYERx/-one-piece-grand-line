@@ -1,0 +1,64 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.barkeeper"
+  },
+  "role": "merchant",
+  "skin": "barkeeper",
+  "health": 20,
+  "attack": 1,
+  "speed": 0.26,
+  "armor": 0,
+  "wander_radius": 3,
+  "lines": {
+    "friendly": [
+      "The usual? Coming right up!",
+      "You've got a tab here, don't worry."
+    ],
+    "neutral": [
+      "Welcome! Have a seat.",
+      "Hungry? We've got meat and milk."
+    ],
+    "hostile": [
+      "Please, leave my bar..."
+    ]
+  },
+  "trades": [
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 1,
+      "sell": "minecraft:cooked_beef",
+      "sell_count": 4,
+      "max_uses": 32
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 1,
+      "sell": "minecraft:milk_bucket",
+      "sell_count": 1,
+      "max_uses": 8,
+      "buy_b": "minecraft:bucket",
+      "buy_b_count": 1
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 1,
+      "sell": "minecraft:bread",
+      "sell_count": 6,
+      "max_uses": 32
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 2,
+      "sell": "minecraft:cake",
+      "sell_count": 1,
+      "max_uses": 6
+    },
+    {
+      "buy": "minecraft:wheat",
+      "buy_count": 18,
+      "sell": "minecraft:emerald",
+      "sell_count": 1,
+      "max_uses": 16
+    }
+  ]
+}

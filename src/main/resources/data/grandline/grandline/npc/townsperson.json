@@ -1,0 +1,26 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.townsperson"
+  },
+  "role": "civilian",
+  "skin": "villager_b",
+  "health": 20,
+  "attack": 1,
+  "speed": 0.28,
+  "armor": 0,
+  "wander_radius": 10,
+  "lines": {
+    "friendly": [
+      "You're always welcome here!",
+      "Have you tried the bar? Best meat in town."
+    ],
+    "neutral": [
+      "Good day.",
+      "Watch out for pirates on the coast."
+    ],
+    "hostile": [
+      "Don't hurt me!",
+      "Marines! Help!"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.marine_lieutenant"
+  },
+  "faction": "grandline:marine",
+  "role": "soldier",
+  "skin": "marine_officer",
+  "health": 60,
+  "attack": 7,
+  "speed": 0.31,
+  "armor": 6,
+  "equipment": {
+    "mainhand": "grandline:katana"
+  },
+  "patrol_radius": 6,
+  "lines": {
+    "friendly": [
+      "Report, sailor. Anything to note?",
+      "Fine work. Keep it up."
+    ],
+    "neutral": [
+      "State your business on this base.",
+      "This is Marine ground."
+    ],
+    "hostile": [
+      "You dare raise your hand against Justice?",
+      "I'll bring you in myself!"
+    ]
+  }
+}

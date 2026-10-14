@@ -1,0 +1,80 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.marine_quartermaster"
+  },
+  "faction": "grandline:marine",
+  "role": "merchant",
+  "skin": "marine",
+  "health": 26,
+  "attack": 2,
+  "speed": 0.25,
+  "armor": 2,
+  "wander_radius": 4,
+  "lines": {
+    "friendly": [
+      "Need supplies? You've earned them.",
+      "Fresh stock from headquarters."
+    ],
+    "neutral": [
+      "Supplies for the Marines and their friends.",
+      "Make it quick."
+    ],
+    "hostile": [
+      "I don't arm criminals."
+    ]
+  },
+  "trades": [
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 1,
+      "sell": "grandline:iron_bullet",
+      "sell_count": 8,
+      "max_uses": 24
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 2,
+      "sell": "grandline:cannonball",
+      "sell_count": 4,
+      "max_uses": 16
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 6,
+      "sell": "grandline:cutlass",
+      "sell_count": 1,
+      "max_uses": 12
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 10,
+      "sell": "grandline:flintlock",
+      "sell_count": 1,
+      "max_uses": 4
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 4,
+      "sell": "grandline:seastone_bullet",
+      "sell_count": 4,
+      "max_uses": 12,
+      "members_only": true
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 16,
+      "sell": "grandline:seastone_cuffs",
+      "sell_count": 1,
+      "max_uses": 2,
+      "members_only": true
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 14,
+      "sell": "grandline:musket",
+      "sell_count": 1,
+      "max_uses": 3,
+      "members_only": true
+    }
+  ]
+}

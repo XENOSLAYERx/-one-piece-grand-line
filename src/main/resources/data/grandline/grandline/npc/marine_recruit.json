@@ -1,0 +1,33 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.marine_recruit"
+  },
+  "faction": "grandline:marine",
+  "role": "soldier",
+  "skin": "marine",
+  "health": 24,
+  "attack": 3,
+  "speed": 0.3,
+  "armor": 2,
+  "equipment": {
+    "mainhand": "grandline:cutlass"
+  },
+  "patrol_radius": 14,
+  "lines": {
+    "friendly": [
+      "Good to see you on our side.",
+      "The seas are calmer with you around.",
+      "Justice will prevail!"
+    ],
+    "neutral": [
+      "Move along, citizen.",
+      "Keep out of trouble.",
+      "We're keeping an eye on pirates around here."
+    ],
+    "hostile": [
+      "Halt! You're under arrest!",
+      "There's a price on your head!",
+      "Surrender to the Marines!"
+    ]
+  }
+}

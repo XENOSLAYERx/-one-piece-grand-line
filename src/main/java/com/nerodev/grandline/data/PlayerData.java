@@ -32,6 +32,8 @@ public final class PlayerData {
     public static final ResourceLocation DEFAULT_RACE = GrandLine.id("human");
     public static final long MAX_BOUNTY = 99_999_999_999L;
     public static final double MAX_MASTERY = 100.0;
+    /** Reputation with each faction runs from -1000 (hated) to 1000 (revered). */
+    public static final int MAX_REPUTATION = 1000;
 
     public static final Codec<PlayerData> CODEC = RecordCodecBuilder.create(i -> i.group(
             ResourceLocation.CODEC.optionalFieldOf("race", DEFAULT_RACE).forGetter(d -> d.race),
@@ -46,7 +48,8 @@ public final class PlayerData {
             Codec.BOOL.optionalFieldOf("awakened", false).forGetter(d -> d.awakened),
             Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("counters", Map.of()).forGetter(d -> d.counters),
             ResourceLocation.CODEC.optionalFieldOf("style").forGetter(d -> d.style),
-            Codec.unboundedMap(Codec.STRING, Loadout.CODEC).optionalFieldOf("loadouts", Map.of()).forGetter(d -> d.loadouts)
+            Codec.unboundedMap(Codec.STRING, Loadout.CODEC).optionalFieldOf("loadouts", Map.of()).forGetter(d -> d.loadouts),
+            Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(d -> d.reputation)
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -64,17 +67,19 @@ public final class PlayerData {
     private final Map<String, Integer> counters = new HashMap<>();
     private Optional<ResourceLocation> style;
     private final Map<String, Loadout> loadouts = new TreeMap<>();
+    private final Map<ResourceLocation, Integer> reputation = new TreeMap<>();
 
     public PlayerData() {
         this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false, Map.of(),
-                Optional.empty(), Map.of());
+                Optional.empty(), Map.of(), Map.of());
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
             Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
             Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style,
-            Map<String, Loadout> loadouts) {
+            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation) {
         this.loadouts.putAll(loadouts);
+        reputation.forEach((faction, value) -> this.reputation.put(faction, clampReputation(value)));
         this.fruit = fruit;
         this.style = style;
         this.awakened = awakened;
@@ -119,6 +124,33 @@ public final class PlayerData {
         // Saturating add: never wraps around on overflow.
         long sum = amount > 0 && bounty > Long.MAX_VALUE - amount ? Long.MAX_VALUE : bounty + amount;
         this.bounty = clampBounty(sum);
+    }
+
+    /** Standing with a faction: 0 is neutral, below zero they distrust you, above zero they like you. */
+    public int reputation(ResourceLocation faction) {
+        return reputation.getOrDefault(faction, 0);
+    }
+
+    /** Every faction this player has any standing with. */
+    public Map<ResourceLocation, Integer> reputations() {
+        return Collections.unmodifiableMap(reputation);
+    }
+
+    public void setReputation(ResourceLocation faction, int value) {
+        int clamped = clampReputation(value);
+        if (clamped == 0) {
+            reputation.remove(faction);
+        } else {
+            reputation.put(faction, clamped);
+        }
+    }
+
+    public void addReputation(ResourceLocation faction, int amount) {
+        setReputation(faction, reputation(faction) + amount);
+    }
+
+    public void clearReputation() {
+        reputation.clear();
     }
 
     public DeathMode deathMode() {
@@ -272,6 +304,8 @@ public final class PlayerData {
         this.style = other.style;
         this.loadouts.clear();
         this.loadouts.putAll(other.loadouts);
+        this.reputation.clear();
+        this.reputation.putAll(other.reputation);
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {
@@ -286,6 +320,10 @@ public final class PlayerData {
 
     private static long clampBounty(long value) {
         return Math.max(0L, Math.min(MAX_BOUNTY, value));
+    }
+
+    private static int clampReputation(int value) {
+        return Mth.clamp(value, -MAX_REPUTATION, MAX_REPUTATION);
     }
 
     private static double clampMastery(double value) {

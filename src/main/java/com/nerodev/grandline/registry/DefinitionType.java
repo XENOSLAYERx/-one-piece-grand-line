@@ -6,6 +6,7 @@ import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.npc.NpcDefinition;
 import com.nerodev.grandline.ship.ShipDefinition;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -91,7 +92,16 @@ public record DefinitionType<T>(
                     line("Crew", Component.literal(ship.crew() + ", " + ship.storageRows() + " rows of cargo")),
                     line("Description", ship.description())));
 
-    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP);
+    public static final DefinitionType<NpcDefinition> NPC = new DefinitionType<>(
+            "npc", GLRegistries.NPC, NpcDefinition::displayName,
+            npc -> List.of(
+                    line("Faction", Component.literal(npc.faction().map(ResourceLocation::toString).orElse("townsfolk"))),
+                    line("Role", Component.literal(npc.role().getSerializedName())),
+                    line("Stats", Component.literal(String.format(Locale.ROOT, "%.0f health, %.0f attack, %.0f armour, speed %.2f",
+                            npc.health(), npc.attack(), npc.armor(), npc.speed()))),
+                    line("Trades", Component.literal(String.valueOf(npc.trades().size())))));
+
+    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP, NPC);
 
     public Registry<T> registry(RegistryAccess access) {
         return access.registryOrThrow(key);

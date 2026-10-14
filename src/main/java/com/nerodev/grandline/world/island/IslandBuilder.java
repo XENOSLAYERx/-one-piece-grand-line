@@ -1,10 +1,14 @@
 package com.nerodev.grandline.world.island;
 
+import com.nerodev.grandline.npc.GLNpcs;
+import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.world.GLWorldgen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
@@ -302,6 +306,16 @@ final class IslandBuilder {
             container(lx, ly, lz, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, facing), loot);
         }
 
+        /** An islander living here, standing at a local position (spawned once, by the chunk that holds the spot). */
+        void resident(ResourceLocation npc, int lx, int ly, int lz) {
+            int x = b.worldX(lx, lz);
+            int y = y0 + ly;
+            int z = b.worldZ(lx, lz);
+            if (box.isInside(x, y, z)) {
+                NpcEntity.spawn(level, npc, new BlockPos(x, y, z), random.nextFloat() * 360f, MobSpawnType.STRUCTURE);
+            }
+        }
+
         /** A flag on a pole: {@code colors} are the rows of the flag from the top. */
         void flag(int lx, int ly, int lz, int height, Block[] colors) {
             for (int i = 0; i < height; i++) {
@@ -408,6 +422,7 @@ final class IslandBuilder {
             f.bed(1, 5, d - 3, Blocks.BLUE_BED);
             f.set(1, 5, 1, Blocks.LANTERN);
         }
+        f.resident(p == VILLAGE ? GLNpcs.VILLAGER : GLNpcs.TOWNSPERSON, w / 2, 1, d / 2);
     }
 
     /** Partys Bar: a long room with a counter, barrels behind it and tables by the windows. */
@@ -434,6 +449,8 @@ final class IslandBuilder {
         for (int lx = 3; lx <= w - 4; lx += 2) {
             f.set(lx, 1, d - 4, Blocks.OAK_FENCE);
         }
+        f.resident(GLNpcs.BARKEEPER, 2 * (w / 4), 1, d - 2);
+        f.resident(GLNpcs.VILLAGER, 2, 1, 3);
     }
 
     /** The windmill above Foosha Village: stone below, timber above, a cap and four sails facing the sea. */
@@ -485,6 +502,7 @@ final class IslandBuilder {
             f.set(cx - i, hub, 0, fence(false, true, false, i < 4));
             f.set(cx - i, hub + 1, 0, sail);
         }
+        f.resident(GLNpcs.VILLAGER, cx, 1, d / 2);
     }
 
     /** The Marine base of Shells Town: a walled yard, the tall tower, an armoury, barracks and the yard's stake. */
@@ -586,6 +604,14 @@ final class IslandBuilder {
         for (int[] corner : new int[][] {{1, 1}, {w - 2, 1}, {1, d - 2}, {w - 2, d - 2}}) {
             f.set(corner[0], 1, corner[1], Blocks.LANTERN);
         }
+        // The garrison: the lieutenant in the tower, the quartermaster in the armoury, recruits and riflemen in the yard.
+        f.resident(GLNpcs.MARINE_LIEUTENANT, tc, 1, tz0 + 2);
+        f.resident(GLNpcs.MARINE_QUARTERMASTER, ax1 - 1, 1, 5);
+        f.resident(GLNpcs.MARINE_RECRUIT, gate - 3, 1, 8);
+        f.resident(GLNpcs.MARINE_RECRUIT, gate + 3, 1, 8);
+        f.resident(GLNpcs.MARINE_RECRUIT, gate, 1, 11);
+        f.resident(GLNpcs.MARINE_RIFLEMAN, gate - 2, 1, 3);
+        f.resident(GLNpcs.MARINE_RIFLEMAN, gate + 2, 1, 3);
     }
 
     /** Arlong Park: sea-stone walls, a pool open to the sea, the hall with Arlong's seat, and the shark-tooth tower. */
@@ -660,6 +686,12 @@ final class IslandBuilder {
             f.set(gate + 4, ly, hz1 - 1, Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, Direction.NORTH));
         }
         f.flag((tx0 + tx1) / 2, 18, (tz0 + tz1) / 2, 6, new Block[] {Blocks.BLACK_WOOL, Blocks.WHITE_WOOL, Blocks.BLACK_WOOL});
+        // Arlong's crew holds the park.
+        f.resident(GLNpcs.FISHMAN_PIRATE, 2, 1, 2);
+        f.resident(GLNpcs.FISHMAN_PIRATE, w - 3, 1, 2);
+        f.resident(GLNpcs.FISHMAN_PIRATE, gate - 3, 1, 10);
+        f.resident(GLNpcs.FISHMAN_PIRATE, gate + 3, 1, 10);
+        f.resident(GLNpcs.FISHMAN_PIRATE, gate, 1, hz1 - 3);
     }
 
     /** Bell-mère's tangerine grove: rows of small trees behind a fence. */
@@ -701,6 +733,7 @@ final class IslandBuilder {
                 f.set(lx, 3, lz, Blocks.OAK_LOG);
             }
         }
+        f.resident(GLNpcs.TANGERINE_FARMER, w / 2, 1, d / 2);
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -736,6 +769,12 @@ final class IslandBuilder {
                     }
                 }
             }
+        }
+        // A travelling merchant has moored at Shells Town's pier.
+        int mx = pier.x() + out.getStepX() * 4;
+        int mz = pier.z() + out.getStepZ() * 4;
+        if (plan.type == IslandType.SHELLS_TOWN && box.isInside(mx, deck + 1, mz) && plan.height(mx, mz) <= deck) {
+            NpcEntity.spawn(level, GLNpcs.TRAVELLING_MERCHANT, new BlockPos(mx, deck + 1, mz), out.toYRot() + 180, MobSpawnType.STRUCTURE);
         }
     }
 

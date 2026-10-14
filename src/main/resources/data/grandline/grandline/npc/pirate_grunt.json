@@ -1,0 +1,32 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.pirate_grunt"
+  },
+  "faction": "grandline:pirate",
+  "role": "guard",
+  "skin": "pirate",
+  "health": 24,
+  "attack": 4,
+  "speed": 0.3,
+  "armor": 1,
+  "equipment": {
+    "mainhand": "grandline:cutlass"
+  },
+  "patrol_radius": 8,
+  "lines": {
+    "friendly": [
+      "Ahoy, mate!",
+      "Seen any treasure lately?",
+      "Yo ho!"
+    ],
+    "neutral": [
+      "What're you looking at?",
+      "Keep walking, landlubber."
+    ],
+    "hostile": [
+      "Get 'em, lads!",
+      "Your treasure or your life!",
+      "Haha! Easy pickings!"
+    ]
+  }
+}

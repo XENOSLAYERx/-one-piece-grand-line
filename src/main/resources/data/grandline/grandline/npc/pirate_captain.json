@@ -1,0 +1,30 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.pirate_captain"
+  },
+  "faction": "grandline:pirate",
+  "role": "guard",
+  "skin": "pirate_captain",
+  "health": 70,
+  "attack": 8,
+  "speed": 0.31,
+  "armor": 5,
+  "equipment": {
+    "mainhand": "grandline:katana"
+  },
+  "patrol_radius": 4,
+  "lines": {
+    "friendly": [
+      "Welcome aboard, friend of the crew.",
+      "The sea's ours for the taking!"
+    ],
+    "neutral": [
+      "You're in pirate waters now.",
+      "Mind your tongue around my crew."
+    ],
+    "hostile": [
+      "I'll feed you to the Sea Kings!",
+      "All hands, attack!"
+    ]
+  }
+}

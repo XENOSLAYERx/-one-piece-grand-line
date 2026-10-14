@@ -1,0 +1,48 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.tangerine_farmer"
+  },
+  "role": "merchant",
+  "skin": "farmer",
+  "health": 22,
+  "attack": 2,
+  "speed": 0.28,
+  "armor": 0,
+  "wander_radius": 8,
+  "lines": {
+    "friendly": [
+      "Take a tangerine for the road!",
+      "Bell-mere's trees never fail us."
+    ],
+    "neutral": [
+      "Best tangerines in the East Blue.",
+      "Careful near Arlong Park."
+    ],
+    "hostile": [
+      "Get off my grove!"
+    ]
+  },
+  "trades": [
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 1,
+      "sell": "grandline:tangerine",
+      "sell_count": 8,
+      "max_uses": 32
+    },
+    {
+      "buy": "minecraft:emerald",
+      "buy_count": 3,
+      "sell": "grandline:tangerine_leaves",
+      "sell_count": 4,
+      "max_uses": 12
+    },
+    {
+      "buy": "grandline:tangerine",
+      "buy_count": 24,
+      "sell": "minecraft:emerald",
+      "sell_count": 1,
+      "max_uses": 16
+    }
+  ]
+}

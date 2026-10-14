@@ -2811,5 +2811,22 @@
   "island.grandline.conomi_islands": "Conomi Islands",
   "island.grandline.conomi_islands.desc": "Cocoyasi's villas and tangerine groves, in the shadow of Arlong Park.",
   "block.grandline.tangerine_leaves": "Tangerine Leaves",
-  "item.grandline.tangerine": "Tangerine"
+  "item.grandline.tangerine": "Tangerine",
+  "npc.grandline.marine_recruit": "Marine Recruit",
+  "npc.grandline.marine_rifleman": "Marine Rifleman",
+  "npc.grandline.marine_lieutenant": "Marine Lieutenant",
+  "npc.grandline.marine_quartermaster": "Marine Quartermaster",
+  "npc.grandline.pirate_grunt": "Pirate",
+  "npc.grandline.pirate_gunner": "Pirate Gunner",
+  "npc.grandline.pirate_captain": "Pirate Captain",
+  "npc.grandline.fishman_pirate": "Arlong Pirate",
+  "npc.grandline.revolutionary_agent": "Revolutionary Agent",
+  "npc.grandline.bounty_hunter": "Bounty Hunter",
+  "npc.grandline.villager": "Villager",
+  "npc.grandline.townsperson": "Townsperson",
+  "npc.grandline.barkeeper": "Barkeeper",
+  "npc.grandline.travelling_merchant": "Travelling Merchant",
+  "npc.grandline.tangerine_farmer": "Tangerine Farmer",
+  "entity.grandline.npc": "Islander",
+  "entity.grandline.npc_shot": "Musket Ball"
 }

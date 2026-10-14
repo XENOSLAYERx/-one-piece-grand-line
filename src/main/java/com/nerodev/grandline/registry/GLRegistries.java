@@ -3,6 +3,7 @@ package com.nerodev.grandline.registry;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
+import com.nerodev.grandline.npc.NpcDefinition;
 import com.nerodev.grandline.ship.ShipDefinition;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -23,6 +24,7 @@ public final class GLRegistries {
     public static final ResourceKey<Registry<RaceDefinition>> RACE = key("race");
     public static final ResourceKey<Registry<FactionDefinition>> FACTION = key("faction");
     public static final ResourceKey<Registry<ShipDefinition>> SHIP = key("ship");
+    public static final ResourceKey<Registry<NpcDefinition>> NPC = key("npc");
 
     private GLRegistries() {}
 
@@ -34,5 +36,6 @@ public final class GLRegistries {
         event.dataPackRegistry(RACE, RaceDefinition.CODEC, RaceDefinition.CODEC);
         event.dataPackRegistry(FACTION, FactionDefinition.CODEC, FactionDefinition.CODEC);
         event.dataPackRegistry(SHIP, ShipDefinition.CODEC, ShipDefinition.CODEC);
+        event.dataPackRegistry(NPC, NpcDefinition.CODEC, NpcDefinition.CODEC);
     }
 }

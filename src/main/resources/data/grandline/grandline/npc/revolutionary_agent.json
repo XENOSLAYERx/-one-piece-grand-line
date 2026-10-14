@@ -1,0 +1,30 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.revolutionary_agent"
+  },
+  "faction": "grandline:revolutionary",
+  "role": "guard",
+  "skin": "revolutionary",
+  "health": 34,
+  "attack": 5,
+  "speed": 0.33,
+  "armor": 3,
+  "equipment": {
+    "mainhand": "grandline:flintlock"
+  },
+  "patrol_radius": 8,
+  "lines": {
+    "friendly": [
+      "The dawn is coming, comrade.",
+      "Dragon sends his regards."
+    ],
+    "neutral": [
+      "You didn't see me.",
+      "Keep your voice down."
+    ],
+    "hostile": [
+      "For the revolution!",
+      "You serve the World Government!"
+    ]
+  }
+}

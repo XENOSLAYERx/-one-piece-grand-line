@@ -1,0 +1,27 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.pirate_gunner"
+  },
+  "faction": "grandline:pirate",
+  "role": "guard",
+  "skin": "pirate",
+  "health": 22,
+  "attack": 2,
+  "speed": 0.29,
+  "armor": 1,
+  "equipment": {
+    "mainhand": "grandline:flintlock"
+  },
+  "patrol_radius": 6,
+  "lines": {
+    "friendly": [
+      "Need a shot fired, mate?"
+    ],
+    "neutral": [
+      "One wrong move..."
+    ],
+    "hostile": [
+      "Bang! Hahaha!"
+    ]
+  }
+}
