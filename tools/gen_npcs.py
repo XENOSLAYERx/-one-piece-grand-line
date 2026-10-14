@@ -421,11 +421,45 @@ def arlong(s):
     belt(s, hexc("3a2a1a"), GOLD)
 
 
+def buggy(s):
+    # Buggy the Clown: clown-white face and big red nose, long blue hair under a captain's hat, a red captain's coat
+    # over a striped shirt.
+    skin = hexc("f4ece4")
+    head(s, skin, hexc("3a6ac8"), style="long", eyes=hexc("2a2a2a"), mouth=hexc("c02828"))
+    for x in (3, 4):
+        for y in (4, 5):
+            s.at("head", "front", x, y, hexc("d82020"), 0)
+    for x in range(2, 6):
+        s.at("head", "front", x, 6, hexc("c02828"), 0)
+    torso(s, WHITE, lambda f, x, y, w, h: hexc("2a52b0") if y % 2 == 0 else WHITE)
+    arms(s, hexc("b02828"), skin, 12, cuff=GOLD)
+    legs(s, hexc("e8a040"), hexc("3a2a1c"), shoe_height=3)
+    belt(s, hexc("3a2a1c"), GOLD)
+    coat(s, hexc("b82828"), trim=GOLD, length=7)
+    # A captain's hat: black crown, brim folded up, a white skull on the front.
+    s.fill("head_", hexc("2a2a30"), faces=("top",))
+    s.paint("head_", lambda f, x, y, w, h: (GOLD if y == 2 else hexc("2a2a30")) if y < 3 else None, faces=("front", "back", "left", "right"))
+    s.at("head_", "front", 3, 1, WHITE, 0)
+    s.at("head_", "front", 4, 1, WHITE, 0)
+
+
+def kuro(s):
+    # Captain Kuro: slicked-back black hair, round glasses, a black suit and a white shirt.
+    skin = SKIN_TONES["light"]
+    head(s, skin, hexc("1c1c22"), eyes=hexc("3a2a1a"), glasses=hexc("1a1a1a"))
+    s.paint("head", lambda f, x, y, w, h: hexc("1c1c22") if y < 3 else None, faces=("front",))
+    torso(s, hexc("22222a"), lambda f, x, y, w, h: WHITE if f == "front" and 3 <= x <= 4 and y < 9 else (
+        hexc("101014") if f == "front" and x in (3, 4) and y in (2, 3) else hexc("22222a")))
+    arms(s, hexc("22222a"), skin, 12, cuff=WHITE)
+    legs(s, hexc("22222a"), hexc("101014"), shoe_height=2)
+    belt(s, hexc("101014"))
+
+
 SKIN_PAINTERS = {
     "marine": marine, "marine_officer": marine_officer, "pirate": pirate, "pirate_captain": pirate_captain,
     "fishman": fishman, "villager_a": villager_a, "villager_b": villager_b, "barkeeper": barkeeper,
     "merchant": merchant, "revolutionary": revolutionary, "bounty_hunter": bounty_hunter, "farmer": farmer,
-    "morgan": morgan, "arlong": arlong,
+    "morgan": morgan, "arlong": arlong, "buggy": buggy, "kuro": kuro,
 }
 
 # ---------------------------------------------------------------------------------------------------------------

@@ -47,6 +47,8 @@ public final class GLNpcs {
     public static final ResourceLocation FISHMAN_PIRATE = GrandLine.id("fishman_pirate");
     public static final ResourceLocation TANGERINE_FARMER = GrandLine.id("tangerine_farmer");
     public static final ResourceLocation TRAVELLING_MERCHANT = GrandLine.id("travelling_merchant");
+    public static final ResourceLocation PIRATE_GRUNT = GrandLine.id("pirate_grunt");
+    public static final ResourceLocation PIRATE_GUNNER = GrandLine.id("pirate_gunner");
 
     private GLNpcs() {}
 

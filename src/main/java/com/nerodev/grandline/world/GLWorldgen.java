@@ -53,6 +53,8 @@ public final class GLWorldgen {
     public static final ResourceKey<LootTable> MARINE_ARMORY = loot("marine_armory");
     public static final ResourceKey<LootTable> ARLONG_HOARD = loot("arlong_hoard");
     public static final ResourceKey<LootTable> BURIED_TREASURE = loot("buried_treasure");
+    public static final ResourceKey<LootTable> BUGGY_STASH = loot("buggy_stash");
+    public static final ResourceKey<LootTable> KAYA_MANSION = loot("kaya_mansion");
 
     private GLWorldgen() {}
 

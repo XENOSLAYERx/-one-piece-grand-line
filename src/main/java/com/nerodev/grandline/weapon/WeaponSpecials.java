@@ -191,6 +191,45 @@ final class WeaponSpecials {
         }
     };
 
+    /**
+     * Buggy's knife: a swung blow sends the hand flying on (a Chop-Chop trick) to cut the nearest other foe ahead as
+     * well.
+     */
+    static final Special BARA_BARA = new Special() {
+        @Override
+        public void afterHit(LivingEntity attacker, LivingEntity target, float dealt, boolean swing) {
+            if (!swing || !(attacker instanceof ServerPlayer player)) {
+                return;
+            }
+            LivingEntity next = null;
+            for (LivingEntity other : AbilityDamage.cone(player, 7, 30)) {
+                if (other != target && (next == null || other.distanceToSqr(player) < next.distanceToSqr(player))) {
+                    next = other;
+                }
+            }
+            if (next != null) {
+                Kit.hit(player, next, AbilityDamage.SLASH, dealt * 0.6f);
+                Vfx.trail(player.serverLevel(), player, target.getBoundingBox().getCenter(), next.getBoundingBox().getCenter(), 0xF0E8D8, 0.5f,
+                        Kind.STREAK);
+            }
+        }
+    };
+
+    /** Kuro's cat claws: ten blades leave their target bleeding and slowed, with the rake marks to show for it. */
+    static final Special NEKO_NO_TE = new Special() {
+        @Override
+        public void afterHit(LivingEntity attacker, LivingEntity target, float dealt, boolean swing) {
+            target.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, swing ? 80 : 40, 0));
+            if (swing) {
+                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 0));
+                if (attacker.level() instanceof ServerLevel level) {
+                    Vec3 look = attacker.getLookAngle();
+                    Vfx.slash(level, attacker, target.getBoundingBox().getCenter(), new Vec3(-look.z, 0, look.x).normalize(), 0xE8ECF4, 1.4f, 5);
+                }
+            }
+        }
+    };
+
     private static void impact(LivingEntity target, int color, float size, Kind kind) {
         if (target.level() instanceof ServerLevel level) {
             Vfx.impact(level, null, target.getBoundingBox().getCenter(), color, size, kind);

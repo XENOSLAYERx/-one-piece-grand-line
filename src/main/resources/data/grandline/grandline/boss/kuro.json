@@ -1,0 +1,74 @@
+{
+  "display_name": {
+    "translate": "boss.grandline.kuro"
+  },
+  "title": {
+    "translate": "boss.grandline.kuro.title"
+  },
+  "skin": "kuro",
+  "parts": "kuro",
+  "weapon": "grandline:cat_claws",
+  "stats": {
+    "health": 320,
+    "attack": 10,
+    "armor": 4,
+    "speed": 0.34,
+    "scale": 1.1,
+    "dodge": 0.25,
+    "guard": 0.0,
+    "knockback_resistance": 0.4
+  },
+  "bar_color": "purple",
+  "faction": "grandline:pirate",
+  "aggressive": false,
+  "phases": [
+    {
+      "name": {
+        "translate": "boss.grandline.kuro.phase1"
+      },
+      "moves": {
+        "claw_rake": 4,
+        "silent_step": 2
+      },
+      "pace": 1.0
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.kuro.phase2"
+      },
+      "moves": {
+        "claw_rake": 3,
+        "silent_step": 3,
+        "shakushi": 1
+      },
+      "pace": 1.2,
+      "threshold": 0.6,
+      "line": "Three years of planning, and you would ruin it?"
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.kuro.phase3"
+      },
+      "moves": {
+        "shakushi": 3,
+        "silent_step": 3,
+        "claw_rake": 2
+      },
+      "pace": 1.4,
+      "threshold": 0.3,
+      "line": "Then I will cut down everything in sight."
+    }
+  ],
+  "rewards": {
+    "bounty": 16000000,
+    "renown": 45,
+    "reputation": {
+      "grandline:civilians": 30,
+      "grandline:pirate": -20
+    }
+  },
+  "lines": {
+    "intro": "I am a butler, nothing more... and you have seen too much.",
+    "defeat": "My plan... was flawless..."
+  }
+}

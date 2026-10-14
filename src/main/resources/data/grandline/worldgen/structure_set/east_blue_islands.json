@@ -11,6 +11,14 @@
     {
       "structure": "grandline:conomi_islands",
       "weight": 1
+    },
+    {
+      "structure": "grandline:orange_town",
+      "weight": 1
+    },
+    {
+      "structure": "grandline:syrup_village",
+      "weight": 1
     }
   ],
   "placement": {

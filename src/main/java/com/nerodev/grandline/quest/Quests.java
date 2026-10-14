@@ -438,7 +438,8 @@ public final class Quests {
             case DEFEAT_FACTION -> Component.literal("Defeat " + count + " of the ").append(orAny(name, "enemy"));
             case DEFEAT_BOSS -> Component.literal("Defeat ").append(orAny(name, "a boss"));
             case TALK -> Component.literal("Speak with ").append(orAny(name, "an islander"));
-            case DISCOVER -> name != null ? Component.literal("Find ").append(name) : Component.literal("Find " + count + " islands");
+            case DISCOVER -> name != null ? Component.literal("Find ").append(name)
+                    : Component.literal(count == 1 ? "Find an island" : "Find " + count + " islands");
             case COLLECT -> Component.literal("Gather " + count + " ").append(orAny(name, "items"));
             case BOUNTY -> Component.literal("Earn a bounty of " + Bounties.format(count));
             case SAIL -> Component.literal("Set out to sea aboard a ship");

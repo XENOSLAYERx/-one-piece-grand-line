@@ -17,7 +17,7 @@ NPCS = ROOT + "/data/grandline/grandline/npc"
 BOSSES = ROOT + "/data/grandline/grandline/boss"
 FACTIONS = ROOT + "/data/grandline/grandline/faction"
 ITEM_MODELS = ROOT + "/assets/grandline/models/item"
-ISLANDS = {"dawn_island", "shells_town", "conomi_islands"}
+ISLANDS = {"dawn_island", "shells_town", "conomi_islands", "orange_town", "syrup_village"}
 
 
 def obj(kind, target=None, count=1, consume=False):
@@ -64,11 +64,32 @@ QUEST_LIST = {
                     "reputation": {"grandline:civilians": 10}},
         "lines": {"done": "Shells Town is free. Word of what you did will travel - to the Fish-Man pirates' ears, too."},
     },
+    "the_clown_of_orange_town": {
+        "name": "The Clown of Orange Town",
+        "desc": "Orange Town stands empty: the Buggy Pirates took it, and their captain holds court in the tavern under a circus "
+                "tent. They say cutting him is no use at all.",
+        "category": "main", "order": 4, "requires": ["the_marine_base"], "island": "orange_town",
+        "objectives": [obj("discover", "grandline:orange_town"), obj("defeat_npc", "grandline:pirate_grunt", 3),
+                       obj("defeat_boss", "grandline:buggy")],
+        "rewards": {"items": items(("minecraft:emerald", 14), ("minecraft:gold_ingot", 4)), "renown": 35,
+                    "reputation": {"grandline:civilians": 10}},
+        "lines": {"done": "The townsfolk are coming home. A blade can't cut a Chop-Chop body, but Haki - or fists - can."},
+    },
+    "the_butler_of_syrup_village": {
+        "name": "The Butler of Syrup Village",
+        "desc": "In Syrup Village the boy who cries pirates swears the rich girl's butler is a pirate captain in hiding. Nobody "
+                "believes him. Find out for yourself.",
+        "category": "main", "order": 5, "requires": ["the_clown_of_orange_town"], "island": "syrup_village",
+        "objectives": [obj("discover", "grandline:syrup_village"), obj("talk", "grandline:villager"), obj("defeat_boss", "grandline:kuro")],
+        "rewards": {"items": items(("minecraft:emerald", 16), ("minecraft:golden_carrot", 8)), "renown": 40,
+                    "reputation": {"grandline:civilians": 10}},
+        "lines": {"done": "Captain Kuro's hundred plans came to nothing. Next, the sea restaurant and the Fish-Men beyond it."},
+    },
     "arlong_park": {
         "name": "Arlong Park",
         "desc": "Fish-Man pirates hold the Conomi Islands, taxing every villager for the right to live. A tangerine farmer "
                 "there knows the way into Arlong Park.",
-        "category": "main", "order": 4, "requires": ["the_marine_base"], "island": "conomi_islands",
+        "category": "main", "order": 6, "requires": ["the_butler_of_syrup_village"], "island": "conomi_islands",
         "objectives": [obj("discover", "grandline:conomi_islands"), obj("talk", "grandline:tangerine_farmer"),
                        obj("defeat_npc", "grandline:fishman_pirate", 5), obj("defeat_boss", "grandline:arlong")],
         "rewards": {"items": items(("minecraft:emerald", 24), ("minecraft:diamond", 2), ("grandline:tangerine", 16)), "renown": 60,
@@ -79,8 +100,8 @@ QUEST_LIST = {
         "name": "Toward the Grand Line",
         "desc": "Your name is known across the East Blue. Chart every island it holds, and earn a bounty worthy of the "
                 "Grand Line.",
-        "category": "main", "order": 5, "requires": ["arlong_park"],
-        "objectives": [obj("discover", count=3), obj("bounty", count=30_000_000)],
+        "category": "main", "order": 7, "requires": ["arlong_park"],
+        "objectives": [obj("discover", count=5), obj("bounty", count=30_000_000)],
         "rewards": {"items": items(("minecraft:gold_ingot", 16), ("minecraft:emerald", 32)), "renown": 100},
         "lines": {"done": "The East Blue is behind you. The Grand Line's charts are still being drawn - its islands await."},
     },
@@ -111,6 +132,16 @@ QUEST_LIST = {
         "rewards": {"items": items(("minecraft:emerald", 6)), "reputation": {"grandline:civilians": 6}},
         "lines": {"offer": "We haven't had fresh fish in weeks. The captain's men take everything we land.",
                   "done": "Fish for dinner! You're a kind soul, stranger."},
+    },
+    "chouchous_shop": {
+        "name": "Chouchou's Shop",
+        "desc": "An old dog still guards his late master's pet food shop, though the pirates scattered his stock. Bring bones to "
+                "fill the shelves again.",
+        "giver": "grandline:townsperson", "island": "orange_town", "order": 4,
+        "objectives": [obj("collect", "minecraft:bone", 8, consume=True)],
+        "rewards": {"items": items(("minecraft:emerald", 5), ("minecraft:cooked_beef", 4)), "reputation": {"grandline:civilians": 6}},
+        "lines": {"offer": "That old dog won't leave the shop. If only we had something to stock it with... bones, maybe?",
+                  "done": "Look at him wag! Thank you, traveller."},
     },
     "marine_drills": {
         "name": "Marine Drills",

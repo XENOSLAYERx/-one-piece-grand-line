@@ -1,0 +1,48 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.the_clown_of_orange_town"
+  },
+  "description": {
+    "translate": "quest.grandline.the_clown_of_orange_town.desc"
+  },
+  "category": "main",
+  "order": 4,
+  "island": "orange_town",
+  "requires": [
+    "grandline:the_marine_base"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "target": "grandline:orange_town"
+    },
+    {
+      "type": "defeat_npc",
+      "target": "grandline:pirate_grunt",
+      "count": 3
+    },
+    {
+      "type": "defeat_boss",
+      "target": "grandline:buggy"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 14
+      },
+      {
+        "id": "minecraft:gold_ingot",
+        "count": 4
+      }
+    ],
+    "renown": 35,
+    "reputation": {
+      "grandline:civilians": 10
+    }
+  },
+  "lines": {
+    "done": "The townsfolk are coming home. A blade can't cut a Chop-Chop body, but Haki - or fists - can."
+  }
+}

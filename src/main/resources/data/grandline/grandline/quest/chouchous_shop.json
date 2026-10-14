@@ -1,0 +1,39 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.chouchous_shop"
+  },
+  "description": {
+    "translate": "quest.grandline.chouchous_shop.desc"
+  },
+  "category": "side",
+  "order": 4,
+  "giver": "grandline:townsperson",
+  "island": "orange_town",
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "minecraft:bone",
+      "count": 8,
+      "consume": true
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 5
+      },
+      {
+        "id": "minecraft:cooked_beef",
+        "count": 4
+      }
+    ],
+    "reputation": {
+      "grandline:civilians": 6
+    }
+  },
+  "lines": {
+    "offer": "That old dog won't leave the shop. If only we had something to stock it with... bones, maybe?",
+    "done": "Look at him wag! Thank you, traveller."
+  }
+}

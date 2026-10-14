@@ -71,6 +71,57 @@ BOSSES = {
         "loot": [("grandline:kiribachi", 1, 1), ("minecraft:emerald", 16, 32), ("minecraft:gold_ingot", 6, 12),
                  ("minecraft:diamond", 1, 3), ("minecraft:prismarine_shard", 4, 10)],
     },
+    "buggy": {
+        "name": "Buggy the Clown",
+        "title": "Captain of the Buggy Pirates, of the Chop-Chop Fruit",
+        "skin": "buggy",
+        "parts": "buggy",
+        "weapon": "grandline:buggys_knife",
+        "stats": {"health": 300, "attack": 9, "armor": 5, "speed": 0.3, "scale": 1.05, "dodge": 0.15, "guard": 0.0,
+                  "knockback_resistance": 0.5},
+        "bar_color": "red",
+        "faction": "grandline:pirate",
+        "aggressive": True,
+        "bladeproof": True,
+        "phases": [
+            {"name": "The Flashy Captain", "moves": {"knife_throw": 3, "bara_bara_cannon": 2, "claw_rake": 3}, "pace": 1.0},
+            {"threshold": 0.6, "name": "Chop-Chop", "pace": 1.15,
+             "moves": {"bara_bara_cannon": 3, "knife_throw": 2, "claw_rake": 2, "bara_bara_festival": 2},
+             "line": "You're looking at my nose, aren't you?!"},
+            {"threshold": 0.3, "name": "Buggy Ball", "pace": 1.3,
+             "moves": {"buggy_ball": 2, "bara_bara_festival": 2, "bara_bara_cannon": 3, "knife_throw": 2, "claw_rake": 2},
+             "line": "Nobody laughs at my nose! Buggy Ball, fire!"},
+        ],
+        "rewards": {"bounty": 15_000_000, "renown": 40, "reputation": {"grandline:civilians": 30, "grandline:pirate": -20}},
+        "lines": {"intro": "Kyahahaha! You've wandered into the wrong town, fool!", "defeat": "Flashy... to the very end..."},
+        "loot": [("grandline:buggys_knife", 1, 1), ("minecraft:emerald", 8, 16), ("minecraft:gold_ingot", 3, 6),
+                 ("minecraft:golden_apple", 1, 1)],
+    },
+    "kuro": {
+        "name": "Captain Kuro",
+        "title": "\"of a Hundred Plans\", Captain of the Black Cat Pirates",
+        "skin": "kuro",
+        "parts": "kuro",
+        "weapon": "grandline:cat_claws",
+        "stats": {"health": 320, "attack": 10, "armor": 4, "speed": 0.34, "scale": 1.1, "dodge": 0.25, "guard": 0.0,
+                  "knockback_resistance": 0.4},
+        "bar_color": "purple",
+        "faction": "grandline:pirate",
+        "aggressive": False,
+        "phases": [
+            {"name": "Klahadore the Butler", "moves": {"claw_rake": 4, "silent_step": 2}, "pace": 1.0},
+            {"threshold": 0.6, "name": "Captain Kuro", "pace": 1.2,
+             "moves": {"claw_rake": 3, "silent_step": 3, "shakushi": 1},
+             "line": "Three years of planning, and you would ruin it?"},
+            {"threshold": 0.3, "name": "Out of Bounds", "pace": 1.4,
+             "moves": {"shakushi": 3, "silent_step": 3, "claw_rake": 2},
+             "line": "Then I will cut down everything in sight."},
+        ],
+        "rewards": {"bounty": 16_000_000, "renown": 45, "reputation": {"grandline:civilians": 30, "grandline:pirate": -20}},
+        "lines": {"intro": "I am a butler, nothing more... and you have seen too much.", "defeat": "My plan... was flawless..."},
+        "loot": [("grandline:cat_claws", 1, 1), ("minecraft:emerald", 10, 18), ("minecraft:gold_ingot", 3, 6),
+                 ("minecraft:diamond", 1, 2)],
+    },
     "lord_of_the_coast": {
         "name": "Lord of the Coast",
         "title": "Sea King of the East Blue",
@@ -129,7 +180,10 @@ def definitions():
         data.update({"stats": b["stats"], "bar_color": b["bar_color"]})
         if "faction" in b:
             data["faction"] = b["faction"]
-        data.update({"aggressive": b["aggressive"], "phases": phases, "rewards": b["rewards"], "lines": b["lines"]})
+        data["aggressive"] = b["aggressive"]
+        if b.get("bladeproof"):
+            data["bladeproof"] = True
+        data.update({"phases": phases, "rewards": b["rewards"], "lines": b["lines"]})
         with open(f"{BOSSES_DIR}/{bid}.json", "w") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
             f.write("\n")

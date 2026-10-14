@@ -1,0 +1,47 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.the_butler_of_syrup_village"
+  },
+  "description": {
+    "translate": "quest.grandline.the_butler_of_syrup_village.desc"
+  },
+  "category": "main",
+  "order": 5,
+  "island": "syrup_village",
+  "requires": [
+    "grandline:the_clown_of_orange_town"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "target": "grandline:syrup_village"
+    },
+    {
+      "type": "talk",
+      "target": "grandline:villager"
+    },
+    {
+      "type": "defeat_boss",
+      "target": "grandline:kuro"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 16
+      },
+      {
+        "id": "minecraft:golden_carrot",
+        "count": 8
+      }
+    ],
+    "renown": 40,
+    "reputation": {
+      "grandline:civilians": 10
+    }
+  },
+  "lines": {
+    "done": "Captain Kuro's hundred plans came to nothing. Next, the sea restaurant and the Fish-Men beyond it."
+  }
+}

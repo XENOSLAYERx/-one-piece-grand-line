@@ -7,10 +7,13 @@ import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
+import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.npc.Reaction;
 import com.nerodev.grandline.registry.GLRegistries;
+import com.nerodev.grandline.weapon.WeaponItem;
+import com.nerodev.grandline.weapon.WeaponKind;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -59,7 +62,10 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -98,6 +104,7 @@ public class BossEntity extends Monster {
     @Nullable
     private UUID moveTarget;
     private Vec3 locked = new Vec3(0, 0, 1);
+    private Vec3 lockedSpot = Vec3.ZERO;
     private final Set<UUID> hits = new HashSet<>();
     private final Map<String, Long> readyAt = new HashMap<>();
     private int pause;
@@ -426,6 +433,7 @@ public class BossEntity extends Monster {
     void startMove(BossMove next, @Nullable LivingEntity target) {
         if (move == BossMoves.GUARD || move != null && move != next) {
             setNoGravity(false);
+            setInvisible(false);
         }
         move = next;
         moveTick = 0;
@@ -445,6 +453,7 @@ public class BossEntity extends Monster {
         move = null;
         entityData.set(MOVE, "");
         setNoGravity(false);
+        setInvisible(false);
         pause = (int) (16 / Math.max(0.5f, pace()));
         if (finished == BossMoves.ROAR) {
             setPhase(pendingPhase);
@@ -507,6 +516,15 @@ public class BossEntity extends Monster {
         return locked;
     }
 
+    /** A spot on the ground a move aims at (a cannonball's landing), fixed when the move is wound up. */
+    Vec3 lockedSpot() {
+        return lockedSpot;
+    }
+
+    void lockSpot(Vec3 spot) {
+        lockedSpot = spot;
+    }
+
     void lockDirection(Vec3 direction) {
         if (direction.lengthSqr() > 1.0E-4) {
             locked = direction.normalize();
@@ -548,6 +566,13 @@ public class BossEntity extends Monster {
             Vec3 to = entity.position().subtract(position()).multiply(1, 0, 1);
             return to.lengthSqr() < 1 || to.normalize().dot(facing) >= cos;
         }).toList();
+    }
+
+    /** Everyone within {@code radius}, friend or foe (Kuro's Out of Bounds spares no one). */
+    List<LivingEntity> everyoneAround(Vec3 centre, double radius) {
+        return level().getEntitiesOfClass(LivingEntity.class, new AABB(centre, centre).inflate(radius, 2.5, radius),
+                entity -> entity != this && entity.isAlive() && !(entity instanceof Player player && (player.isCreative() || player.isSpectator()))
+                        && entity.position().distanceTo(centre) <= radius + entity.getBbWidth() / 2);
     }
 
     private boolean canHit(LivingEntity entity) {
@@ -598,6 +623,17 @@ public class BossEntity extends Monster {
             lastCombat = level().getGameTime();
             grudges.put(living.getUUID(), level().getGameTime() + GRUDGE_TICKS);
             BossDefinition def = definition();
+            if (def != null && def.bladeproof() && cutBy(source, living)) {
+                // The Chop-Chop body comes apart around the blade; only Armament Haki finds something to cut.
+                amount *= 0.1f;
+                if (level() instanceof ServerLevel level) {
+                    Vfx.burst(level, this, position().add(0, getBbHeight() * 0.6, 0), 0xF4ECE4, 1.2f, Kind.SHARD, 0);
+                }
+                if (living instanceof ServerPlayer player) {
+                    player.displayClientMessage(Component.literal("The blade passes right through! Only Haki can cut a Chop-Chop body.")
+                            .withStyle(ChatFormatting.YELLOW), true);
+                }
+            }
             if (move == BossMoves.GUARD && inFront(living)) {
                 amount *= 0.25f;
                 playSound(SoundEvents.SHIELD_BLOCK, 1.2f, 0.7f);
@@ -635,6 +671,22 @@ public class BossEntity extends Monster {
             Bounties.crime(player, Bounties.MARINE_ASSAULT * 4, false, "attacking a Marine captain");
         }
         Factions.alarm(this, faction, player);
+    }
+
+    /** Whether {@code source} is a cut: a slashing technique, or a blow from a blade that isn't clad in Armament Haki. */
+    private static boolean cutBy(DamageSource source, LivingEntity attacker) {
+        if (attacker instanceof Player player && HakiManager.armamentActive(player)) {
+            return false;
+        }
+        if (source.is(AbilityDamage.SLASH)) {
+            return true;
+        }
+        if (source.getDirectEntity() != attacker) {
+            return false;
+        }
+        Item held = attacker.getMainHandItem().getItem();
+        return held instanceof SwordItem || held instanceof AxeItem || held instanceof WeaponItem weapon
+                && (weapon.kind() == WeaponKind.SWORD || weapon.kind() == WeaponKind.POLEARM);
     }
 
     private boolean inFront(LivingEntity attacker) {

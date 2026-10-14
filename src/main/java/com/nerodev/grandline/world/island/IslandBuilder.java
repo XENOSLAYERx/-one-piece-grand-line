@@ -189,9 +189,9 @@ final class IslandBuilder {
         };
     }
 
-    /** Shells Town has paved streets; the villages have trodden earth. */
+    /** Shells Town and Orange Town have paved streets; the villages have trodden earth. */
     private BlockState pathBlock(int x, int z) {
-        if (plan.type == IslandType.SHELLS_TOWN) {
+        if (plan.type == IslandType.SHELLS_TOWN || plan.type == IslandType.ORANGE_TOWN) {
             double roll = plan.hash(x, z, 8);
             return (roll < 0.55 ? Blocks.STONE_BRICKS : roll < 0.8 ? Blocks.COBBLESTONE : Blocks.ANDESITE).defaultBlockState();
         }
@@ -220,6 +220,8 @@ final class IslandBuilder {
             Blocks.SPRUCE_STAIRS, Blocks.SPRUCE_SLAB, Blocks.SPRUCE_DOOR, Blocks.STONE_BRICKS);
     private static final Palette VILLA = new Palette(Blocks.BIRCH_PLANKS, Blocks.SMOOTH_SANDSTONE, Blocks.STRIPPED_BIRCH_LOG,
             Blocks.ACACIA_STAIRS, Blocks.ACACIA_SLAB, Blocks.BIRCH_DOOR, Blocks.SANDSTONE);
+    private static final Palette MANSION = new Palette(Blocks.DARK_OAK_PLANKS, Blocks.QUARTZ_BLOCK, Blocks.STRIPPED_DARK_OAK_LOG,
+            Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DARK_OAK_DOOR, Blocks.STONE_BRICKS);
 
     /** A building's local frame: x across the front, y up from its floor, z from the front wall to the back. */
     private final class Frame {
@@ -356,6 +358,8 @@ final class IslandBuilder {
             case MARINE_BASE -> marineBase(f);
             case ARLONG_PARK -> arlongPark(f);
             case GROVE -> grove(f);
+            case BUGGY_HQ -> buggyHq(f);
+            case MANSION -> mansion(f);
         }
     }
 
@@ -714,6 +718,107 @@ final class IslandBuilder {
         f.boss(GLBosses.ARLONG, gate, 1, hz1 - 3, gate, hz0);
     }
 
+    /**
+     * Buggy's headquarters in Orange Town: a brick tavern under a red-and-white striped circus tent with the Buggy
+     * Pirates' flag on its pole, his stash in the back, his crew at the door and Buggy himself in the middle of it.
+     */
+    private void buggyHq(Frame f) {
+        int w = f.w;
+        int d = f.d;
+        BlockState brick = Blocks.BRICKS.defaultBlockState();
+        f.foundation(0, 0, w - 1, d - 1, Blocks.STONE_BRICKS);
+        f.fill(0, 0, 0, w - 1, 0, d - 1, Blocks.SPRUCE_PLANKS);
+        f.fill(1, 1, 1, w - 2, 13, d - 2, AIR);
+        f.ring(0, 0, w - 1, d - 1, 1, 4, brick);
+        for (int ly = 1; ly <= 4; ly++) {
+            f.set(0, ly, 0, Blocks.STRIPPED_SPRUCE_LOG);
+            f.set(w - 1, ly, 0, Blocks.STRIPPED_SPRUCE_LOG);
+            f.set(0, ly, d - 1, Blocks.STRIPPED_SPRUCE_LOG);
+            f.set(w - 1, ly, d - 1, Blocks.STRIPPED_SPRUCE_LOG);
+        }
+        for (int lx = 2; lx < w - 2; lx += 3) {
+            if (Math.abs(lx - w / 2) > 1) {
+                f.set(lx, 2, 0, pane(Direction.Axis.X));
+            }
+            f.set(lx, 2, d - 1, pane(Direction.Axis.X));
+        }
+        for (int lz = 2; lz < d - 2; lz += 3) {
+            f.set(0, 2, lz, pane(Direction.Axis.Z));
+            f.set(w - 1, 2, lz, pane(Direction.Axis.Z));
+        }
+        f.door(w / 2, 0, Blocks.SPRUCE_DOOR, Direction.NORTH);
+        // The circus tent: shrinking rings of red and white stripes, open below so the tavern is one tall room.
+        double cx = (w - 1) / 2.0;
+        double cz = (d - 1) / 2.0;
+        int layers = 7;
+        for (int k = 0; k < layers; k++) {
+            double shrink = 1 - k / (double) layers;
+            double rx = (w / 2.0 + 0.6) * shrink;
+            double rz = (d / 2.0 + 0.6) * shrink;
+            for (int lx = -1; lx <= w; lx++) {
+                for (int lz = -1; lz <= d; lz++) {
+                    double nx = (lx - cx) / rx;
+                    double nz = (lz - cz) / rz;
+                    double outer = nx * nx + nz * nz;
+                    double inner = Math.pow(Math.max(0, 1 - 1.4 / Math.min(rx, rz)), 2);
+                    if (outer <= 1 && (outer >= inner || k == layers - 1)) {
+                        double angle = Math.atan2(lz - cz, lx - cx) + Math.PI;
+                        boolean red = ((int) Math.floor(angle / (Math.PI / 6))) % 2 == 0;
+                        f.set(lx, 5 + k, lz, red ? Blocks.RED_WOOL : Blocks.WHITE_WOOL);
+                    }
+                }
+            }
+        }
+        f.flag((int) cx, 5 + layers, (int) cz, 4, new Block[] {Blocks.BLACK_WOOL, Blocks.RED_WOOL, Blocks.BLACK_WOOL});
+        // The bar along the back wall, the stash beside it, and tables.
+        for (int lx = 2; lx <= w - 3; lx++) {
+            f.set(lx, 1, d - 3, Blocks.SPRUCE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.TOP));
+        }
+        f.chest(1, 1, d - 2, Direction.NORTH, GLWorldgen.BUGGY_STASH);
+        f.chest(w - 2, 1, d - 2, Direction.NORTH, GLWorldgen.BUGGY_STASH);
+        for (int lx = 3; lx <= w - 4; lx += 2) {
+            f.set(lx, 1, d - 2, Blocks.BARREL);
+        }
+        for (int lx : new int[] {3, w - 4}) {
+            f.set(lx, 1, 3, Blocks.OAK_FENCE);
+            f.set(lx, 2, 3, Blocks.LANTERN);
+        }
+        // A Buggy Ball cannon by the door.
+        f.set(1, 1, 1, Blocks.POLISHED_BLACKSTONE);
+        f.set(2, 1, 1, Blocks.POLISHED_BLACKSTONE_WALL);
+        f.set(2, 2, 1, Blocks.COAL_BLOCK);
+        f.resident(GLNpcs.PIRATE_GRUNT, 3, 1, 5);
+        f.resident(GLNpcs.PIRATE_GRUNT, w - 4, 1, 5);
+        f.resident(GLNpcs.PIRATE_GUNNER, w / 2 + 3, 1, d - 5);
+        f.boss(GLBosses.BUGGY, w / 2, 1, d / 2, w / 2, 0);
+    }
+
+    /**
+     * Kaya's mansion above Syrup Village: two white storeys under a dark tiled roof, a hall with a staircase, a
+     * library and her room upstairs, and her butler "Klahadore" (Captain Kuro) keeping watch in the hall.
+     */
+    private void mansion(Frame f) {
+        int w = f.w;
+        int d = f.d;
+        shell(f, MANSION, 2);
+        for (int lx = 1; lx < w - 1; lx += 2) {
+            f.set(lx, 1, d - 2, Blocks.BOOKSHELF);
+            f.set(lx, 2, d - 2, Blocks.BOOKSHELF);
+        }
+        f.set(1, 1, 1, Blocks.LANTERN);
+        f.set(w - 2, 1, 1, Blocks.LANTERN);
+        f.chest(2, 1, d - 3, Direction.NORTH, GLWorldgen.KAYA_MANSION);
+        f.bed(1, 5, d - 4, Blocks.WHITE_BED);
+        f.chest(3, 5, d - 2, Direction.NORTH, GLWorldgen.KAYA_MANSION);
+        f.set(w - 3, 5, d - 2, Blocks.BOOKSHELF);
+        f.set(2, 5, 1, Blocks.LANTERN);
+        f.set(w - 3, 1, 3, Blocks.RED_CARPET);
+        f.set(w - 4, 1, 3, Blocks.RED_CARPET);
+        f.resident(GLNpcs.VILLAGER, 3, 5, 3);
+        f.resident(GLNpcs.TOWNSPERSON, w - 4, 1, d / 2);
+        f.boss(GLBosses.KURO, w / 2, 1, d / 2, w / 2, 0);
+    }
+
     /** Bell-mère's tangerine grove: rows of small trees behind a fence. */
     private void grove(Frame f) {
         int w = f.w;
@@ -830,6 +935,8 @@ final class IslandBuilder {
             case DAWN_ISLAND -> 0.75;
             case SHELLS_TOWN -> 0.35;
             case CONOMI_ISLANDS -> 0.5;
+            case ORANGE_TOWN -> 0.3;
+            case SYRUP_VILLAGE -> 0.65;
         };
         int gx0 = Math.floorDiv(box.minX() - 4, CELL);
         int gx1 = Math.floorDiv(box.maxX() + 4, CELL);

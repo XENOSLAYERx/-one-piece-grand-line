@@ -847,6 +847,20 @@ def _(h):
           cubes=[C(-0.5, 0, 0, 1, 5, 3, "skin")])
 
 
+@boss_parts("buggy", pal(0xD82020, 0x8A1414, 0xF04040, nose=0xD82020), seed=953)
+def _(h):
+    # Buggy's famous big round red nose.
+    h.add("nose", anchor="HEAD", cubes=[C(-1.5, -5, -6, 3, 3, 2, "nose")])
+
+
+@boss_parts("kuro", pal(0x1A1A1A, 0x101010, 0xC8D8E8, glow=0xC8D8E8), seed=954)
+def _(h):
+    # Captain Kuro's round glasses, which he pushes up with the heel of his hand.
+    h.add("glasses", anchor="HEAD", cubes=[C(-4, -5, -4.6, 8, 1, 1, "dark"), C(-3.5, -4.5, -4.7, 3, 2, 1, "glow"),
+                                           C(0.5, -4.5, -4.7, 3, 2, 1, "glow"), C(-4.5, -5, -4.5, 1, 1, 4, "dark"),
+                                           C(3.5, -5, -4.5, 1, 1, 4, "dark")])
+
+
 BOSS_BODIES = {}
 
 

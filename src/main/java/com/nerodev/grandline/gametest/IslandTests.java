@@ -102,7 +102,7 @@ public final class IslandTests {
     public static void islandChestsHaveLoot(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         List<ResourceKey<LootTable>> tables = List.of(GLWorldgen.VILLAGE_HOUSE, GLWorldgen.PARTYS_BAR, GLWorldgen.MARINE_ARMORY,
-                GLWorldgen.ARLONG_HOARD, GLWorldgen.BURIED_TREASURE);
+                GLWorldgen.ARLONG_HOARD, GLWorldgen.BURIED_TREASURE, GLWorldgen.BUGGY_STASH, GLWorldgen.KAYA_MANSION);
         LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                 .create(LootContextParamSets.CHEST);
         for (ResourceKey<LootTable> key : tables) {
@@ -165,7 +165,13 @@ public final class IslandTests {
             helper.assertTrue(residents.size() >= plan.buildings.size(), name + " is inhabited, " + residents.size() + " islanders");
             residents.forEach(NpcEntity::discard);
             List<BossEntity> bosses = level.getEntitiesOfClass(BossEntity.class, area);
-            ResourceLocation ruler = type == IslandType.SHELLS_TOWN ? GLBosses.MORGAN : type == IslandType.CONOMI_ISLANDS ? GLBosses.ARLONG : null;
+            ResourceLocation ruler = switch (type) {
+                case SHELLS_TOWN -> GLBosses.MORGAN;
+                case CONOMI_ISLANDS -> GLBosses.ARLONG;
+                case ORANGE_TOWN -> GLBosses.BUGGY;
+                case SYRUP_VILLAGE -> GLBosses.KURO;
+                default -> null;
+            };
             helper.assertTrue(ruler == null ? bosses.isEmpty() : bosses.size() == 1 && ruler.equals(bosses.getFirst().bossId()),
                     name + " is held by " + ruler + ", found " + bosses.stream().map(BossEntity::bossId).toList());
             bosses.forEach(BossEntity::discard);

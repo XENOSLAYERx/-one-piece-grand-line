@@ -236,6 +236,47 @@ def kiribachi():
     return outline(paint(canvas(), fn), (28, 28, 34))
 
 
+def cat_claws():
+    """Captain Kuro's Neko no Te: a black glove with five long, thin blades on its fingers."""
+    glove = ((44, 40, 48), (24, 22, 28))
+    steel = ((222, 226, 234), (156, 160, 170))
+
+    def fn(u, q, x, y):
+        aq = abs(q)
+        if u < 5.5:
+            if aq < 2.1 - max(0.0, 1.6 - u) * 0.6:
+                return glove[0] if q < 0.5 else glove[1]
+            return None
+        if u > LENGTH - 0.8:
+            return None
+        for k in (-2, -1, 0, 1, 2):
+            centre = k * (0.9 + (u - 5.5) * 0.06)
+            if abs(q - centre) < 0.34:
+                return steel[0] if k <= 0 else steel[1]
+        return None
+
+    return outline(paint(canvas(), fn), (18, 18, 22))
+
+
+def chop_fist():
+    """Buggy's fist flying free (a Chop-Chop cannon): a white-gloved fist with a cuff and a speed streak."""
+    img = canvas()
+    px = img.load()
+    glove, shadow, cuff = (238, 236, 230, 255), (196, 192, 184, 255), (176, 40, 40, 255)
+    for y in range(4, 12):
+        for x in range(5, 13):
+            if (x - 8.5) ** 2 / 14 + (y - 7.5) ** 2 / 12 <= 1:
+                px[x, y] = shadow if x > 10 or y > 10 else glove
+    for y in range(6, 10):
+        px[4, y] = cuff
+        px[3, y] = cuff
+    for x in (6, 8, 10):
+        px[x, 5] = shadow
+    for x, y in ((1, 7), (0, 8), (1, 9), (2, 6), (2, 10)):
+        px[x, y] = (220, 230, 240, 160)
+    return outline(img, (40, 34, 30))
+
+
 def kanabo():
     iron = ((122, 124, 134), (84, 86, 96), (54, 56, 64))
     stud = (196, 198, 206)
@@ -604,6 +645,9 @@ def items():
         "murakumogiri": (polearm(bisento_head, shaft=((70, 60, 54), (40, 34, 30)), head_from=11.0), True),
         "morgans_axe": (polearm(axe_head, shaft=((110, 112, 122), (74, 76, 86)), head_from=9.0), True),
         "kiribachi": (kiribachi(), True),
+        "buggys_knife": (sword(handle=(150, 30, 34), wrap=(232, 200, 70), guard=(212, 176, 70), guard_kind="cross", tip=LENGTH - 5.5),
+                         False),
+        "cat_claws": (cat_claws(), False),
         "flintlock": (flintlock(), False),
         "musket": (musket(), True),
     }
@@ -622,6 +666,7 @@ def main():
         "seastone_net": net(),
         "raw_seastone": raw_seastone(),
         "seastone_ingot": ingot(),
+        "chop_fist": chop_fist(),
     }
     for name, img in flat.items():
         img.save(os.path.join(ITEM_TEX, name + ".png"))

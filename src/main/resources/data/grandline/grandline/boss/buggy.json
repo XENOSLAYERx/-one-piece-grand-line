@@ -1,0 +1,79 @@
+{
+  "display_name": {
+    "translate": "boss.grandline.buggy"
+  },
+  "title": {
+    "translate": "boss.grandline.buggy.title"
+  },
+  "skin": "buggy",
+  "parts": "buggy",
+  "weapon": "grandline:buggys_knife",
+  "stats": {
+    "health": 300,
+    "attack": 9,
+    "armor": 5,
+    "speed": 0.3,
+    "scale": 1.05,
+    "dodge": 0.15,
+    "guard": 0.0,
+    "knockback_resistance": 0.5
+  },
+  "bar_color": "red",
+  "faction": "grandline:pirate",
+  "aggressive": true,
+  "bladeproof": true,
+  "phases": [
+    {
+      "name": {
+        "translate": "boss.grandline.buggy.phase1"
+      },
+      "moves": {
+        "knife_throw": 3,
+        "bara_bara_cannon": 2,
+        "claw_rake": 3
+      },
+      "pace": 1.0
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.buggy.phase2"
+      },
+      "moves": {
+        "bara_bara_cannon": 3,
+        "knife_throw": 2,
+        "claw_rake": 2,
+        "bara_bara_festival": 2
+      },
+      "pace": 1.15,
+      "threshold": 0.6,
+      "line": "You're looking at my nose, aren't you?!"
+    },
+    {
+      "name": {
+        "translate": "boss.grandline.buggy.phase3"
+      },
+      "moves": {
+        "buggy_ball": 2,
+        "bara_bara_festival": 2,
+        "bara_bara_cannon": 3,
+        "knife_throw": 2,
+        "claw_rake": 2
+      },
+      "pace": 1.3,
+      "threshold": 0.3,
+      "line": "Nobody laughs at my nose! Buggy Ball, fire!"
+    }
+  ],
+  "rewards": {
+    "bounty": 15000000,
+    "renown": 40,
+    "reputation": {
+      "grandline:civilians": 30,
+      "grandline:pirate": -20
+    }
+  },
+  "lines": {
+    "intro": "Kyahahaha! You've wandered into the wrong town, fool!",
+    "defeat": "Flashy... to the very end..."
+  }
+}

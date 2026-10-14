@@ -9,6 +9,7 @@ import com.nerodev.grandline.boss.GLBosses;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.npc.Factions;
+import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.weapon.GLWeapons;
 import java.util.List;
@@ -24,11 +25,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Husk;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -193,6 +197,43 @@ public final class BossTests {
                 + drops.stream().map(item -> item.getItem().toString()).toList());
         drops.forEach(ItemEntity::discard);
         helper.succeed();
+    }
+
+    @GameTest(template = ARENA)
+    public static void buggyShrugsOffBlades(GameTestHelper helper) {
+        BossEntity buggy = spawn(helper, GLBosses.BUGGY, 8, 8);
+        ServerPlayer player = NpcTests.newPlayer(helper);
+        Vec3 at = helper.absoluteVec(new Vec3(1, 2, 1));
+        player.setPos(at.x, at.y, at.z);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
+        float before = buggy.getHealth();
+        buggy.hurt(player.damageSources().playerAttack(player), 20f);
+        float cut = before - buggy.getHealth();
+        helper.assertTrue(cut > 0 && cut < 4, "A sword passes through a Chop-Chop body: " + cut + " damage");
+        buggy.invulnerableTime = 0;
+        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        before = buggy.getHealth();
+        buggy.hurt(player.damageSources().playerAttack(player), 20f);
+        float punched = before - buggy.getHealth();
+        helper.assertTrue(punched > 10, "A fist lands in full: " + punched + " damage");
+        buggy.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = ARENA, timeoutTicks = 140, batch = "boss_kuro")
+    public static void kuroCutsFriendAndFoe(GameTestHelper helper) {
+        BossEntity kuro = spawn(helper, GLBosses.KURO, 8, 8);
+        NpcEntity crewman = NpcEntity.spawn(helper.getLevel(), GrandLine.id("pirate_grunt"), helper.absolutePos(new BlockPos(9, 2, 8)), 0f,
+                MobSpawnType.COMMAND);
+        helper.assertTrue(crewman != null && crewman.faction().equals(kuro.faction()), "A pirate of Kuro's own side stands by");
+        crewman.setNoAi(true);
+        float health = crewman.getMaxHealth();
+        kuro.perform(BossMoves.SHAKUSHI);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(!crewman.isAlive() || crewman.getHealth() < health, "Out of Bounds cuts Kuro's own crew too");
+            kuro.discard();
+            crewman.discard();
+        });
     }
 
     @GameTest(template = ARENA)

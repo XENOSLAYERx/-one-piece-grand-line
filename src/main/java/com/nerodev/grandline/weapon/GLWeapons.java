@@ -116,6 +116,12 @@ public final class GLWeapons {
     /** Dropped by Arlong the Saw. */
     public static final DeferredItem<WeaponItem> KIRIBACHI = weapon("kiribachi",
             legendary(Tiers.DIAMOND, WeaponKind.POLEARM, WeaponGrade.SKILLED, 10.5f, 1.0f).reach(1f).special(WeaponSpecials.SAW));
+    /** Dropped by Buggy the Clown. */
+    public static final DeferredItem<WeaponItem> BUGGYS_KNIFE = weapon("buggys_knife",
+            legendary(Tiers.DIAMOND, WeaponKind.SWORD, WeaponGrade.SKILLED, 7.5f, 1.9f).special(WeaponSpecials.BARA_BARA));
+    /** Dropped by Captain Kuro. */
+    public static final DeferredItem<WeaponItem> CAT_CLAWS = weapon("cat_claws",
+            legendary(Tiers.DIAMOND, WeaponKind.SWORD, WeaponGrade.SKILLED, 8f, 2.0f).special(WeaponSpecials.NEKO_NO_TE));
     public static final DeferredItem<WeaponItem> MURAKUMOGIRI = weapon("murakumogiri",
             legendary(Tiers.NETHERITE, WeaponKind.POLEARM, WeaponGrade.SUPREME, 12.5f, 0.9f).reach(1.5f)
                     .special(WeaponSpecials.MURAKUMOGIRI));

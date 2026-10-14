@@ -113,6 +113,38 @@ public class BossRenderer extends HumanoidMobRenderer<BossEntity, BossRenderer.M
             // Blows that land on the first active tick are swung through in two ticks, so the pose meets the hit.
             float strike = ease(Mth.clamp((t - move.windup()) / 2f, 0f, 1f));
             switch (move.id()) {
+                case "knife_throw" -> {
+                    // A knife drawn back past the ear, then flicked out; one throw per two ticks.
+                    float flick = t >= move.windup() && t < move.windup() + move.active() ? Mth.sin((t - move.windup()) * Mth.PI) : 0f;
+                    rightArm.xRot = (-2.4f * ease(w) + 1.2f * Math.abs(flick)) * hold;
+                    rightArm.yRot = -0.3f * hold;
+                    twist(0.3f * ease(w) * hold);
+                }
+                case "bara_bara_cannon", "buggy_ball" -> {
+                    // Arm thrown out at the prey (Buggy's fist flies from it).
+                    rightArm.xRot = (-1.6f * ease(w) - 0.1f * strike) * hold;
+                    rightArm.yRot = -0.1f * hold;
+                    leftArm.xRot = -0.6f * ease(w) * hold;
+                    lean(0.2f * strike * hold);
+                }
+                case "claw_rake" -> {
+                    // Both claws raised, then raked down across.
+                    rightArm.xRot = Mth.lerp(strike, -2.4f * ease(w), -0.6f) * hold;
+                    leftArm.xRot = Mth.lerp(strike, -2.4f * ease(w), -0.6f) * hold;
+                    rightArm.zRot = 0.3f * hold;
+                    leftArm.zRot = -0.3f * hold;
+                    lean(0.4f * strike * hold);
+                }
+                case "silent_step", "shakushi" -> {
+                    // Low and swaying, claws swept back for speed.
+                    float sway = move.id().equals("shakushi") ? Mth.sin(ageInTicks * 0.9f) * 0.3f : 0f;
+                    lean(0.7f * ease(w) * hold);
+                    rightArm.xRot = (1.2f + sway) * ease(w) * hold;
+                    leftArm.xRot = (1.2f - sway) * ease(w) * hold;
+                    rightArm.zRot = 0.4f * hold;
+                    leftArm.zRot = -0.4f * hold;
+                    head.xRot = -0.3f * hold;
+                }
                 case "cleave", "saw_sweep" -> {
                     // Weapon drawn back over the shoulder, then swept across the body.
                     float back = ease(w) * (1 - strike);

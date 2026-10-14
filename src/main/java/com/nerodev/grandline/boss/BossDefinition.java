@@ -19,11 +19,12 @@ import net.minecraft.world.item.Item;
  * are, the phases of the fight (each with its own moves, pace and words) and what beating them is worth. The moves
  * themselves are code ({@link BossMoves}); the definition picks which ones each phase uses and how often. An
  * {@code aggressive} boss attacks anyone who comes near unless they stand well with its faction; others fight only
- * those their faction is hostile to, or who strike first.
+ * those their faction is hostile to, or who strike first. A {@code bladeproof} boss (Buggy, with his Chop-Chop body)
+ * comes apart around blades: cuts barely touch him unless the blade is clad in Armament Haki.
  */
 public record BossDefinition(Component displayName, Component title, Body body, String skin, String parts, Optional<Item> weapon, Stats stats,
-        BossEvent.BossBarColor barColor, Optional<ResourceLocation> faction, boolean aggressive, List<Phase> phases, Rewards rewards,
-        Lines lines) {
+        BossEvent.BossBarColor barColor, Optional<ResourceLocation> faction, boolean aggressive, boolean bladeproof, List<Phase> phases,
+        Rewards rewards, Lines lines) {
     public static final Codec<BossEvent.BossBarColor> BAR_COLOR = Codec.STRING.xmap(BossEvent.BossBarColor::byName,
             BossEvent.BossBarColor::getName);
 
@@ -38,6 +39,7 @@ public record BossDefinition(Component displayName, Component title, Body body, 
             BAR_COLOR.optionalFieldOf("bar_color", BossEvent.BossBarColor.RED).forGetter(BossDefinition::barColor),
             ResourceLocation.CODEC.optionalFieldOf("faction").forGetter(BossDefinition::faction),
             Codec.BOOL.optionalFieldOf("aggressive", false).forGetter(BossDefinition::aggressive),
+            Codec.BOOL.optionalFieldOf("bladeproof", false).forGetter(BossDefinition::bladeproof),
             Phase.CODEC.listOf().fieldOf("phases").forGetter(BossDefinition::phases),
             Rewards.CODEC.optionalFieldOf("rewards", Rewards.NONE).forGetter(BossDefinition::rewards),
             Lines.CODEC.optionalFieldOf("lines", Lines.NONE).forGetter(BossDefinition::lines)

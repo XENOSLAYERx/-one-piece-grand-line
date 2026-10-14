@@ -43,7 +43,7 @@ public final class QuestTests {
     private static final ResourceLocation ROMANCE_DAWN = GrandLine.id("romance_dawn");
     private static final ResourceLocation LAND_HO = GrandLine.id("land_ho");
     private static final ResourceLocation MARINE_BASE = GrandLine.id("the_marine_base");
-    private static final ResourceLocation ARLONG_PARK = GrandLine.id("arlong_park");
+    private static final ResourceLocation ORANGE_TOWN = GrandLine.id("the_clown_of_orange_town");
     private static final ResourceLocation BAR_SUPPLIES = GrandLine.id("partys_bar_supplies");
 
     private QuestTests() {}
@@ -133,7 +133,7 @@ public final class QuestTests {
         Journey journey = GLPlayer.data(player).journey();
         helper.assertTrue(journey.isCompleted(MARINE_BASE), "Beating Morgan finishes The Marine Base: " + journey.activeQuests());
         helper.assertTrue(player.getInventory().countItem(Items.EMERALD) >= emeralds + 12, "and pays its reward");
-        helper.assertTrue(journey.isActive(ARLONG_PARK), "and the story moves on to Arlong Park");
+        helper.assertTrue(journey.isActive(ORANGE_TOWN), "and the story moves on to Orange Town");
         helper.getLevel().getEntitiesOfClass(ItemEntity.class, morgan.getBoundingBox().inflate(6)).forEach(ItemEntity::discard);
         helper.succeed();
     }

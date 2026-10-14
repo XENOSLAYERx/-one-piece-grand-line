@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
-/** The tracked quest in the top right corner: its name and what is left to do. */
+/** The tracked quest at the left edge of the screen (clear of toasts, boss bars and effects): its name and what is left to do. */
 public final class QuestHud {
     public static final ResourceLocation ID = GrandLine.id("quest_tracker");
     private static final int WIDTH = 150;
@@ -47,10 +47,9 @@ public final class QuestHud {
             return;
         }
         Font font = mc.font;
-        int x = g.guiWidth() - WIDTH - 4;
-        // Keep clear of the status effect icons.
-        int y = mc.player.getActiveEffects().isEmpty() ? 4 : 54;
         int lines = 1 + quest.objectives().size();
+        int x = 4;
+        int y = Math.max(24, g.guiHeight() / 2 - 20 - lines * 10);
         g.fill(x - 3, y - 3, x + WIDTH + 1, y + lines * 10 + 1, 0x70000000);
         g.drawString(font, font.plainSubstrByWidth(quest.displayName().getString(), WIDTH), x, y,
                 quest.category() == QuestDefinition.Category.MAIN ? 0xFFF0C050 : 0xFFF0F0D8, true);

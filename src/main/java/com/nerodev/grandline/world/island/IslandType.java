@@ -11,7 +11,7 @@ import net.minecraft.util.StringRepresentable;
 /**
  * The islands of the East Blue that can rise out of the sea, each with its own shape, plants and settlement:
  * Dawn Island's windmill village, Shells Town under its Marine base, and the Conomi Islands with Arlong Park and
- * the tangerine groves of Cocoyasi.
+ * the tangerine groves of Cocoyasi, Orange Town under Buggy's circus tent, and Syrup Village below Kaya's mansion.
  */
 public enum IslandType implements StringRepresentable {
     DAWN_ISLAND(46, 16, Flora.OAK, List.of(
@@ -37,7 +37,22 @@ public enum IslandType implements StringRepresentable {
             Site.of(Site.Kind.VILLA, -19, -7, 6, 7),
             Site.of(Site.Kind.VILLA, 3, 19, 6, 6),
             Site.of(Site.Kind.HOUSE, -24, 15, 6, 6),
-            Site.of(Site.Kind.GROVE, -15, 25, 11, 8)), 180, 250);
+            Site.of(Site.Kind.GROVE, -15, 25, 11, 8)), 180, 250),
+    ORANGE_TOWN(44, 9, Flora.OAK, List.of(
+            Site.of(Site.Kind.BUGGY_HQ, 0, -12, 15, 13),
+            Site.of(Site.Kind.TOWN_HOUSE, -15, 7, 7, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, -5, 10, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 5, 10, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 15, 7, 6, 7),
+            Site.of(Site.Kind.TOWN_HOUSE, -9, 20, 6, 6),
+            Site.of(Site.Kind.TOWN_HOUSE, 9, 20, 7, 6)), 270, 135),
+    SYRUP_VILLAGE(48, 18, Flora.OAK, List.of(
+            Site.of(Site.Kind.MANSION, -4, -17, 17, 13),
+            Site.of(Site.Kind.HOUSE, -18, 4, 7, 6),
+            Site.of(Site.Kind.HOUSE, -7, 12, 7, 6),
+            Site.of(Site.Kind.HOUSE, 6, 12, 6, 6),
+            Site.of(Site.Kind.HOUSE, 17, 3, 6, 7),
+            Site.of(Site.Kind.HOUSE, 13, 22, 6, 6)), 90, 300);
 
     public static final Codec<IslandType> CODEC = StringRepresentable.fromEnum(IslandType::values);
 
@@ -132,7 +147,7 @@ public enum IslandType implements StringRepresentable {
     /** A building on an island: what it is and where, relative to the centre (before turning). */
     public record Site(Kind kind, int x, int z, int width, int depth) {
         public enum Kind {
-            HOUSE, BAR, WINDMILL, TOWN_HOUSE, MARINE_BASE, VILLA, ARLONG_PARK, GROVE
+            HOUSE, BAR, WINDMILL, TOWN_HOUSE, MARINE_BASE, VILLA, ARLONG_PARK, GROVE, BUGGY_HQ, MANSION
         }
 
         static Site of(Kind kind, int x, int z, int width, int depth) {

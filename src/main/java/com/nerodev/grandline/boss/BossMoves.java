@@ -8,6 +8,7 @@ import com.nerodev.grandline.fx.Vfx;
 import com.nerodev.grandline.npc.NpcEntity;
 import com.nerodev.grandline.npc.NpcShot;
 import com.nerodev.grandline.ship.ShipEntity;
+import com.nerodev.grandline.weapon.GLWeapons;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -491,6 +492,178 @@ public final class BossMoves {
                 victim.setDeltaMovement(victim.getDeltaMovement().add(0, 1.1, 0));
                 victim.hurtMarked = true;
             }
+        }
+    }));
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Buggy the Clown
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Three knives thrown in a fan. */
+    public static final BossMove KNIFE_THROW = register(new BossMove("knife_throw", 10, 6, 10, 50, 3, 16, false, (boss, target, t) -> {
+        face(boss, target, true);
+        boss.getNavigation().stop();
+        if (target != null && t >= 10 && t < 16 && (t - 10) % 2 == 0 && boss.level() instanceof ServerLevel level) {
+            Vec3 from = boss.getEyePosition().add(boss.forward().scale(0.6));
+            Vec3 aim = target.getEyePosition().subtract(0, 0.3, 0).subtract(from).normalize();
+            double spread = ((t - 10) / 2 - 1) * 0.12;
+            Vec3 dir = new Vec3(aim.x * Math.cos(spread) - aim.z * Math.sin(spread), aim.y, aim.x * Math.sin(spread) + aim.z * Math.cos(spread));
+            NpcShot knife = new NpcShot(level, boss, boss.attackDamage() * 0.7f);
+            knife.setItem(new ItemStack(GLWeapons.BUGGYS_KNIFE.get()));
+            knife.setPos(from.x, from.y, from.z);
+            knife.setDeltaMovement(dir.scale(1.6));
+            level.addFreshEntity(knife);
+            sound(boss, SoundEvents.WITCH_THROW, 1.1f, 1.4f);
+        }
+    }));
+
+    /** Chop-Chop Cannon: Buggy's fist flies off his arm at his prey. */
+    public static final BossMove BARA_BARA_CANNON = register(new BossMove("bara_bara_cannon", 14, 4, 12, 70, 3, 18, false,
+            (boss, target, t) -> {
+                face(boss, target, true);
+                boss.getNavigation().stop();
+                if (t < 14 && t % 4 == 0 && target != null) {
+                    trail(boss, boss.getEyePosition(), target.getEyePosition(), 0xE84A3A);
+                }
+                if (t == 14 && target != null && boss.level() instanceof ServerLevel level) {
+                    Vec3 from = boss.getEyePosition().add(boss.forward().scale(0.8)).subtract(0, 0.3, 0);
+                    Vec3 aim = target.getBoundingBox().getCenter().subtract(from).normalize();
+                    NpcShot fist = new NpcShot(level, boss, boss.attackDamage() * 1.6f);
+                    fist.setItem(new ItemStack(GLBosses.CHOP_FIST.get()));
+                    fist.setPos(from.x, from.y, from.z);
+                    fist.setDeltaMovement(aim.scale(1.5));
+                    level.addFreshEntity(fist);
+                    sound(boss, SoundEvents.PLAYER_ATTACK_STRONG, 1.4f, 0.8f);
+                    burst(boss, from, 0xF4ECE4, 0.8f, Kind.SHARD, 0);
+                }
+            }));
+
+    /** Chop-Chop Festival: Buggy flies apart, and his pieces strike from every side while there is nothing to hit. */
+    public static final BossMove BARA_BARA_FESTIVAL = register(new BossMove("bara_bara_festival", 16, 40, 14, 260, 0, 14, true,
+            (boss, target, t) -> {
+                boss.getNavigation().stop();
+                if (t == 0) {
+                    sound(boss, SoundEvents.ARMOR_STAND_BREAK, 1.6f, 0.7f);
+                    boss.shout("Chop-Chop Festival!");
+                }
+                if (t == 16) {
+                    boss.setInvisible(true);
+                    burst(boss, boss.position().add(0, 1, 0), 0xF4ECE4, 2.5f, Kind.SHARD, Vfx.HEAVY);
+                }
+                if (t > 16 && t < 56 && t % 5 == 0 && target != null) {
+                    // A piece of Buggy flies in from a random side.
+                    double angle = boss.getRandom().nextDouble() * Mth.TWO_PI;
+                    Vec3 hit = target.getBoundingBox().getCenter();
+                    Vec3 from = hit.add(Math.cos(angle) * 4, 1 + boss.getRandom().nextDouble(), Math.sin(angle) * 4);
+                    trail(boss, from, hit, 0xF4ECE4);
+                    for (LivingEntity victim : boss.targetsAround(hit, 1.5)) {
+                        boss.strike(victim, 0.6f, AbilityDamage.STRIKE);
+                        AbilityDamage.knockback(victim, from, 0.4, 0.15);
+                    }
+                    sound(boss, SoundEvents.PLAYER_ATTACK_KNOCKBACK, 1f, 1.3f);
+                }
+                if (t == 56) {
+                    boss.setInvisible(false);
+                    burst(boss, boss.position().add(0, 1, 0), 0xF4ECE4, 2f, Kind.SHARD, 0);
+                }
+            }));
+
+    /** Buggy Ball: a cannonball the size of a man, fired at the spot where his prey stood. */
+    public static final BossMove BUGGY_BALL = register(new BossMove("buggy_ball", 26, 2, 18, 220, 6, 24, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        face(boss, target, t < 20);
+        if (t == 0) {
+            sound(boss, SoundEvents.ANVIL_PLACE, 1.2f, 0.6f);
+            boss.shout("Buggy Ball! Fire!");
+        }
+        if (t < 26) {
+            if (target != null && t < 20) {
+                boss.lockSpot(target.position());
+            }
+            if (t % 4 == 0) {
+                burst(boss, boss.lockedSpot().add(0, 0.1, 0), 0xE84A3A, 4.5f, Kind.RING, Vfx.RING);
+            }
+            return;
+        }
+        if (t == 26 && boss.level() instanceof ServerLevel level) {
+            Vec3 spot = boss.lockedSpot();
+            Vfx.trail(level, boss, boss.getEyePosition(), spot.add(0, 0.5, 0), 0x2A2A2A, 1f, Kind.SMOKE);
+            level.playSound(null, spot.x, spot.y, spot.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 2f, 0.7f);
+            sound(boss, SoundEvents.GENERIC_EXPLODE.value(), 1f, 1.2f);
+            burst(boss, spot.add(0, 0.6, 0), 0xF0A040, 4.5f, Kind.FLAME, Vfx.SHOCKWAVE | Vfx.HEAVY | Vfx.GROUND);
+            burst(boss, spot.add(0, 1, 0), 0x404040, 3f, Kind.SMOKE, 0);
+            for (LivingEntity victim : boss.targetsAround(spot, 4.5)) {
+                float falloff = (float) Math.max(0.35, 1 - victim.position().distanceTo(spot) / 5);
+                boss.strike(victim, 2.2f * falloff, AbilityDamage.BLAST);
+                AbilityDamage.knockback(victim, spot, 1.2, 0.7);
+            }
+        }
+    }));
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Captain Kuro
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** A quick rake of the cat claws. */
+    public static final BossMove CLAW_RAKE = register(new BossMove("claw_rake", 8, 3, 8, 30, 0, 4, false, (boss, target, t) -> {
+        face(boss, target, true);
+        if (t == 8) {
+            sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 1.2f, 1.5f);
+            slash(boss, 3.5f, 0xE8ECF4);
+            for (LivingEntity victim : boss.targetsInArc(3.6, 110)) {
+                boss.strike(victim, 1.2f, AbilityDamage.SLASH);
+                victim.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 60, 0));
+            }
+        }
+    }));
+
+    /** Silent Step: Kuro vanishes and is behind his prey before they hear him move, claws already falling. */
+    public static final BossMove SILENT_STEP = register(new BossMove("silent_step", 6, 4, 10, 80, 3, 14, false, (boss, target, t) -> {
+        if (t == 6 && target != null) {
+            Vec3 behind = target.position().subtract(Vec3.directionFromRotation(0, target.getYRot()).scale(1.8));
+            burst(boss, boss.position().add(0, 1, 0), 0x202028, 1f, Kind.SMOKE, 0);
+            boss.teleportTo(behind.x, target.getY(), behind.z);
+            boss.getLookControl().setLookAt(target, 180f, 180f);
+            boss.setYRot((float) (Mth.atan2(target.getZ() - behind.z, target.getX() - behind.x) * Mth.RAD_TO_DEG) - 90f);
+            boss.yBodyRot = boss.getYRot();
+            boss.yHeadRot = boss.getYRot();
+            burst(boss, boss.position().add(0, 1, 0), 0x202028, 1f, Kind.SMOKE, 0);
+            sound(boss, SoundEvents.ENDERMAN_TELEPORT, 0.6f, 1.6f);
+        }
+        if (t == 7 && target != null && boss.distanceTo(target) < 3.5) {
+            boss.strike(target, 1.5f, AbilityDamage.SLASH);
+            target.addEffect(new MobEffectInstance(GLMobEffects.BLEEDING, 80, 0));
+            slash(boss, 3f, 0xE8ECF4);
+            sound(boss, SoundEvents.PLAYER_ATTACK_CRIT, 1.2f, 1.4f);
+        }
+    }));
+
+    /** Out of Bounds (Shakushi): Kuro moves too fast to see and cuts everything around him, his own crew included. */
+    public static final BossMove SHAKUSHI = register(new BossMove("shakushi", 20, 50, 24, 260, 0, 12, false, (boss, target, t) -> {
+        boss.getNavigation().stop();
+        if (t == 0) {
+            boss.lockSpot(boss.position());
+            boss.shout("Out of Bounds...");
+            sound(boss, SoundEvents.ELDER_GUARDIAN_CURSE, 0.8f, 1.6f);
+        }
+        if (t < 20) {
+            if (t % 4 == 0) {
+                burst(boss, boss.lockedSpot().add(0, 0.1, 0), 0xE84A3A, 7f, Kind.RING, Vfx.RING);
+            }
+            return;
+        }
+        if (t < 70 && t % 3 == 0) {
+            Vec3 centre = boss.lockedSpot();
+            double angle = boss.getRandom().nextDouble() * Mth.TWO_PI;
+            double r = boss.getRandom().nextDouble() * 6;
+            Vec3 to = new Vec3(centre.x + Math.cos(angle) * r, centre.y, centre.z + Math.sin(angle) * r);
+            trail(boss, boss.position().add(0, 1, 0), to.add(0, 1, 0), 0x303038);
+            boss.teleportTo(to.x, centre.y, to.z);
+            boss.setYRot((float) (angle * Mth.RAD_TO_DEG));
+            for (LivingEntity victim : boss.everyoneAround(to, 2.5)) {
+                boss.strike(victim, 0.45f, AbilityDamage.SLASH);
+            }
+            sound(boss, SoundEvents.PLAYER_ATTACK_SWEEP, 0.8f, 1.6f + boss.getRandom().nextFloat() * 0.3f);
         }
     }));
 

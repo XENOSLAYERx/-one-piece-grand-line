@@ -6,10 +6,10 @@
     "translate": "quest.grandline.arlong_park.desc"
   },
   "category": "main",
-  "order": 4,
+  "order": 6,
   "island": "conomi_islands",
   "requires": [
-    "grandline:the_marine_base"
+    "grandline:the_butler_of_syrup_village"
   ],
   "objectives": [
     {
