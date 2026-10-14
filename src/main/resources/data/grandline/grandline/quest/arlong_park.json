@@ -9,7 +9,7 @@
   "order": 4,
   "island": "conomi_islands",
   "requires": [
-    "the_marine_base"
+    "grandline:the_marine_base"
   ],
   "objectives": [
     {

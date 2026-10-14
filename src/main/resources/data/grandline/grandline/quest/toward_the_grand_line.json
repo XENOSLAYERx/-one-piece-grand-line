@@ -8,7 +8,7 @@
   "category": "main",
   "order": 5,
   "requires": [
-    "arlong_park"
+    "grandline:arlong_park"
   ],
   "objectives": [
     {

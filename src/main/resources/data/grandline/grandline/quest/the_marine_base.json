@@ -9,7 +9,7 @@
   "order": 3,
   "island": "shells_town",
   "requires": [
-    "land_ho"
+    "grandline:land_ho"
   ],
   "objectives": [
     {

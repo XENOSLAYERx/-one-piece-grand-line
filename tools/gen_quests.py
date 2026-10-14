@@ -177,9 +177,11 @@ def main():
         key = f"quest.grandline.{qid}"
         data = {"display_name": {"translate": key}, "description": {"translate": key + ".desc"},
                 "category": q.get("category", "side"), "order": q.get("order", 0)}
-        for field in ("giver", "island", "requires", "standing"):
+        for field in ("giver", "island", "standing"):
             if field in q:
                 data[field] = q[field]
+        if "requires" in q:
+            data["requires"] = ["grandline:" + req for req in q["requires"]]
         data["objectives"] = q["objectives"]
         if "rewards" in q:
             data["rewards"] = q["rewards"]

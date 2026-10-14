@@ -8,7 +8,7 @@
   "category": "main",
   "order": 2,
   "requires": [
-    "romance_dawn"
+    "grandline:romance_dawn"
   ],
   "objectives": [
     {
