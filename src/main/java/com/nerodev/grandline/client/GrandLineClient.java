@@ -27,6 +27,7 @@ import com.nerodev.grandline.client.render.AbilityProjectileRenderer;
 import com.nerodev.grandline.client.render.DisguiseRenderer;
 import com.nerodev.grandline.client.render.HakiLayer;
 import com.nerodev.grandline.client.render.ProjectileVisuals;
+import com.nerodev.grandline.client.render.RaceLayer;
 import com.nerodev.grandline.client.render.TransformationLayer;
 import com.nerodev.grandline.client.render.TransformationRenderer;
 import com.nerodev.grandline.client.visual.ClientVisuals;
@@ -109,6 +110,7 @@ public final class GrandLineClient {
     private static void addLayers(EntityRenderersEvent.AddLayers event) {
         for (PlayerSkin.Model skin : event.getSkins()) {
             if (event.getSkin(skin) instanceof PlayerRenderer renderer) {
+                renderer.addLayer(new RaceLayer(renderer, event.getEntityModels(), skin == PlayerSkin.Model.SLIM));
                 renderer.addLayer(new TransformationLayer(renderer, event.getEntityModels(), skin == PlayerSkin.Model.SLIM));
                 renderer.addLayer(new HakiLayer(renderer));
             }

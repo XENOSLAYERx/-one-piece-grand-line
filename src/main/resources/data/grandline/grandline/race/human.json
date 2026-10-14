@@ -1,4 +1,8 @@
 {
   "display_name": "Human",
-  "description": "The most common race of the seas. Balanced at everything and able to master any fighting style."
+  "description": "The most common race of the seas. Balanced at everything and able to master any fighting style: humans train every kind of mastery a little faster, and can find a second wind in a fight.",
+  "abilities": [
+    "grandline:human_second_wind"
+  ],
+  "mastery_multiplier": 1.1
 }

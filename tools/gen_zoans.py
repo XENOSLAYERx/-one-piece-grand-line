@@ -774,6 +774,44 @@ def _(b, h):
 # Output
 # ---------------------------------------------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------------------------------------------
+# Race features: parts every member of a race wears on the player model (no beast body)
+# ---------------------------------------------------------------------------------------------------------------
+
+RACES = {}
+
+
+def race_parts(rid, palette, seed=1):
+    def wrap(fn):
+        parts = Shape("race_" + rid + "_parts", palette, "none", "front", 1.0, 1.0, seed)
+        parts.overlay_mat = "fur"
+        fn(parts)
+        RACES[rid] = parts
+        return fn
+    return wrap
+
+
+@race_parts("mink", pal(0xD8B888, 0x8A6A4A, 0xF0E4C8), seed=901)
+def _(h):
+    # Furry ears on top of the head and a short, bushy tail.
+    h_ears(h, "pointy")
+    h_tail(h, w=3, n=2, l=4, pitch=-1.0)
+
+
+@race_parts("fishman", pal(0x3A7AA8, 0x1A4A6A, 0x8AC8E8, scale=0x3A7AA8), seed=902)
+def _(h):
+    # A dorsal fin down the back and a fin on each forearm.
+    h.add("dorsal", anchor="BODY", pivot=(0, 1, 2), rot=(0.25, 0, 0), cubes=[C(-0.5, 0, 0, 1, 8, 4, "scale")])
+    h.add("fin_r", anchor="RIGHT_ARM", pivot=(-3, 5, 0), rot=(0, 0, 0.3), cubes=[C(-0.5, 0, 0, 1, 4, 3, "scale")])
+    h.add("fin_l", anchor="LEFT_ARM", pivot=(3, 5, 0), rot=(0, 0, -0.3), cubes=[C(-0.5, 0, 0, 1, 4, 3, "scale")])
+
+
+@race_parts("skypiean", pal(0xF4F4F8, 0xC8CCD8, 0xFFFFFF, feather=0xF4F4F8), seed=903)
+def _(h):
+    # Small white wings on the back.
+    h_wings(h, span=7, depth=5, mat="feather")
+
+
 def write_java(entries):
     lines = [
         "package com.nerodev.grandline.client.model;",
@@ -827,8 +865,15 @@ def main():
             sheet.paste(c, (320, 0))
             sheet.paste(d, (640, 0))
             sheet.save(os.path.join(preview, sid + ".png"))
+    for rid, parts in RACES.items():
+        parts.pack()
+        paint_shape(parts).save(os.path.join(TEX, "race_" + rid + "_parts.png"))
+        entries.append(("race_" + rid + "_parts", parts.encode()))
+        if preview:
+            hp = player_polys() + shape_polys(parts, paint_shape(parts), anchors=PLAYER)
+            render(hp, yaw=150, pitch=15, label="race " + rid).save(os.path.join(preview, "race_" + rid + ".png"))
     write_java(entries)
-    print("zoan bodies:", len(SPECIES), file=sys.stderr)
+    print("zoan bodies:", len(SPECIES), "race parts:", len(RACES), file=sys.stderr)
 
 
 if __name__ == "__main__":

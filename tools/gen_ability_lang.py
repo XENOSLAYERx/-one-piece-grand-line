@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fills in missing ability names and descriptions in en_us.json.
 
-Scans the fruit and fighting-style sources for ``ability("id", Move::new)`` registrations and takes:
+Scans the fruit, fighting-style and race sources for ``ability("id", Move::new)`` registrations and takes:
   - the display name from an ``@name Display Name`` line in the move's javadoc, else NAMES, else the id title-cased
     (for Paramecia, Zoan and style moves, whose ids start with "<fruit or style id>_", that prefix is left out);
   - the description from the rest of the javadoc above ``class Move``.
@@ -14,7 +14,7 @@ import sys
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 PACKAGE = os.path.join(ROOT, "src", "main", "java", "com", "nerodev", "grandline")
-SOURCES = [os.path.join(PACKAGE, "fruit"), os.path.join(PACKAGE, "style")]
+SOURCES = [os.path.join(PACKAGE, "fruit"), os.path.join(PACKAGE, "style"), os.path.join(PACKAGE, "race")]
 LANG = os.path.join(ROOT, "src", "main", "resources", "assets", "grandline", "lang", "en_us.json")
 
 SMALL = {"no", "of", "the", "de", "a", "el", "la", "del"}

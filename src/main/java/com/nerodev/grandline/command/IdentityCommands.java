@@ -14,6 +14,7 @@ import com.nerodev.grandline.fruit.FruitManager;
 import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.permission.PermissionTier;
 import com.nerodev.grandline.permission.Permissions;
+import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.registry.DefinitionType;
 import java.util.Collection;
 import java.util.List;
@@ -132,7 +133,7 @@ final class IdentityCommands {
             throws CommandSyntaxException {
         Map.Entry<ResourceLocation, RaceDefinition> race = RegistryArguments.get(ctx, "race", DefinitionType.RACE);
         for (ServerPlayer player : targets) {
-            GLPlayer.edit(player, data -> data.setRace(race.getKey()));
+            RaceManager.setRace(player, race.getKey());
         }
         Component name = race.getValue().displayName();
         feedback(ctx.getSource(), targets, p -> Component.literal("Set race of " + p + " to ").append(name));
@@ -209,6 +210,9 @@ final class IdentityCommands {
                 HakiManager.reset(player);
             }
             GLPlayer.edit(player, part.reset);
+            if (part == ResetPart.RACE || part == ResetPart.ALL) {
+                RaceManager.refresh(player);
+            }
         }
         feedback(ctx.getSource(), targets, p -> Component.literal("Reset " + part.name + " data of " + p));
         return targets.size();

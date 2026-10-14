@@ -1,4 +1,25 @@
 {
   "display_name": "Skypiean",
-  "description": "Winged people of the sky islands. Light on their feet and skilled with Dials."
+  "description": "Winged people of the sky islands. Light on their feet: they fall gently, take half damage from falls and can glide on their little wings.",
+  "attributes": [
+    {
+      "attribute": "minecraft:generic.fall_damage_multiplier",
+      "amount": -0.5
+    },
+    {
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "amount": 3
+    },
+    {
+      "attribute": "minecraft:generic.gravity",
+      "amount": -0.01
+    },
+    {
+      "attribute": "minecraft:generic.jump_strength",
+      "amount": 0.04
+    }
+  ],
+  "abilities": [
+    "grandline:skypiean_glide"
+  ]
 }

@@ -1,4 +1,30 @@
 {
   "display_name": "Longleg",
-  "description": "A tribe with extraordinarily long legs, built for powerful kicks and long strides."
+  "description": "A tribe with extraordinarily long legs, built for powerful kicks and long strides: faster, higher-jumping and sure-footed.",
+  "attributes": [
+    {
+      "attribute": "minecraft:generic.movement_speed",
+      "amount": 0.15,
+      "operation": "add_multiplied_base"
+    },
+    {
+      "attribute": "minecraft:generic.jump_strength",
+      "amount": 0.12
+    },
+    {
+      "attribute": "minecraft:generic.step_height",
+      "amount": 0.5
+    },
+    {
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "amount": 3
+    },
+    {
+      "attribute": "minecraft:generic.scale",
+      "amount": 0.1
+    }
+  ],
+  "abilities": [
+    "grandline:longleg_sky_stride"
+  ]
 }

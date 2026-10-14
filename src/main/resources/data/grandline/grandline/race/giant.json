@@ -1,4 +1,50 @@
 {
   "display_name": "Giant",
-  "description": "Enormous warriors from Elbaph. Huge reach and strength, but a big target."
+  "description": "Enormous warriors from Elbaph. Twice the size of a human, with huge reach, strength and health, but a big target.",
+  "attributes": [
+    {
+      "attribute": "minecraft:generic.scale",
+      "amount": 1.0
+    },
+    {
+      "attribute": "minecraft:generic.max_health",
+      "amount": 20
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "amount": 4
+    },
+    {
+      "attribute": "minecraft:player.entity_interaction_range",
+      "amount": 2.0
+    },
+    {
+      "attribute": "minecraft:player.block_interaction_range",
+      "amount": 2.0
+    },
+    {
+      "attribute": "minecraft:generic.step_height",
+      "amount": 0.6
+    },
+    {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "amount": 0.5
+    },
+    {
+      "attribute": "minecraft:generic.movement_speed",
+      "amount": 0.15,
+      "operation": "add_multiplied_base"
+    },
+    {
+      "attribute": "minecraft:generic.jump_strength",
+      "amount": 0.1
+    },
+    {
+      "attribute": "minecraft:generic.safe_fall_distance",
+      "amount": 4
+    }
+  ],
+  "abilities": [
+    "grandline:giant_stomp"
+  ]
 }

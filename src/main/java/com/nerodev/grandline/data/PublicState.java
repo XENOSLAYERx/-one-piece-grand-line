@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * What other players need to know to render someone: their fruit, whether it is awakened, the active body
+ * What other players need to know to render someone: their race, fruit, whether it is awakened, the active body
  * transformation, Haki state and any disguise. Synced to everyone tracking the player; never saved (rebuilt from
  * {@link PlayerData} on join).
  */
@@ -25,10 +25,12 @@ public final class PublicState {
             (buf, state) -> {
                 BASE_CODEC.encode(buf, state);
                 buf.writeUtf(state.disguise);
+                buf.writeResourceLocation(state.race);
             },
             buf -> {
                 PublicState state = BASE_CODEC.decode(buf);
                 state.disguise = buf.readUtf();
+                state.race = buf.readResourceLocation();
                 return state;
             });
 
@@ -44,6 +46,7 @@ public final class PublicState {
     private long transformedAt;
     private int haki;
     private String disguise = "";
+    private ResourceLocation race = PlayerData.DEFAULT_RACE;
 
     public PublicState() {}
 
@@ -104,6 +107,15 @@ public final class PublicState {
 
     public void setDisguise(String disguise) {
         this.disguise = disguise;
+    }
+
+    /** The player's race, for drawing race features (ears, fins, wings). */
+    public ResourceLocation race() {
+        return race;
+    }
+
+    public void setRace(ResourceLocation race) {
+        this.race = race;
     }
 
     public void setTransformation(Optional<ResourceLocation> transformation, long now) {

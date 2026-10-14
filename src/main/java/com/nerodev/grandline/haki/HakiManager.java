@@ -17,6 +17,7 @@ import com.nerodev.grandline.fruit.LogiaFruit;
 import com.nerodev.grandline.fx.Fx;
 import com.nerodev.grandline.fx.FxParams;
 import com.nerodev.grandline.fx.GLEffects;
+import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.sound.GLSounds;
 import com.nerodev.grandline.transform.TransformationManager;
 import java.util.HashMap;
@@ -266,7 +267,7 @@ public final class HakiManager {
         if (!has(player, type)) {
             return;
         }
-        double gain = amount * GLServerConfig.masteryGainMultiplier();
+        double gain = amount * GLServerConfig.masteryGainMultiplier() * RaceManager.masteryMultiplier(player);
         PlayerData data = GLPlayer.data(player);
         double before = data.mastery(type.masteryKey());
         if (gain <= 0 || before >= PlayerData.MAX_MASTERY) {

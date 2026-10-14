@@ -1,4 +1,27 @@
 {
   "display_name": "Mink",
-  "description": "Animal-like warriors from Zou. Naturally channel Electro, and transform into Sulong under a full moon."
+  "description": "Animal-like warriors from Zou. Quick and springy, they naturally channel Electro through their blows, and transform into Sulong under a full moon.",
+  "attributes": [
+    {
+      "attribute": "minecraft:generic.movement_speed",
+      "amount": 0.1,
+      "operation": "add_multiplied_base"
+    },
+    {
+      "attribute": "minecraft:generic.jump_strength",
+      "amount": 0.08
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "amount": 1
+    }
+  ],
+  "traits": [
+    "electro"
+  ],
+  "abilities": [
+    "grandline:mink_electro",
+    "grandline:mink_electro_burst",
+    "grandline:mink_sulong"
+  ]
 }

@@ -221,6 +221,12 @@ public final class AbilityState {
         return true;
     }
 
+    /** Gives back {@code amount} stamina, up to the maximum. */
+    public void restoreStamina(float amount, long now) {
+        staminaBase = Math.min(maxStamina, stamina(now) + amount);
+        staminaTick = now - REGEN_DELAY;
+    }
+
     public void refillStamina(long now) {
         staminaBase = maxStamina;
         staminaTick = now - REGEN_DELAY;

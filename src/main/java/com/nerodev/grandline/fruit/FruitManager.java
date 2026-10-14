@@ -14,6 +14,7 @@ import com.nerodev.grandline.data.UnlockCategory;
 import com.nerodev.grandline.fx.Fx;
 import com.nerodev.grandline.fx.FxParams;
 import com.nerodev.grandline.fx.GLEffects;
+import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.transform.TransformationManager;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -193,7 +194,8 @@ public final class FruitManager {
             return;
         }
         String key = fruit.masteryKey();
-        double gain = ability.properties().masteryGain() * GLServerConfig.masteryGainMultiplier();
+        double gain = ability.properties().masteryGain() * GLServerConfig.masteryGainMultiplier()
+                * RaceManager.masteryMultiplier(player);
         if (gain <= 0) {
             return;
         }
@@ -268,6 +270,7 @@ public final class FruitManager {
         if (entity instanceof ServerPlayer player) {
             PlayerData data = GLPlayer.data(player);
             PublicState.of(player).setFruit(data.fruit(), data.isAwakened());
+            PublicState.of(player).setRace(data.race());
             TransformationManager.sync(player);
         }
     }

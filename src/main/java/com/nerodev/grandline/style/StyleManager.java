@@ -10,6 +10,7 @@ import com.nerodev.grandline.config.GLServerConfig;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.PlayerData;
 import com.nerodev.grandline.data.UnlockCategory;
+import com.nerodev.grandline.race.RaceManager;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -88,7 +89,8 @@ public final class StyleManager {
             return;
         }
         String key = style.masteryKey();
-        double gain = ability.properties().masteryGain() * GLServerConfig.masteryGainMultiplier();
+        double gain = ability.properties().masteryGain() * GLServerConfig.masteryGainMultiplier()
+                * RaceManager.masteryMultiplier(player);
         PlayerData data = GLPlayer.data(player);
         double before = data.mastery(key);
         if (gain <= 0 || before >= PlayerData.MAX_MASTERY) {

@@ -11,7 +11,8 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 /**
  * Client look of every Zoan body, found by transformation id: {@code grandline:<fruit>_beast} draws the beast model in
- * place of the player, {@code grandline:<fruit>_hybrid} wears its parts and a fur or scale overlay on the player.
+ * place of the player, {@code grandline:<fruit>_hybrid} wears its parts and a fur or scale overlay on the player. Race
+ * features ({@code race_<race>_parts}) come from the same generated data.
  */
 public final class ZoanLooks {
     /** Bodies made of light (blue flames and the like) are drawn fully bright. */
@@ -23,6 +24,8 @@ public final class ZoanLooks {
 
     private static final Map<ResourceLocation, Beast> BEASTS = new HashMap<>();
     private static final Map<ResourceLocation, Hybrid> HYBRIDS = new HashMap<>();
+    /** Race features (Mink ears and tail, Fish-Man fins, Skypiean wings) by race id. */
+    private static final Map<ResourceLocation, BeastShape> RACE_PARTS = new HashMap<>();
     private static final Map<BeastShape, BeastModel> MODELS = new HashMap<>();
 
     private ZoanLooks() {}
@@ -34,6 +37,11 @@ public final class ZoanLooks {
         Map<String, String> data = ZoanShapeData.all();
         for (Map.Entry<String, String> e : data.entrySet()) {
             String id = e.getKey();
+            if (id.startsWith("race_") && id.endsWith("_parts")) {
+                String race = id.substring("race_".length(), id.length() - "_parts".length());
+                RACE_PARTS.put(GrandLine.id(race), BeastShape.parse(e.getValue()));
+                continue;
+            }
             if (id.endsWith("_parts")) {
                 continue;
             }
@@ -54,6 +62,16 @@ public final class ZoanLooks {
         for (Hybrid hybrid : HYBRIDS.values()) {
             event.registerLayerDefinition(hybrid.parts().layer(), hybrid.parts()::createLayer);
         }
+        for (BeastShape parts : RACE_PARTS.values()) {
+            event.registerLayerDefinition(parts.layer(), parts::createLayer);
+        }
+    }
+
+    /** The features every member of {@code race} wears, or null for races that look human. */
+    @Nullable
+    public static BeastShape raceParts(ResourceLocation race) {
+        load();
+        return RACE_PARTS.get(race);
     }
 
     @Nullable

@@ -2,10 +2,10 @@ package com.nerodev.grandline.registry;
 
 import com.nerodev.grandline.ability.Ability;
 import com.nerodev.grandline.ability.GLAbilities;
-import com.nerodev.grandline.fruit.DevilFruit;
-import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
+import com.nerodev.grandline.fruit.DevilFruit;
+import com.nerodev.grandline.fruit.GLFruits;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -50,7 +50,13 @@ public record DefinitionType<T>(
 
     public static final DefinitionType<RaceDefinition> RACE = new DefinitionType<>(
             "race", GLRegistries.RACE, RaceDefinition::displayName,
-            race -> List.of(line("Description", race.description())));
+            race -> List.of(
+                    line("Abilities", Component.literal(race.abilities().isEmpty() ? "-"
+                            : String.join(", ", race.abilities().stream().map(ResourceLocation::getPath).toList()))),
+                    line("Traits", Component.literal(race.traits().isEmpty() ? "-"
+                            : String.join(", ", race.traits().stream().map(t -> t.getSerializedName()).toList()))),
+                    line("Mastery", Component.literal(String.format(Locale.ROOT, "x%.2f", race.masteryMultiplier()))),
+                    line("Description", race.description())));
 
     public static final DefinitionType<FactionDefinition> FACTION = new DefinitionType<>(
             "faction", GLRegistries.FACTION, FactionDefinition::displayName,

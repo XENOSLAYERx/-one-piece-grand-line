@@ -1152,7 +1152,7 @@ shot 153_murakumogiri
 cmd item replace entity @s weapon.mainhand with grandline:wado_ichimonji
 camera first
 look 0 20
-wait 5
+wait 15
 shot 154_wado_first_person
 cmd fill ~-2 ~ ~3 ~2 ~1 ~3 air
 cmd setblock ~-2 ~ ~3 grandline:seastone_ore
@@ -1165,6 +1165,39 @@ shot 155_seastone
 cmd fill ~-2 ~ ~3 ~2 ~1 ~3 air
 cmd item replace entity @s weapon.mainhand with air
 wait 5
+
+# ---- Races: features on the player model (seen from behind), a Giant, and a Mink in Sulong under the full moon
+cmd onepiece race set grandline:mink
+camera back
+look 30 15
+wait 5
+shot 156_mink
+cmd onepiece race set grandline:fishman
+wait 5
+shot 157_fishman
+cmd onepiece race set grandline:skypiean
+wait 5
+shot 158_skypiean
+cmd onepiece race set grandline:giant
+camera front
+look 0 10
+body 40
+wait 10
+shot 159_giant
+cmd onepiece race set grandline:mink
+cmd time set 18000
+cmd onepiece ability equip 1 grandline:mink_sulong
+wait 10
+press 1
+release 1
+wait 30
+shot 160_sulong
+press 1
+release 1
+cmd time set 6000
+cmd onepiece race set grandline:human
+cmd onepiece ability equip 1 grandline:soru
+wait 10
 
 # ---- Menu
 camera first

@@ -22,6 +22,8 @@ import com.nerodev.grandline.haki.HakiAbilities;
 import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.network.GLNetwork;
+import com.nerodev.grandline.race.RaceAbilities;
+import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.sound.GLSounds;
 import com.nerodev.grandline.style.GLStyles;
@@ -66,6 +68,7 @@ public final class GrandLine {
         // Abilities, effects and networking.
         GLAbilities.register(modBus);
         GLStyles.register(modBus);
+        RaceAbilities.register(modBus);
         GLParticles.register(modBus);
         GLSounds.register(modBus);
         GLMobEffects.register(modBus);
@@ -92,6 +95,7 @@ public final class GrandLine {
         CombatManager.register();
         StyleManager.register();
         WeaponManager.register();
+        RaceManager.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);
