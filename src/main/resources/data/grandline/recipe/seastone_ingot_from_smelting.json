@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": {
+    "item": "grandline:raw_seastone"
+  },
+  "result": {
+    "id": "grandline:seastone_ingot"
+  },
+  "experience": 1.0,
+  "cookingtime": 200
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "grandline:seastone_ingot"
+    }
+  },
+  "result": {
+    "id": "grandline:seastone_bars",
+    "count": 16
+  }
+}

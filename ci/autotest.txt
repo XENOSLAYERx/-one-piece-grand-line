@@ -1137,6 +1137,35 @@ shot 151_dachshund_beast
 cmd onepiece fruit remove
 wait 5
 
+# ---- Weapons: named blades held in third and first person, a gun, then the Seastone blocks
+cmd item replace entity @s weapon.mainhand with grandline:yoru
+cmd item replace entity @s weapon.offhand with grandline:flintlock
+camera front
+look 0 10
+body 40
+wait 5
+shot 152_yoru
+cmd item replace entity @s weapon.mainhand with grandline:murakumogiri
+cmd item replace entity @s weapon.offhand with air
+wait 5
+shot 153_murakumogiri
+cmd item replace entity @s weapon.mainhand with grandline:wado_ichimonji
+camera first
+look 0 20
+wait 5
+shot 154_wado_first_person
+cmd fill ~-2 ~ ~3 ~2 ~1 ~3 air
+cmd setblock ~-2 ~ ~3 grandline:seastone_ore
+cmd setblock ~-1 ~ ~3 grandline:deepslate_seastone_ore
+cmd setblock ~ ~ ~3 grandline:seastone_block
+cmd fill ~1 ~ ~3 ~2 ~1 ~3 grandline:seastone_bars
+cmd item replace entity @s weapon.mainhand with grandline:seastone_cuffs
+wait 10
+shot 155_seastone
+cmd fill ~-2 ~ ~3 ~2 ~1 ~3 air
+cmd item replace entity @s weapon.mainhand with air
+wait 5
+
 # ---- Menu
 camera first
 menu

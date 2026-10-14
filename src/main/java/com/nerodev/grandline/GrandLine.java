@@ -28,6 +28,8 @@ import com.nerodev.grandline.style.GLStyles;
 import com.nerodev.grandline.style.StyleManager;
 import com.nerodev.grandline.transform.GLTransformations;
 import com.nerodev.grandline.transform.TransformationManager;
+import com.nerodev.grandline.weapon.GLWeapons;
+import com.nerodev.grandline.weapon.WeaponManager;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -76,6 +78,7 @@ public final class GrandLine {
         GLTransformations.register(modBus);
         GLEntities.register(modBus);
         GLItems.register(modBus);
+        GLWeapons.register(modBus);
         FruitManager.register();
         TransformationManager.register();
         TempBlocks.register();
@@ -88,6 +91,7 @@ public final class GrandLine {
         HakiManager.register();
         CombatManager.register();
         StyleManager.register();
+        WeaponManager.register();
 
         // Commands.
         NeoForge.EVENT_BUS.addListener(OnePieceCommand::onRegisterCommands);

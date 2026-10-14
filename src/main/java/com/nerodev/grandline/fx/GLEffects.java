@@ -110,6 +110,8 @@ public final class GLEffects {
     public static final ResourceLocation ANIM_KICK_HIGH = GrandLine.id("kick_high");
     public static final ResourceLocation ANIM_SPIN_KICK = GrandLine.id("spin_kick");
     public static final ResourceLocation ANIM_AXE_KICK = GrandLine.id("axe_kick");
+    public static final ResourceLocation ANIM_PISTOL_SHOT = GrandLine.id("pistol_shot");
+    public static final ResourceLocation ANIM_RIFLE_SHOT = GrandLine.id("rifle_shot");
     public static final ResourceLocation ANIM_STOP = GrandLine.id("stop");
 
     private GLEffects() {}
