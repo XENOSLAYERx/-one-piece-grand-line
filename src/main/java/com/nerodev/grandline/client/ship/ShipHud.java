@@ -2,6 +2,7 @@ package com.nerodev.grandline.client.ship;
 
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.client.GLKeys;
+import com.nerodev.grandline.ship.Currents;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
 import java.util.Locale;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
@@ -53,6 +55,12 @@ public final class ShipHud {
                 Math.abs(ship.speed()) * 20 * 1.944, ship.burning() > 0 ? "   ON FIRE" : "");
         g.drawString(font, status, cx - font.width(status) / 2, y, ship.burning() > 0 ? 0xFFFF7A4A : 0xFFE0E4EC, true);
         y += 11;
+        Vec3 current = Currents.at(mc.level, ship.blockPosition());
+        if (current.lengthSqr() > 1.0E-6) {
+            String set = String.format(Locale.ROOT, "Current %.1f knots, setting %s", current.length() * 20 * 1.944, Currents.setting(current));
+            g.drawString(font, set, cx - font.width(set) / 2, y, 0xFF8CC8E8, true);
+            y += 11;
+        }
         if (def.cannons() > 0) {
             String port = gun("Port", ship.readyAt(1), now, def.cannonReload());
             String starboard = gun("Starboard", ship.readyAt(-1), now, def.cannonReload());

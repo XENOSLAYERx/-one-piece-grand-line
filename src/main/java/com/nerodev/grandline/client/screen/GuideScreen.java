@@ -469,7 +469,8 @@ public class GuideScreen extends BrowserScreen {
                 text("The sea is not empty. Sailors meet Marine patrols (which run down anyone wanted), pirate raiders (which "
                         + "attack anyone they do not count as a friend) and merchant ships heavy with cargo that flee when attacked. "
                         + "Sink one and its hold spills; kill its crew and the ship is yours to sail or bottle."),
-                text("Storms make the sea heave and push the bow about, and lightning finds masts. Sea Kings ram ships.")), 0x8B5A2B,
+                text("Storms make the sea heave and push the bow about, and lightning finds masts. Currents set across the "
+                        + "open ocean and carry a ship under way (the ship's display shows them). Sea Kings ram ships.")), 0x8B5A2B,
                 ShipItem.of(ShipEntity.DEFAULT_TYPE, 1f), () -> false, List.of()));
 
         out.add(new Entry(Component.literal("Islands and the Log Pose"), List.of(

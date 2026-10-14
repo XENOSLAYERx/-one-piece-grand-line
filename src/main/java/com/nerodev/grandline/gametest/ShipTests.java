@@ -6,6 +6,7 @@ import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.npc.NpcEntity;
+import com.nerodev.grandline.ship.Currents;
 import com.nerodev.grandline.ship.Encounter;
 import com.nerodev.grandline.ship.GLShips;
 import com.nerodev.grandline.ship.SeaEncounters;
@@ -242,6 +243,26 @@ public final class ShipTests {
             ship.discard();
             helper.succeed();
         });
+    }
+
+    @GameTest(template = POOL)
+    public static void oceanCurrentsAreGentleAndSmooth(GameTestHelper helper) {
+        double weakest = Double.MAX_VALUE;
+        double strongest = 0;
+        for (int i = 0; i < 400; i++) {
+            double x = (i % 20) * 173.3 - 1700;
+            double z = (i / 20) * 211.7 - 2100;
+            Vec3 here = Currents.field(x, z);
+            Vec3 step = Currents.field(x + 1, z);
+            helper.assertTrue(here.distanceTo(step) < 0.002, "The current changes smoothly, by " + here.distanceTo(step) + " per block");
+            weakest = Math.min(weakest, here.length());
+            strongest = Math.max(strongest, here.length());
+        }
+        helper.assertTrue(strongest <= 0.04 + 1.0E-9, "Never more than 0.04 blocks a tick, strongest " + strongest);
+        helper.assertTrue(strongest > 0.02 && weakest < strongest, "It varies from place to place: " + weakest + " to " + strongest);
+        helper.assertTrue(!Currents.setting(new Vec3(0, 0, -1)).isEmpty() && Currents.setting(new Vec3(0, 0, -1)).equals("north"),
+                "Water flowing toward -z sets north");
+        helper.succeed();
     }
 
     // ---------------------------------------------------------------------------------------------------------

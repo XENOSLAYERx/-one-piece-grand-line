@@ -104,7 +104,8 @@ next one, whose name stays a mystery until you arrive.
 anyone they don't count as a friend, and merchant ships heavy with cargo that flee when attacked. Each is crewed by
 islanders who sail, keep their broadside to their quarry and fire when the guns bear. Sink one and its hold spills;
 kill its crew and the ship is yours to sail or bottle (the only way to own a Marine warship outside creator tools).
-Storms make the sea heave and push the bow about, and lightning finds masts.
+Storms make the sea heave and push the bow about, and lightning finds masts. Currents set across the open ocean,
+changing from region to region; the ship's HUD shows the one under you.
 
 **World events** befall players now and then: pirate, Marine and Fish-Man raids, bands of bounty hunters, and Sea
 Kings at sea. Creators can mark out **arenas** where players fight round after round of ever harder enemies.

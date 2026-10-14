@@ -89,6 +89,8 @@ public class ShipEntity extends Entity {
     /** Commands the ship when islanders crew it (server only); null for a ship sailed by players. */
     @Nullable
     private ShipCaptain captain;
+    /** The ocean current carrying the ship while she is under way (refreshed every second). */
+    private Vec3 current = Vec3.ZERO;
     private double speed;
     private int burstTicks;
     /** Yaw the ship turned this tick, passed on to the crew. */
@@ -359,6 +361,10 @@ public class ShipEntity extends Entity {
         boolean storm = afloat && level().isThundering()
                 && level().isRainingAt(BlockPos.containing(getX(), surface + def.hullHeight() + 2, getZ()));
         float max = def.maxSpeed() * (burstTicks > 0 ? 2.6f : storm ? 0.85f : 1f);
+        if (tickCount % 20 == 0) {
+            boolean underWay = helmsman() instanceof Player || captain != null;
+            current = afloat && underWay ? Currents.at(level(), blockPosition()) : Vec3.ZERO;
+        }
         if (afloat || burstTicks > 0) {
             if (forwardInput > 0.01f) {
                 speed += def.acceleration() * forwardInput;
@@ -385,7 +391,7 @@ public class ShipEntity extends Entity {
         setYRot(Mth.wrapDegrees(getYRot() + turn));
         yawDelta = turn;
 
-        Vec3 horizontal = forward(getYRot()).scale(speed);
+        Vec3 horizontal = forward(getYRot()).scale(speed).add(afloat ? current : Vec3.ZERO);
         double vy = getDeltaMovement().y;
         if (afloat && burstTicks < 30) {
             double swell = storm ? Math.sin(tickCount * 0.12 + getId()) * 0.32 + Math.sin(tickCount * 0.05) * 0.18
