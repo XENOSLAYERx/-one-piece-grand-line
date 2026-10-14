@@ -45,6 +45,14 @@ public final class GLServerConfig {
     public static final ModConfigSpec.IntValue DODGE_COOLDOWN_TICKS;
     public static final ModConfigSpec.DoubleValue HEAVY_ATTACK_STAMINA;
 
+    public static final ModConfigSpec.DoubleValue BOUNTY_GAIN_MULTIPLIER;
+    public static final ModConfigSpec.BooleanValue BOUNTY_HUNTERS;
+    public static final ModConfigSpec.LongValue HUNTER_MIN_BOUNTY;
+    public static final ModConfigSpec.IntValue HUNT_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue MAX_CREW_SIZE;
+    public static final ModConfigSpec.IntValue MAX_RECRUITS;
+    public static final ModConfigSpec.BooleanValue CREW_FRIENDLY_FIRE;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -135,6 +143,30 @@ public final class GLServerConfig {
                 .defineInRange("heavyAttackStamina", 6.0, 0.0, 100.0);
         BUILDER.pop();
 
+        BUILDER.comment("Bounties, bounty hunters and crews.").push("bounty");
+        BOUNTY_GAIN_MULTIPLIER = BUILDER
+                .comment("Multiplies every bounty a crime raises. 0 turns bounties off.")
+                .defineInRange("bountyGainMultiplier", 1.0, 0.0, 100.0);
+        BOUNTY_HUNTERS = BUILDER
+                .comment("If true, bounty hunters and Marine squads come after players with a bounty.")
+                .define("bountyHunters", true);
+        HUNTER_MIN_BOUNTY = BUILDER
+                .comment("The smallest bounty that draws hunters.")
+                .defineInRange("hunterMinBounty", 1_000_000L, 1L, 99_999_999_999L);
+        HUNT_INTERVAL_TICKS = BUILDER
+                .comment("Average ticks between two hunts on the same player (bigger bounties are hunted more often).")
+                .defineInRange("huntIntervalTicks", 9600, 600, 1_000_000);
+        MAX_CREW_SIZE = BUILDER
+                .comment("Most players in one crew.")
+                .defineInRange("maxCrewSize", 12, 1, 100);
+        MAX_RECRUITS = BUILDER
+                .comment("Most islanders a crew can recruit.")
+                .defineInRange("maxRecruits", 4, 0, 32);
+        CREW_FRIENDLY_FIRE = BUILDER
+                .comment("If false, crewmates (and their recruits) cannot hurt each other.")
+                .define("crewFriendlyFire", false);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 
@@ -164,6 +196,34 @@ public final class GLServerConfig {
 
     public static float heavyAttackStamina() {
         return value(HEAVY_ATTACK_STAMINA).floatValue();
+    }
+
+    public static double bountyGainMultiplier() {
+        return value(BOUNTY_GAIN_MULTIPLIER);
+    }
+
+    public static boolean bountyHunters() {
+        return value(BOUNTY_HUNTERS);
+    }
+
+    public static long hunterMinBounty() {
+        return value(HUNTER_MIN_BOUNTY);
+    }
+
+    public static int huntIntervalTicks() {
+        return value(HUNT_INTERVAL_TICKS);
+    }
+
+    public static int maxCrewSize() {
+        return value(MAX_CREW_SIZE);
+    }
+
+    public static int maxRecruits() {
+        return value(MAX_RECRUITS);
+    }
+
+    public static boolean crewFriendlyFire() {
+        return value(CREW_FRIENDLY_FIRE);
     }
 
     public static double cooldownMultiplier() {

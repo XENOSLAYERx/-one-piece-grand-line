@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -49,7 +51,8 @@ public final class PlayerData {
             Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("counters", Map.of()).forGetter(d -> d.counters),
             ResourceLocation.CODEC.optionalFieldOf("style").forGetter(d -> d.style),
             Codec.unboundedMap(Codec.STRING, Loadout.CODEC).optionalFieldOf("loadouts", Map.of()).forGetter(d -> d.loadouts),
-            Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(d -> d.reputation)
+            Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(d -> d.reputation),
+            UUIDUtil.CODEC.optionalFieldOf("crew").forGetter(d -> d.crew)
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -68,17 +71,19 @@ public final class PlayerData {
     private Optional<ResourceLocation> style;
     private final Map<String, Loadout> loadouts = new TreeMap<>();
     private final Map<ResourceLocation, Integer> reputation = new TreeMap<>();
+    private Optional<UUID> crew;
 
     public PlayerData() {
         this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false, Map.of(),
-                Optional.empty(), Map.of(), Map.of());
+                Optional.empty(), Map.of(), Map.of(), Optional.empty());
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
             Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
             Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style,
-            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation) {
+            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation, Optional<UUID> crew) {
         this.loadouts.putAll(loadouts);
+        this.crew = crew;
         reputation.forEach((key, value) -> this.reputation.put(key, clampReputation(value)));
         this.fruit = fruit;
         this.style = style;
@@ -151,6 +156,15 @@ public final class PlayerData {
 
     public void clearReputation() {
         reputation.clear();
+    }
+
+    /** The crew this player sails with (the crew itself lives in the world's crew data). */
+    public Optional<UUID> crew() {
+        return crew;
+    }
+
+    public void setCrew(Optional<UUID> crew) {
+        this.crew = crew;
     }
 
     public DeathMode deathMode() {
@@ -306,6 +320,7 @@ public final class PlayerData {
         this.loadouts.putAll(other.loadouts);
         this.reputation.clear();
         this.reputation.putAll(other.reputation);
+        this.crew = other.crew;
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {

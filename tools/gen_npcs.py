@@ -460,6 +460,20 @@ DEFINITIONS = {
         lines={"friendly": ["Business is good. Know any wanted faces?"],
                "neutral": ["You're not worth anything to me. Yet."],
                "hostile": ["Your bounty is mine!", "Dead or alive, you're coming with me!"]}),
+    "bounty_hunter_veteran": dict(
+        display_name="Veteran Bounty Hunter", faction="grandline:bounty_hunter", role="guard", skin="bounty_hunter",
+        health=70, attack=9, speed=0.34, armor=6, equipment={"mainhand": "grandline:sandai_kitetsu", "head": "minecraft:chainmail_helmet"},
+        patrol_radius=10,
+        lines={"friendly": ["A fellow professional. Good hunting."],
+               "neutral": ["Not worth my time."],
+               "hostile": ["I've taken bigger heads than yours.", "Your poster's coming down today!"]}),
+    "marine_captain": dict(
+        display_name="Marine Captain", faction="grandline:marine", role="soldier", skin="marine_officer",
+        health=110, attack=11, speed=0.32, armor=9, equipment={"mainhand": "grandline:katana", "chest": "minecraft:iron_chestplate"},
+        patrol_radius=6,
+        lines={"friendly": ["At ease. The sea is safer with you on it."],
+               "neutral": ["Mind yourself. I answer to Headquarters."],
+               "hostile": ["In the name of Absolute Justice!", "You won't escape this time, pirate!"]}),
     "villager": dict(
         display_name="Villager", role="civilian", skin="villager_a", health=20, attack=1, speed=0.28, armor=0, wander_radius=10,
         lines={"friendly": ["Thank you for keeping us safe!", "Lovely day, isn't it?", "Come back anytime!"],

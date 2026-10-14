@@ -1,10 +1,15 @@
 package com.nerodev.grandline.ship;
 
+import com.nerodev.grandline.bounty.Bounties;
+import com.nerodev.grandline.crew.Crews;
+import com.nerodev.grandline.crew.JollyRoger;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.fx.GLParticles.Kind;
 import com.nerodev.grandline.fx.Vfx;
 import com.nerodev.grandline.registry.GLRegistries;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -68,12 +73,15 @@ public class ShipEntity extends Entity {
     private static final EntityDataAccessor<Long> STARBOARD_READY = SynchedEntityData.defineId(ShipEntity.class,
             EntityDataSerializers.LONG);
     private static final EntityDataAccessor<Long> BURST_READY = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.LONG);
+    /** The Jolly Roger of the crew that owns this ship, or "" for the ship's own colours. */
+    private static final EntityDataAccessor<String> CREW_FLAG = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.STRING);
 
     /** Ticks between two Coups de Burst. */
     public static final int BURST_COOLDOWN = 600;
 
     private final ShipPart[] parts = new ShipPart[MAX_PARTS];
     private final SimpleContainer cargo = new SimpleContainer(MAX_CARGO);
+    private Optional<UUID> crew = Optional.empty();
     private double speed;
     private int burstTicks;
     /** Yaw the ship turned this tick, passed on to the crew. */
@@ -110,6 +118,7 @@ public class ShipEntity extends Entity {
         builder.define(PORT_READY, 0L);
         builder.define(STARBOARD_READY, 0L);
         builder.define(BURST_READY, 0L);
+        builder.define(CREW_FLAG, "");
     }
 
     public ResourceLocation typeId() {
@@ -567,6 +576,11 @@ public class ShipEntity extends Entity {
             return InteractionResult.sidedSuccess(client);
         }
         if (canAddPassenger(player) && !player.isPassenger()) {
+            if (!client && crew.isPresent() && getPassengers().isEmpty() && !Crews.crewOf(player).equals(crew)) {
+                player.displayClientMessage(Component.literal("This ship flies another crew's colours: its crew must take the helm first"),
+                        true);
+                return InteractionResult.FAIL;
+            }
             if (!client) {
                 player.startRiding(this);
             }
@@ -671,6 +685,10 @@ public class ShipEntity extends Entity {
             Component name = def.displayName();
             if (source != null && source.getEntity() instanceof ServerPlayer killer) {
                 killer.displayClientMessage(Component.literal("You sank the ").append(name).withStyle(ChatFormatting.GOLD), false);
+                if (def.sail() == SailStyle.MARINE) {
+                    Bounties.crime(killer, Bounties.MARINE_SHIP_SUNK, false, "sinking a Marine ship");
+                }
+                Crews.addRenown(killer, Math.max(1, (long) def.maxHealth() / 20));
             }
         }
         discard();
@@ -782,6 +800,8 @@ public class ShipEntity extends Entity {
         }
         setBurning(tag.getInt("Burning"));
         cargo.fromTag(tag.getList("Cargo", 10), registryAccess());
+        crew = tag.hasUUID("Crew") ? Optional.of(tag.getUUID("Crew")) : Optional.empty();
+        entityData.set(CREW_FLAG, tag.getString("CrewFlag"));
     }
 
     @Override
@@ -790,5 +810,29 @@ public class ShipEntity extends Entity {
         tag.putFloat("Health", health());
         tag.putInt("Burning", burning());
         tag.put("Cargo", cargo.createTag(registryAccess()));
+        crew.ifPresent(id -> tag.putUUID("Crew", id));
+        tag.putString("CrewFlag", entityData.get(CREW_FLAG));
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Crew
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** The crew that claimed this ship (server side). */
+    public Optional<UUID> crew() {
+        return crew;
+    }
+
+    public void setCrew(Optional<UUID> crew) {
+        this.crew = crew;
+    }
+
+    /** The Jolly Roger this ship flies instead of its own colours, if a crew claimed it. */
+    public Optional<JollyRoger> crewFlag() {
+        return Optional.ofNullable(JollyRoger.byName(entityData.get(CREW_FLAG)));
+    }
+
+    public void setCrewFlag(Optional<JollyRoger> flag) {
+        entityData.set(CREW_FLAG, flag.map(JollyRoger::getSerializedName).orElse(""));
     }
 }

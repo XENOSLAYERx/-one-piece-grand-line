@@ -57,7 +57,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
         pose.mulPose(Axis.XP.rotationDegrees(pitch));
         pose.translate(0, -def.draft() * 0.5, 0);
         int overlay = hurt > 6 ? OverlayTexture.pack(0, true) : OverlayTexture.NO_OVERLAY;
-        mesh(def).render(pose, buffers, light, overlay, time, ship.speed());
+        mesh(def).render(pose, buffers, light, overlay, time, ship.speed(), ship.crewFlag().orElse(null));
         pose.popPose();
         super.render(ship, yaw, partialTick, pose, buffers, light);
     }

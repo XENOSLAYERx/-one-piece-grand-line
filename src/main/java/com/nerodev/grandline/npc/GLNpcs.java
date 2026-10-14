@@ -1,6 +1,8 @@
 package com.nerodev.grandline.npc;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.bounty.Bounties;
+import com.nerodev.grandline.crew.Crews;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -65,19 +67,35 @@ public final class GLNpcs {
         }
         if (victim instanceof NpcEntity npc) {
             if (attacker instanceof ServerPlayer player) {
+                boolean unprovoked = npc.reactionTo(player) != Reaction.HOSTILE;
                 Factions.onAssault(player, npc);
+                if (unprovoked) {
+                    Bounties.onAssault(player, npc);
+                }
             } else {
                 Factions.alarm(npc, attacker);
             }
         } else if (victim instanceof ServerPlayer player) {
             Factions.defend(player, attacker);
         }
+        // A crew fights together: recruits answer when a crewmate is attacked or picks a fight.
+        Crews.rally(victim, attacker);
     }
 
     private static void onDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof NpcEntity npc && !npc.level().isClientSide
-                && event.getSource().getEntity() instanceof ServerPlayer player) {
+        LivingEntity victim = event.getEntity();
+        if (victim.level().isClientSide || !(event.getSource().getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (victim instanceof NpcEntity npc) {
+            boolean wasHostile = npc.reactionTo(player) == Reaction.HOSTILE;
             Factions.onKill(player, npc);
+            Bounties.onKill(player, npc);
+            if (wasHostile && npc.role().fighter()) {
+                Crews.addRenown(player, Math.max(1, (long) (npc.getMaxHealth() / 10)));
+            }
+        } else if (victim instanceof ServerPlayer slain && slain != player) {
+            Bounties.onPlayerKill(player, slain);
         }
     }
 }

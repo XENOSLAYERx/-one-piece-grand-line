@@ -1,0 +1,29 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.bounty_hunter_veteran"
+  },
+  "faction": "grandline:bounty_hunter",
+  "role": "guard",
+  "skin": "bounty_hunter",
+  "health": 70,
+  "attack": 9,
+  "speed": 0.34,
+  "armor": 6,
+  "equipment": {
+    "mainhand": "grandline:sandai_kitetsu",
+    "head": "minecraft:chainmail_helmet"
+  },
+  "patrol_radius": 10,
+  "lines": {
+    "friendly": [
+      "A fellow professional. Good hunting."
+    ],
+    "neutral": [
+      "Not worth my time."
+    ],
+    "hostile": [
+      "I've taken bigger heads than yours.",
+      "Your poster's coming down today!"
+    ]
+  }
+}

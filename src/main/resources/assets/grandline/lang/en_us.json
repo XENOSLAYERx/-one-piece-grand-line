@@ -2828,5 +2828,7 @@
   "npc.grandline.travelling_merchant": "Travelling Merchant",
   "npc.grandline.tangerine_farmer": "Tangerine Farmer",
   "entity.grandline.npc": "Islander",
-  "entity.grandline.npc_shot": "Musket Ball"
+  "entity.grandline.npc_shot": "Musket Ball",
+  "npc.grandline.bounty_hunter_veteran": "Veteran Bounty Hunter",
+  "npc.grandline.marine_captain": "Marine Captain"
 }

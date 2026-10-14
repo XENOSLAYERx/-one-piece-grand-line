@@ -1,0 +1,29 @@
+{
+  "display_name": {
+    "translate": "npc.grandline.marine_captain"
+  },
+  "faction": "grandline:marine",
+  "role": "soldier",
+  "skin": "marine_officer",
+  "health": 110,
+  "attack": 11,
+  "speed": 0.32,
+  "armor": 9,
+  "equipment": {
+    "mainhand": "grandline:katana",
+    "chest": "minecraft:iron_chestplate"
+  },
+  "patrol_radius": 6,
+  "lines": {
+    "friendly": [
+      "At ease. The sea is safer with you on it."
+    ],
+    "neutral": [
+      "Mind yourself. I answer to Headquarters."
+    ],
+    "hostile": [
+      "In the name of Absolute Justice!",
+      "You won't escape this time, pirate!"
+    ]
+  }
+}

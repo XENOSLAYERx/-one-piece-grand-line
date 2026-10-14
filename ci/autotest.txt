@@ -1291,6 +1291,36 @@ cmd kill @e[type=item]
 cmd tp @s 0 -60 0
 wait 10
 
+# ---- Crews and bounties: a crew's sloop flying the Straw Hat Jolly Roger, then hunters closing in on a wanted pirate
+camera first
+cmd tp @s 400 -60 400 0 0
+wait 10
+cmd fill 390 -63 405 414 -61 432 water
+cmd execute rotated 0 0 positioned 401 -60 408 run onepiece ship spawn grandline:sloop
+wait 10
+cmd onepiece crew create Autotest Crew
+cmd onepiece crew flag straw_hat #FFCC00
+cmd ride @s mount @e[type=grandline:ship,limit=1,sort=nearest]
+cmd onepiece crew ship
+cmd ride @s dismount
+cmd tp @s 413 -57 403 40 12
+wait 30
+shot 171_crew_ship
+cmd tp @s 400 -60 380 0 0
+cmd onepiece bounty set 120000000
+cmd onepiece bounty hunt
+wait 60
+cmd execute as @s at @s facing entity @e[type=grandline:npc,limit=1,sort=nearest] feet run tp @s ~ ~ ~ ~ 4
+wait 5
+shot 172_bounty_hunters
+cmd onepiece npc remove 64
+cmd onepiece bounty set 0
+cmd onepiece crew leave
+cmd kill @e[type=grandline:ship]
+cmd kill @e[type=item]
+cmd tp @s 0 -60 0
+wait 10
+
 # ---- Creator Menu
 camera first
 cmd onepiece menu

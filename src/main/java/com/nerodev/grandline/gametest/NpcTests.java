@@ -80,17 +80,19 @@ public final class NpcTests {
         helper.succeed();
     }
 
-    @GameTest(template = ARENA, timeoutTicks = 300)
+    @GameTest(template = ARENA, timeoutTicks = 300, batch = "npc_patrol")
     public static void soldiersWalkTheirBeat(GameTestHelper helper) {
+        Runnable release = keepLoaded(helper);
         NpcEntity recruit = spawn(helper, "marine_recruit", 8, 8);
         Vec3 home = recruit.position();
         helper.succeedWhen(() -> {
             helper.assertTrue(recruit.position().distanceTo(home) > 3, "The recruit walks away from his post on patrol: " + describe(recruit));
             recruit.discard();
+            release.run();
         });
     }
 
-    @GameTest(template = ARENA, timeoutTicks = 200)
+    @GameTest(template = ARENA, timeoutTicks = 200, batch = "npc_fight")
     public static void marinesAndPiratesFight(GameTestHelper helper) {
         NpcEntity marine = spawn(helper, "marine_recruit", 3, 8);
         NpcEntity pirate = spawn(helper, "pirate_grunt", 12, 8);
@@ -102,7 +104,7 @@ public final class NpcTests {
         });
     }
 
-    @GameTest(template = ARENA, timeoutTicks = 300)
+    @GameTest(template = ARENA, timeoutTicks = 300, batch = "npc_gunfire")
     public static void gunmenOpenFire(GameTestHelper helper) {
         NpcEntity rifleman = spawn(helper, "marine_rifleman", 2, 8);
         NpcEntity pirate = spawn(helper, "pirate_grunt", 13, 8);
@@ -224,6 +226,28 @@ public final class NpcTests {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * Keeps the chunks around the test loaded and ticking (islanders walk beyond the arena), and returns what
+     * lets them go again.
+     */
+    private static Runnable keepLoaded(GameTestHelper helper) {
+        BlockPos origin = helper.absolutePos(BlockPos.ZERO);
+        int cx = origin.getX() >> 4;
+        int cz = origin.getZ() >> 4;
+        for (int dx = -2; dx <= 3; dx++) {
+            for (int dz = -2; dz <= 3; dz++) {
+                helper.getLevel().setChunkForced(cx + dx, cz + dz, true);
+            }
+        }
+        return () -> {
+            for (int dx = -2; dx <= 3; dx++) {
+                for (int dz = -2; dz <= 3; dz++) {
+                    helper.getLevel().setChunkForced(cx + dx, cz + dz, false);
+                }
+            }
+        };
+    }
 
     /** What an islander's AI is up to, for failure messages. */
     private static String describe(NpcEntity npc) {

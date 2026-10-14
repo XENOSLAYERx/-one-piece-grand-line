@@ -1,5 +1,6 @@
 package com.nerodev.grandline.npc;
 
+import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.weapon.GunItem;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -86,6 +88,12 @@ public class NpcEntity extends PathfinderMob implements Merchant {
     private MerchantOffers offers;
     private long offersDay = -1;
     private boolean offersForMember;
+    @Nullable
+    private UUID crewId;
+    @Nullable
+    private UUID quarry;
+    private int lostTrail;
+    private int huntTicks;
 
     public NpcEntity(EntityType<? extends NpcEntity> type, Level level) {
         super(type, level);
@@ -245,6 +253,8 @@ public class NpcEntity extends PathfinderMob implements Merchant {
             } else {
                 goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.15, true));
             }
+            goalSelector.addGoal(3, new NpcGoals.FollowCaptain(this));
+            goalSelector.addGoal(3, new NpcGoals.Track(this));
             goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.8));
             if (def.role().patrols()) {
                 goalSelector.addGoal(5, new NpcGoals.Patrol(this));
@@ -269,10 +279,10 @@ public class NpcEntity extends PathfinderMob implements Merchant {
 
     /** Whether this islander, a fighter, wants to attack {@code target}. */
     public boolean hostileTo(LivingEntity target) {
-        if (target == this || !target.isAlive()) {
+        if (target == this || !target.isAlive() || Crews.crewmates(this, target)) {
             return false;
         }
-        if (holdsGrudge(target)) {
+        if (holdsGrudge(target) || target.getUUID().equals(quarry)) {
             return true;
         }
         if (target instanceof Player player) {
@@ -301,7 +311,10 @@ public class NpcEntity extends PathfinderMob implements Merchant {
 
     /** How this islander feels about a player. */
     public Reaction reactionTo(Player player) {
-        return holdsGrudge(player) ? Reaction.HOSTILE : Factions.reaction(player, faction());
+        if (Crews.crewmates(this, player)) {
+            return Reaction.FRIENDLY;
+        }
+        return holdsGrudge(player) || player.getUUID().equals(quarry) ? Reaction.HOSTILE : Factions.reaction(player, faction());
     }
 
     public boolean holdsGrudge(LivingEntity entity) {
@@ -311,7 +324,7 @@ public class NpcEntity extends PathfinderMob implements Merchant {
 
     /** Remembers being wronged by {@code enemy}; fighters turn on them at once. */
     public void provoke(LivingEntity enemy) {
-        if (enemy == this || !enemy.isAlive()) {
+        if (enemy == this || !enemy.isAlive() || Crews.crewmates(this, enemy)) {
             return;
         }
         grudges.put(enemy.getUUID(), level().getGameTime() + GRUDGE_TICKS);
@@ -335,6 +348,83 @@ public class NpcEntity extends PathfinderMob implements Merchant {
         if (def != null && def.swimmer() && isInWater()) {
             setAirSupply(getMaxAirSupply());
         }
+        if (!level().isClientSide && quarry != null && tickCount % 20 == 0) {
+            followTrail();
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    // Hunting and crews
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Sets this islander on {@code target}'s trail: no home, no rest until the target is caught or the trail goes cold. */
+    public void hunt(ServerPlayer target) {
+        quarry = target.getUUID();
+        lostTrail = 0;
+        huntTicks = 0;
+        clearRestriction();
+        provoke(target);
+    }
+
+    @Nullable
+    public UUID quarry() {
+        return quarry;
+    }
+
+    /** The hunted player, if they are around. */
+    @Nullable
+    ServerPlayer quarryPlayer() {
+        if (quarry == null || getServer() == null) {
+            return null;
+        }
+        ServerPlayer target = getServer().getPlayerList().getPlayer(quarry);
+        return target != null && target.isAlive() && target.level() == level() && !target.isSpectator() && !target.isCreative()
+                ? target : null;
+    }
+
+    private void followTrail() {
+        ServerPlayer target = quarryPlayer();
+        boolean near = target != null && distanceToSqr(target) < 128 * 128;
+        lostTrail = near ? 0 : lostTrail + 20;
+        huntTicks += 20;
+        if (near && (getTarget() == null || !getTarget().isAlive()) && distanceToSqr(target) < 40 * 40) {
+            setTarget(target);
+        }
+        if (lostTrail > 600 || huntTicks > 24000) {
+            discard();
+        }
+    }
+
+    public Optional<UUID> crew() {
+        return Optional.ofNullable(crewId);
+    }
+
+    /** Whether {@code player} could win this islander over: a fighter, not hunting, not set against them, and no deserter. */
+    public boolean recruitable(Player player) {
+        if (!role().fighter() || crewId != null || quarry != null || reactionTo(player) == Reaction.HOSTILE) {
+            return false;
+        }
+        return faction().map(f -> !f.equals(Factions.MARINES) || Factions.member(player, Factions.MARINES)).orElse(true);
+    }
+
+    /** Joins a crew: no more home or beat, they follow the captain and fight beside the crew. */
+    public void joinCrew(UUID crew, UUID captain) {
+        crewId = crew;
+        grudges.remove(captain);
+        clearRestriction();
+        if (getTarget() != null && Crews.crewmates(this, getTarget())) {
+            setTarget(null);
+        }
+        setPersistenceRequired();
+    }
+
+    /** Leaves the crew and settles where they stand. */
+    public void leaveCrew() {
+        crewId = null;
+        if (isPassenger()) {
+            stopRiding();
+        }
+        setHome(blockPosition());
     }
 
     /** Fires the held gun at {@code target}. */
@@ -383,6 +473,16 @@ public class NpcEntity extends PathfinderMob implements Merchant {
         }
         Reaction reaction = reactionTo(player);
         getLookControl().setLookAt(player);
+        if (player.isSecondaryUseActive() && def.role().fighter() && player instanceof ServerPlayer recruiter && crewId == null) {
+            String refusal = Crews.recruit(recruiter, this);
+            if (refusal != null) {
+                recruiter.displayClientMessage(Component.literal(refusal).withStyle(ChatFormatting.RED), true);
+                say(player, reaction);
+            } else {
+                say(player, Reaction.FRIENDLY);
+            }
+            return InteractionResult.CONSUME;
+        }
         if (def.role() == NpcRole.MERCHANT && reaction != Reaction.HOSTILE && tradingPlayer == null && getTarget() == null) {
             MerchantOffers available = offersFor(player);
             if (!available.isEmpty()) {
@@ -535,6 +635,13 @@ public class NpcEntity extends PathfinderMob implements Merchant {
         tag.putString("Npc", entityData.get(NPC));
         BlockPos home = home();
         tag.putIntArray("Home", new int[] {home.getX(), home.getY(), home.getZ()});
+        if (crewId != null) {
+            tag.putUUID("Crew", crewId);
+        }
+        if (quarry != null) {
+            tag.putUUID("Quarry", quarry);
+            tag.putInt("HuntTicks", huntTicks);
+        }
     }
 
     @Override
@@ -547,6 +654,12 @@ public class NpcEntity extends PathfinderMob implements Merchant {
         int[] home = tag.getIntArray("Home");
         if (home.length == 3) {
             setHome(new BlockPos(home[0], home[1], home[2]));
+        }
+        crewId = tag.hasUUID("Crew") ? tag.getUUID("Crew") : null;
+        quarry = tag.hasUUID("Quarry") ? tag.getUUID("Quarry") : null;
+        huntTicks = tag.getInt("HuntTicks");
+        if (crewId != null || quarry != null) {
+            clearRestriction();
         }
     }
 }

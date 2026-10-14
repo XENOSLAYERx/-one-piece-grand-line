@@ -3,11 +3,13 @@ package com.nerodev.grandline.client.ship;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.crew.JollyRoger;
 import com.nerodev.grandline.ship.SailStyle;
 import com.nerodev.grandline.ship.ShipDefinition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -278,7 +280,9 @@ public final class ShipMesh {
     // Drawing
     // ---------------------------------------------------------------------------------------------------------
 
-    public void render(PoseStack pose, MultiBufferSource buffers, int light, int overlay, float time, float speed) {
+    /** Draws the ship; a crew's Jolly Roger, if given, replaces the emblem on its sails and flags. */
+    public void render(PoseStack pose, MultiBufferSource buffers, int light, int overlay, float time, float speed,
+            @Nullable JollyRoger crew) {
         PoseStack.Pose last = pose.last();
         VertexConsumer solid = buffers.getBuffer(RenderType.entityCutoutNoCull(ATLAS));
         for (Quad q : quads) {
@@ -289,10 +293,10 @@ public final class ShipMesh {
         }
         float billow = 0.25f + Math.min(1f, Math.abs(speed) * 3f) * 0.6f;
         for (Sail sail : sails) {
-            drawSail(pose, buffers, sail, light, overlay, time, billow);
+            drawSail(pose, buffers, sail, light, overlay, time, billow, crew);
         }
         for (Flag flag : flags) {
-            drawFlag(pose, buffers, flag, light, overlay, time);
+            drawFlag(pose, buffers, flag, light, overlay, time, crew);
         }
     }
 
@@ -300,9 +304,11 @@ public final class ShipMesh {
         return GrandLine.id("textures/entity/ship/sail_" + style.getSerializedName().toLowerCase(Locale.ROOT) + ".png");
     }
 
-    private void drawSail(PoseStack pose, MultiBufferSource buffers, Sail sail, int light, int overlay, float time, float billow) {
-        boolean emblem = sail.emblem && style != SailStyle.PLAIN;
-        VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(emblem ? emblem() : CANVAS));
+    private void drawSail(PoseStack pose, MultiBufferSource buffers, Sail sail, int light, int overlay, float time, float billow,
+            @Nullable JollyRoger crew) {
+        boolean emblem = sail.emblem && (crew != null || style != SailStyle.PLAIN);
+        VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(!emblem ? CANVAS
+                : crew != null ? crew.sailTexture() : emblem()));
         int color = emblem ? 0xFFFFFFFF : sailColor;
         PoseStack.Pose last = pose.last();
         int n = 6;
@@ -324,9 +330,10 @@ public final class ShipMesh {
         }
     }
 
-    private void drawFlag(PoseStack pose, MultiBufferSource buffers, Flag flag, int light, int overlay, float time) {
-        VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(
-                GrandLine.id("textures/entity/ship/flag_" + style.getSerializedName() + ".png")));
+    private void drawFlag(PoseStack pose, MultiBufferSource buffers, Flag flag, int light, int overlay, float time,
+            @Nullable JollyRoger crew) {
+        VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(crew != null ? crew.flagTexture()
+                : GrandLine.id("textures/entity/ship/flag_" + style.getSerializedName() + ".png")));
         PoseStack.Pose last = pose.last();
         int n = 4;
         float width = 1.4f;

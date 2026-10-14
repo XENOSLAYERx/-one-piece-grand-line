@@ -188,7 +188,7 @@ public final class ShipTests {
 
     // ---------------------------------------------------------------------------------------------------------
 
-    private static ShipEntity launch(GameTestHelper helper, String type) {
+    static ShipEntity launch(GameTestHelper helper, String type) {
         Vec3 at = helper.absoluteVec(new Vec3(6, 3, 6));
         ShipEntity ship = GLShips.SHIP.get().create(helper.getLevel());
         ship.setShipType(GrandLine.id(type));
@@ -214,7 +214,7 @@ public final class ShipTests {
      * A test player that can go aboard. NeoForge's fake players refuse to ride anything, so this is a plain server
      * player borrowing a fake player's (silent) connection; like a fake player it is never ticked by the server.
      */
-    private static ServerPlayer sailor(GameTestHelper helper) {
+    static ServerPlayer sailor(GameTestHelper helper) {
         ServerPlayer fake = newPlayer(helper);
         ServerLevel level = helper.getLevel();
         ServerPlayer sailor = new ServerPlayer(level.getServer(), level, new GameProfile(UUID.randomUUID(), "gl_sailor"),

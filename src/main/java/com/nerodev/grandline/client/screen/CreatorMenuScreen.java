@@ -5,7 +5,10 @@ import com.nerodev.grandline.ability.Ability;
 import com.nerodev.grandline.ability.AbilityCategory;
 import com.nerodev.grandline.ability.AbilityState;
 import com.nerodev.grandline.ability.GLAbilities;
+import com.nerodev.grandline.bounty.Bounties;
+import com.nerodev.grandline.bounty.BountyHunts;
 import com.nerodev.grandline.creator.Battles;
+import com.nerodev.grandline.crew.JollyRoger;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.data.Loadout;
 import com.nerodev.grandline.data.PlayerData;
@@ -108,6 +111,7 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("Weapons"), this::weapons));
         categories.add(new Category(Component.literal("Factions"), this::factions));
         categories.add(new Category(Component.literal("NPCs"), this::npcs));
+        categories.add(new Category(Component.literal("Crew & Bounty"), this::crewAndBounty));
         categories.add(new Category(Component.literal("Ships"), this::ships));
         categories.add(new Category(Component.literal("Islands"), this::islands));
         categories.add(new Category(Component.literal("Battle Test"), this::battleTest));
@@ -564,6 +568,30 @@ public class CreatorMenuScreen extends Screen {
             out.add(new Entry(npc.displayName(), details, color, icon, () -> false,
                     List.of(Action.of("Spawn here", "onepiece npc spawn " + id), Action.of("Spawn 3", "onepiece npc spawn " + id + " 3"),
                             Action.confirmed("Remove nearby", "onepiece npc remove 16"))));
+        }
+        return out;
+    }
+
+    private List<Entry> crewAndBounty() {
+        List<Entry> out = new ArrayList<>();
+        out.add(new Entry(Component.literal("Found a crew"), List.of(Component.literal("Founds a crew with you as captain. Invite others with "
+                + "/onepiece crew invite, recruit islanders by sneak-right-clicking them with emeralds.")), 0xC62828,
+                new ItemStack(Items.BLACK_BANNER), () -> data() != null && data().crew().isPresent(),
+                List.of(Action.of("Found \"Creator Crew\"", "onepiece crew create Creator Crew"), Action.of("Crew info", "onepiece crew info"),
+                        Action.of("Claim ship (aboard)", "onepiece crew ship"), Action.of("Dismiss recruits", "onepiece crew dismiss"),
+                        Action.of("Leave crew", "onepiece crew leave"))));
+        for (JollyRoger roger : JollyRoger.values()) {
+            out.add(new Entry(Component.literal("Jolly Roger: " + roger.label()), List.of(Component.literal(
+                    "Flies on your crew's claimed ship, on its flag and sails.")), 0x303034, ItemStack.EMPTY, () -> false,
+                    List.of(Action.of("Fly this flag", "onepiece crew flag " + roger.getSerializedName()))));
+        }
+        for (long bounty : new long[] {0L, 1_000_000L, 30_000_000L, 120_000_000L, 500_000_000L}) {
+            String label = bounty == 0 ? "No bounty" : "Bounty " + Bounties.format(bounty);
+            BountyHunts.Tier tier = BountyHunts.TIERS.stream().filter(t -> bounty >= t.bounty()).reduce((a, b) -> b).orElse(null);
+            out.add(new Entry(Component.literal(label), List.of(line("Hunted by", Component.literal(tier == null ? "nobody"
+                    : tier.hunters().size() + " bounty hunters or " + tier.marines().size() + " Marines"))), 0xE0B83A,
+                    new ItemStack(Items.PAPER), () -> data() != null && data().bounty() == bounty,
+                    List.of(Action.of("Set bounty", "onepiece bounty set " + bounty), Action.of("Send hunters now", "onepiece bounty hunt"))));
         }
         return out;
     }
