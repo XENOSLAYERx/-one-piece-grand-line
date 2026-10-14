@@ -85,7 +85,7 @@ public final class NpcTests {
         NpcEntity recruit = spawn(helper, "marine_recruit", 8, 8);
         Vec3 home = recruit.position();
         helper.succeedWhen(() -> {
-            helper.assertTrue(recruit.position().distanceTo(home) > 3, "The recruit walks away from his post on patrol");
+            helper.assertTrue(recruit.position().distanceTo(home) > 3, "The recruit walks away from his post on patrol: " + describe(recruit));
             recruit.discard();
         });
     }
@@ -95,7 +95,8 @@ public final class NpcTests {
         NpcEntity marine = spawn(helper, "marine_recruit", 3, 8);
         NpcEntity pirate = spawn(helper, "pirate_grunt", 12, 8);
         helper.succeedWhen(() -> {
-            helper.assertTrue(marine.getTarget() == pirate || pirate.getTarget() == marine, "Marine and pirate go for each other");
+            helper.assertTrue(marine.getTarget() == pirate || pirate.getTarget() == marine, "Marine and pirate go for each other: "
+                    + describe(marine) + " / hostile=" + marine.hostileTo(pirate));
             marine.discard();
             pirate.discard();
         });
@@ -108,7 +109,7 @@ public final class NpcTests {
         pirate.setNoAi(true);
         helper.succeedWhen(() -> {
             boolean shot = !helper.getLevel().getEntitiesOfClass(NpcShot.class, rifleman.getBoundingBox().inflate(20)).isEmpty();
-            helper.assertTrue(shot || pirate.getHealth() < pirate.getMaxHealth(), "The rifleman fires on the pirate");
+            helper.assertTrue(shot || pirate.getHealth() < pirate.getMaxHealth(), "The rifleman fires on the pirate: " + describe(rifleman));
             helper.getLevel().getEntitiesOfClass(NpcShot.class, rifleman.getBoundingBox().inflate(30)).forEach(NpcShot::discard);
             rifleman.discard();
             pirate.discard();
@@ -223,6 +224,15 @@ public final class NpcTests {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+
+    /** What an islander's AI is up to, for failure messages. */
+    private static String describe(NpcEntity npc) {
+        return "tick " + npc.tickCount + ", goals " + npc.goalSelector.getAvailableGoals().size() + "/" + npc.targetSelector.getAvailableGoals().size()
+                + ", running " + npc.goalSelector.getRunningGoals().map(g -> g.getGoal().getClass().getSimpleName()).toList()
+                + ", target " + npc.getTarget() + ", path " + (npc.getNavigation().getPath() == null ? "none" : npc.getNavigation().getPath().getNodeCount() + " nodes")
+                + ", at " + npc.blockPosition() + ", ground " + npc.onGround() + ", noAi " + npc.isNoAi() + ", removed " + npc.isRemoved()
+                + ", speed " + npc.getSpeed() + ", effectiveAi " + npc.isEffectiveAi();
+    }
 
     private static NpcEntity spawn(GameTestHelper helper, String id, int x, int z) {
         NpcEntity npc = NpcEntity.spawn(helper.getLevel(), GrandLine.id(id), helper.absolutePos(new BlockPos(x, 1, z)), 0f,
