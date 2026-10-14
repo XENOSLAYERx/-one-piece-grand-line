@@ -1,0 +1,30 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.romance_dawn"
+  },
+  "description": {
+    "translate": "quest.grandline.romance_dawn.desc"
+  },
+  "category": "main",
+  "order": 1,
+  "objectives": [
+    {
+      "type": "sail"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "grandline:log_pose",
+        "count": 1
+      },
+      {
+        "id": "minecraft:emerald",
+        "count": 5
+      }
+    ]
+  },
+  "lines": {
+    "done": "The sea is yours now. Hold up your Log Pose and let it find the pull of the nearest island."
+  }
+}

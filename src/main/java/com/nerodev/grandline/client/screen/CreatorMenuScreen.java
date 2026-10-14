@@ -23,6 +23,10 @@ import com.nerodev.grandline.haki.HakiType;
 import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.npc.Factions;
 import com.nerodev.grandline.npc.NpcDefinition;
+import com.nerodev.grandline.quest.GLQuests;
+import com.nerodev.grandline.quest.QuestDefinition;
+import com.nerodev.grandline.quest.QuestObjective;
+import com.nerodev.grandline.quest.Quests;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.ship.ShipDefinition;
 import com.nerodev.grandline.ship.ShipEntity;
@@ -113,6 +117,7 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("Factions"), this::factions));
         categories.add(new Category(Component.literal("NPCs"), this::npcs));
         categories.add(new Category(Component.literal("Bosses"), this::bosses));
+        categories.add(new Category(Component.literal("Quests"), this::quests));
         categories.add(new Category(Component.literal("Crew & Bounty"), this::crewAndBounty));
         categories.add(new Category(Component.literal("Ships"), this::ships));
         categories.add(new Category(Component.literal("Islands"), this::islands));
@@ -600,6 +605,38 @@ public class CreatorMenuScreen extends Screen {
             ItemStack icon = boss.weapon().map(ItemStack::new).orElseGet(() -> new ItemStack(Items.WITHER_SKELETON_SKULL));
             Integer color = boss.barColor().getFormatting().getColor();
             out.add(new Entry(boss.displayName(), details, color == null ? 0xF2EEDC : color, icon, () -> false, actions));
+        }
+        return out;
+    }
+
+    private List<Entry> quests() {
+        List<Entry> out = new ArrayList<>();
+        out.add(new Entry(Component.literal("Log Pose and journal"), List.of(Component.literal("The Log Pose records islands as you reach "
+                + "them and points to the next. Open the quest journal with K.")), 0x5AA6C8, new ItemStack(GLQuests.LOG_POSE.get()),
+                () -> false, List.of(Action.of("Give a Log Pose", "give @s grandline:log_pose"), Action.of("Find next island", "onepiece logpose next"),
+                        Action.of("Show journal", "onepiece quest"), Action.confirmed("Forget islands", "onepiece logpose forget"),
+                        Action.confirmed("Reset all quests", "onepiece quest reset"))));
+        if (minecraft == null || minecraft.level == null) {
+            return out;
+        }
+        for (Map.Entry<ResourceLocation, QuestDefinition> e : Quests.all(minecraft.level.registryAccess())) {
+            ResourceLocation id = e.getKey();
+            QuestDefinition quest = e.getValue();
+            List<Component> details = new ArrayList<>();
+            details.add(quest.description().copy().withStyle(ChatFormatting.GRAY));
+            details.add(line("Kind", Component.literal(quest.category() == QuestDefinition.Category.MAIN ? "story, part " + quest.order()
+                    : "side quest" + quest.giver().map(g -> ", from " + g.getPath()).orElse(""))));
+            for (QuestObjective objective : quest.objectives()) {
+                details.add(Component.literal("- ").append(Quests.describe(minecraft.level.registryAccess(), objective)));
+            }
+            if (!quest.requires().isEmpty()) {
+                details.add(line("After", Component.literal(String.join(", ", quest.requires().stream().map(ResourceLocation::getPath).toList()))));
+            }
+            out.add(new Entry(quest.displayName(), details, quest.category() == QuestDefinition.Category.MAIN ? 0xF0C050 : 0xE8E8D0,
+                    new ItemStack(quest.category() == QuestDefinition.Category.MAIN ? Items.MAP : Items.WRITABLE_BOOK),
+                    () -> data() != null && data().journey().isCompleted(id),
+                    List.of(Action.of("Take it on", "onepiece quest accept " + id), Action.of("Complete", "onepiece quest complete " + id),
+                            Action.of("Reset", "onepiece quest reset " + id))));
         }
         return out;
     }

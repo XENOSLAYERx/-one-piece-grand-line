@@ -37,6 +37,7 @@ final class IslandCommands {
             new HelpEntry("/onepiece island list", "The islands that rise from the sea", PermissionTier.PLAYER),
             new HelpEntry("/onepiece island locate <island>", "Find the nearest island of a kind", PermissionTier.CREATOR),
             new HelpEntry("/onepiece island teleport <island>", "Go to the nearest island of a kind", PermissionTier.CREATOR),
+            new HelpEntry("/onepiece teleport <island>", "Same as island teleport", PermissionTier.CREATOR),
             new HelpEntry("/onepiece island place <island> [seed]", "Raise an island right here, in a sea at your feet",
                     PermissionTier.CREATOR));
 
@@ -61,6 +62,9 @@ final class IslandCommands {
                         .executes(ctx -> place(ctx, ctx.getSource().getLevel().random.nextLong()))
                         .then(Commands.argument("seed", LongArgumentType.longArg())
                                 .executes(ctx -> place(ctx, LongArgumentType.getLong(ctx, "seed")))))));
+        // The short form creators reach for: /onepiece teleport <island>.
+        root.then(creator("teleport").then(Commands.argument("island", StringArgumentType.word()).suggests(ISLANDS)
+                .executes(ctx -> locate(ctx, true))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> creator(String name) {

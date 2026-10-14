@@ -2,6 +2,7 @@ package com.nerodev.grandline.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.nerodev.grandline.ability.AbilityState;
+import com.nerodev.grandline.client.quest.QuestJournalScreen;
 import com.nerodev.grandline.client.screen.AbilityScreen;
 import com.nerodev.grandline.network.AbilityKeyPayload;
 import com.nerodev.grandline.network.DodgePayload;
@@ -38,6 +39,9 @@ public final class GLKeys {
     /** At a ship's helm: Coup de Burst (ships that have one). */
     public static final KeyMapping SHIP_BURST = new KeyMapping("key.grandline.ship_burst", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, CATEGORY);
+    /** Opens the quest journal. */
+    public static final KeyMapping QUEST_JOURNAL = new KeyMapping("key.grandline.quest_journal", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, CATEGORY);
     /** Asks the server to open the Creator Menu (it only does for players with the CREATOR permission). */
     public static final KeyMapping CREATOR_MENU = new KeyMapping("key.grandline.creator_menu", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, CATEGORY);
@@ -64,6 +68,7 @@ public final class GLKeys {
         event.register(CREATOR_MENU);
         event.register(SHIP_FIRE);
         event.register(SHIP_BURST);
+        event.register(QUEST_JOURNAL);
     }
 
     /** Sends a payload whenever a slot key changes state. Opening any screen counts as releasing every key. */
@@ -108,6 +113,11 @@ public final class GLKeys {
         while (SHIP_BURST.consumeClick()) {
             if (listening && mc.player.getVehicle() instanceof ShipEntity) {
                 PacketDistributor.sendToServer(new ShipActionPayload(ShipActionPayload.BURST));
+            }
+        }
+        while (QUEST_JOURNAL.consumeClick()) {
+            if (listening) {
+                mc.setScreen(new QuestJournalScreen());
             }
         }
         while (CREATOR_MENU.consumeClick()) {

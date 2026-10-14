@@ -1,0 +1,35 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.tangerine_harvest"
+  },
+  "description": {
+    "translate": "quest.grandline.tangerine_harvest.desc"
+  },
+  "category": "side",
+  "order": 6,
+  "giver": "grandline:tangerine_farmer",
+  "island": "conomi_islands",
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "grandline:tangerine",
+      "count": 16,
+      "consume": true
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 8
+      }
+    ],
+    "reputation": {
+      "grandline:civilians": 6
+    }
+  },
+  "lines": {
+    "offer": "These tangerines are all we have. Will you help me pick them before the Fish-Men come to collect?",
+    "done": "That's the whole harvest in. Here - you've earned more than a tangerine."
+  }
+}

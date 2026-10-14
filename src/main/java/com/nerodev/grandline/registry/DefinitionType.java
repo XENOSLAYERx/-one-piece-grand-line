@@ -8,6 +8,7 @@ import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.GLFruits;
 import com.nerodev.grandline.npc.NpcDefinition;
+import com.nerodev.grandline.quest.QuestDefinition;
 import com.nerodev.grandline.ship.ShipDefinition;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -115,7 +116,18 @@ public record DefinitionType<T>(
                     line("Rewards", Component.literal(String.format(Locale.ROOT, "%,d bounty, %d renown", boss.rewards().bounty(),
                             boss.rewards().renown())))));
 
-    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP, NPC, BOSS);
+    public static final DefinitionType<QuestDefinition> QUEST = new DefinitionType<>(
+            "quest", GLRegistries.QUEST, QuestDefinition::displayName,
+            quest -> List.of(
+                    line("Kind", Component.literal(quest.category().getSerializedName() + quest.giver().map(g -> ", given by " + g).orElse(""))),
+                    line("Requires", Component.literal(quest.requires().isEmpty() ? "-"
+                            : String.join(", ", quest.requires().stream().map(ResourceLocation::getPath).toList()))),
+                    line("Objectives", Component.literal(String.join(", ", quest.objectives().stream()
+                            .map(o -> o.kind().getSerializedName() + o.target().map(t -> " " + t.getPath()).orElse("")
+                                    + (o.count() > 1 ? " x" + o.count() : "")).toList()))),
+                    line("Description", quest.description())));
+
+    public static final List<DefinitionType<?>> ALL = List.of(FRUIT, RACE, FACTION, ABILITY, SHIP, NPC, BOSS, QUEST);
 
     public Registry<T> registry(RegistryAccess access) {
         return access.registryOrThrow(key);

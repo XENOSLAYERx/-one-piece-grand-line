@@ -1,0 +1,33 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.land_ho"
+  },
+  "description": {
+    "translate": "quest.grandline.land_ho.desc"
+  },
+  "category": "main",
+  "order": 2,
+  "requires": [
+    "romance_dawn"
+  ],
+  "objectives": [
+    {
+      "type": "discover"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 8
+      },
+      {
+        "id": "minecraft:bread",
+        "count": 8
+      }
+    ]
+  },
+  "lines": {
+    "done": "Each island you reach is recorded. Islanders talk; some of them will have work for you."
+  }
+}

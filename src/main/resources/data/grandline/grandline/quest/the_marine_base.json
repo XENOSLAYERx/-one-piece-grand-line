@@ -1,0 +1,47 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.the_marine_base"
+  },
+  "description": {
+    "translate": "quest.grandline.the_marine_base.desc"
+  },
+  "category": "main",
+  "order": 3,
+  "island": "shells_town",
+  "requires": [
+    "land_ho"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "target": "grandline:shells_town"
+    },
+    {
+      "type": "talk",
+      "target": "grandline:townsperson"
+    },
+    {
+      "type": "defeat_boss",
+      "target": "grandline:morgan"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 12
+      },
+      {
+        "id": "minecraft:iron_ingot",
+        "count": 8
+      }
+    ],
+    "renown": 30,
+    "reputation": {
+      "grandline:civilians": 10
+    }
+  },
+  "lines": {
+    "done": "Shells Town is free. Word of what you did will travel - to the Fish-Man pirates' ears, too."
+  }
+}

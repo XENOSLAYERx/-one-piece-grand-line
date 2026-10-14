@@ -48,6 +48,7 @@ public final class OnePieceCommand {
         IslandCommands.register(root);
         NpcCommands.register(root);
         BossCommands.register(root);
+        QuestCommands.register(root);
         CrewCommands.register(root);
         DebugCommand.register(root);
 
@@ -68,6 +69,7 @@ public final class OnePieceCommand {
         entries.addAll(IslandCommands.HELP);
         entries.addAll(NpcCommands.HELP);
         entries.addAll(BossCommands.HELP);
+        entries.addAll(QuestCommands.HELP);
         entries.addAll(CrewCommands.HELP);
         entries.addAll(AbilityCommands.HELP);
         entries.addAll(DebugCommand.HELP);

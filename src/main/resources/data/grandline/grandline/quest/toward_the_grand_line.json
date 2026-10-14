@@ -1,0 +1,39 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.toward_the_grand_line"
+  },
+  "description": {
+    "translate": "quest.grandline.toward_the_grand_line.desc"
+  },
+  "category": "main",
+  "order": 5,
+  "requires": [
+    "arlong_park"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "count": 3
+    },
+    {
+      "type": "bounty",
+      "count": 30000000
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:gold_ingot",
+        "count": 16
+      },
+      {
+        "id": "minecraft:emerald",
+        "count": 32
+      }
+    ],
+    "renown": 100
+  },
+  "lines": {
+    "done": "The East Blue is behind you. The Grand Line's charts are still being drawn - its islands await."
+  }
+}

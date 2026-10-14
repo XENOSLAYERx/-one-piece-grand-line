@@ -1,0 +1,56 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.arlong_park"
+  },
+  "description": {
+    "translate": "quest.grandline.arlong_park.desc"
+  },
+  "category": "main",
+  "order": 4,
+  "island": "conomi_islands",
+  "requires": [
+    "the_marine_base"
+  ],
+  "objectives": [
+    {
+      "type": "discover",
+      "target": "grandline:conomi_islands"
+    },
+    {
+      "type": "talk",
+      "target": "grandline:tangerine_farmer"
+    },
+    {
+      "type": "defeat_npc",
+      "target": "grandline:fishman_pirate",
+      "count": 5
+    },
+    {
+      "type": "defeat_boss",
+      "target": "grandline:arlong"
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 24
+      },
+      {
+        "id": "minecraft:diamond",
+        "count": 2
+      },
+      {
+        "id": "grandline:tangerine",
+        "count": 16
+      }
+    ],
+    "renown": 60,
+    "reputation": {
+      "grandline:civilians": 20
+    }
+  },
+  "lines": {
+    "done": "Arlong Park has fallen. The Conomi Islands are free, and your bounty poster is on every wall."
+  }
+}

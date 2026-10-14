@@ -1,6 +1,7 @@
 package com.nerodev.grandline.npc;
 
 import com.nerodev.grandline.crew.Crews;
+import com.nerodev.grandline.quest.Quests;
 import com.nerodev.grandline.registry.GLRegistries;
 import com.nerodev.grandline.weapon.GunItem;
 import java.util.HashMap;
@@ -481,6 +482,9 @@ public class NpcEntity extends PathfinderMob implements Merchant {
             } else {
                 say(player, Reaction.FRIENDLY);
             }
+            return InteractionResult.CONSUME;
+        }
+        if (player instanceof ServerPlayer talker && reaction != Reaction.HOSTILE && getTarget() == null && Quests.interact(talker, this)) {
             return InteractionResult.CONSUME;
         }
         if (def.role() == NpcRole.MERCHANT && reaction != Reaction.HOSTILE && tradingPlayer == null && getTarget() == null) {

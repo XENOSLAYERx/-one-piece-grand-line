@@ -55,6 +55,15 @@ public class IslandPiece extends StructurePiece {
         return new BoundingBox(cx - reach, sea - 48, cz - reach, cx + reach, sea + island.peak() + 36, cz + reach);
     }
 
+    public IslandType island() {
+        return island;
+    }
+
+    /** The island's centre at sea level. */
+    public BlockPos centre() {
+        return new BlockPos(cx, sea, cz);
+    }
+
     public IslandPlan plan() {
         IslandPlan plan = this.plan;
         if (plan == null) {

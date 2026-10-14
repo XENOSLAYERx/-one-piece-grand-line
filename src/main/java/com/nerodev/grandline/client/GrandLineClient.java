@@ -26,6 +26,7 @@ import com.nerodev.grandline.client.hud.AbilityHud;
 import com.nerodev.grandline.client.model.TransformationModels;
 import com.nerodev.grandline.client.npc.NpcRenderer;
 import com.nerodev.grandline.client.particle.GLParticleProviders;
+import com.nerodev.grandline.client.quest.QuestHud;
 import com.nerodev.grandline.client.render.AbilityProjectileRenderer;
 import com.nerodev.grandline.client.render.DisguiseRenderer;
 import com.nerodev.grandline.client.render.HakiLayer;
@@ -40,14 +41,17 @@ import com.nerodev.grandline.client.visual.StatusVisuals;
 import com.nerodev.grandline.entity.AbilityProjectile;
 import com.nerodev.grandline.entity.GLEntities;
 import com.nerodev.grandline.npc.GLNpcs;
+import com.nerodev.grandline.quest.GLQuests;
 import com.nerodev.grandline.ship.GLShips;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.PlayerSkin;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -75,6 +79,9 @@ public final class GrandLineClient {
             event.registerEntityRenderer(GLBosses.BOSS.get(), BossRenderer::new);
         });
         modBus.addListener(ShipHud::register);
+        modBus.addListener(QuestHud::register);
+        modBus.addListener(FMLClientSetupEvent.class, event -> event.enqueueWork(() -> ItemProperties.register(GLQuests.LOG_POSE.get(),
+                GrandLine.id("heading"), QuestHud::needle)));
         modBus.addListener(TransformationModels::registerLayers);
         modBus.addListener(EntityRenderersEvent.AddLayers.class, GrandLineClient::addLayers);
 

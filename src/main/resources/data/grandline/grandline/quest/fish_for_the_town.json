@@ -1,0 +1,35 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.fish_for_the_town"
+  },
+  "description": {
+    "translate": "quest.grandline.fish_for_the_town.desc"
+  },
+  "category": "side",
+  "order": 3,
+  "giver": "grandline:townsperson",
+  "island": "shells_town",
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "minecraft:cod",
+      "count": 10,
+      "consume": true
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 6
+      }
+    ],
+    "reputation": {
+      "grandline:civilians": 6
+    }
+  },
+  "lines": {
+    "offer": "We haven't had fresh fish in weeks. The captain's men take everything we land.",
+    "done": "Fish for dinner! You're a kind soul, stranger."
+  }
+}

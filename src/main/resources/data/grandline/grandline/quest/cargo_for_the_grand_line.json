@@ -1,0 +1,35 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.cargo_for_the_grand_line"
+  },
+  "description": {
+    "translate": "quest.grandline.cargo_for_the_grand_line.desc"
+  },
+  "category": "side",
+  "order": 5,
+  "giver": "grandline:travelling_merchant",
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "minecraft:iron_ingot",
+      "count": 10,
+      "consume": true
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "grandline:cannonball",
+        "count": 16
+      },
+      {
+        "id": "minecraft:emerald",
+        "count": 4
+      }
+    ]
+  },
+  "lines": {
+    "offer": "Iron, friend - I need iron. Ten bars, and I'll pay you in shot for your cannons.",
+    "done": "Pleasure doing business. May the winds be kind to you."
+  }
+}

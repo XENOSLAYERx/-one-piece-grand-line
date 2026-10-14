@@ -1,6 +1,7 @@
 package com.nerodev.grandline.client.dev;
 
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.client.quest.QuestJournalScreen;
 import com.nerodev.grandline.client.screen.AbilityScreen;
 import com.nerodev.grandline.network.AbilityKeyPayload;
 import com.nerodev.grandline.network.DodgePayload;
@@ -155,6 +156,7 @@ public final class ClientAutoTest {
                 mc.player.swing(InteractionHand.MAIN_HAND);
             }
             case "menu" -> mc.setScreen(new AbilityScreen());
+            case "journal" -> mc.setScreen(new QuestJournalScreen());
             case "close" -> mc.setScreen(null);
             case "shot" -> Screenshot.grab(mc.gameDirectory, arg + ".png", mc.getMainRenderTarget(),
                     message -> GrandLine.LOGGER.info("[autotest] {}", message.getString()));

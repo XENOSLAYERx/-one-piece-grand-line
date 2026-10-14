@@ -1,0 +1,39 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.partys_bar_supplies"
+  },
+  "description": {
+    "translate": "quest.grandline.partys_bar_supplies.desc"
+  },
+  "category": "side",
+  "order": 1,
+  "giver": "grandline:barkeeper",
+  "island": "dawn_island",
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "minecraft:wheat",
+      "count": 12,
+      "consume": true
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 4
+      },
+      {
+        "id": "minecraft:bread",
+        "count": 6
+      }
+    ],
+    "reputation": {
+      "grandline:civilians": 5
+    }
+  },
+  "lines": {
+    "offer": "Could you spare some wheat? The whole village eats here, and the pantry's bare.",
+    "done": "Bless you! Come back any time - the first drink's on the house."
+  }
+}

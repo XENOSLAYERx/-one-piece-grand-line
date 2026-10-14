@@ -1,0 +1,110 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "grandline:item/log_pose/log_pose_00"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "grandline:heading": 0.0
+      },
+      "model": "grandline:item/log_pose_00"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.03125
+      },
+      "model": "grandline:item/log_pose_01"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.09375
+      },
+      "model": "grandline:item/log_pose_02"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.15625
+      },
+      "model": "grandline:item/log_pose_03"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.21875
+      },
+      "model": "grandline:item/log_pose_04"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.28125
+      },
+      "model": "grandline:item/log_pose_05"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.34375
+      },
+      "model": "grandline:item/log_pose_06"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.40625
+      },
+      "model": "grandline:item/log_pose_07"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.46875
+      },
+      "model": "grandline:item/log_pose_08"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.53125
+      },
+      "model": "grandline:item/log_pose_09"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.59375
+      },
+      "model": "grandline:item/log_pose_10"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.65625
+      },
+      "model": "grandline:item/log_pose_11"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.71875
+      },
+      "model": "grandline:item/log_pose_12"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.78125
+      },
+      "model": "grandline:item/log_pose_13"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.84375
+      },
+      "model": "grandline:item/log_pose_14"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.90625
+      },
+      "model": "grandline:item/log_pose_15"
+    },
+    {
+      "predicate": {
+        "grandline:heading": 0.96875
+      },
+      "model": "grandline:item/log_pose_00"
+    }
+  ]
+}

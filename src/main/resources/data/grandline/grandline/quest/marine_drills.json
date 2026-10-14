@@ -1,0 +1,41 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.marine_drills"
+  },
+  "description": {
+    "translate": "quest.grandline.marine_drills.desc"
+  },
+  "category": "side",
+  "order": 4,
+  "giver": "grandline:marine_lieutenant",
+  "island": "shells_town",
+  "standing": {
+    "grandline:marine": 0
+  },
+  "objectives": [
+    {
+      "type": "defeat_faction",
+      "target": "grandline:pirate",
+      "count": 6
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 10
+      },
+      {
+        "id": "minecraft:iron_ingot",
+        "count": 8
+      }
+    ],
+    "reputation": {
+      "grandline:marine": 25
+    }
+  },
+  "lines": {
+    "offer": "Civilian volunteers are rare. Bring down some pirates and the Marines will remember it.",
+    "done": "Fine work. Justice thanks you - consider joining up."
+  }
+}

@@ -3,6 +3,7 @@ package com.nerodev.grandline.npc;
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.crew.Crews;
+import com.nerodev.grandline.quest.Quests;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -87,6 +88,7 @@ public final class GLNpcs {
         if (victim.level().isClientSide || !(event.getSource().getEntity() instanceof ServerPlayer player)) {
             return;
         }
+        Quests.onKill(player, victim);
         if (victim instanceof NpcEntity npc) {
             boolean wasHostile = npc.reactionTo(player) == Reaction.HOSTILE;
             Factions.onKill(player, npc);

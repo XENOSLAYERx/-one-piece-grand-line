@@ -5,6 +5,7 @@ import com.nerodev.grandline.boss.BossDefinition;
 import com.nerodev.grandline.definition.FactionDefinition;
 import com.nerodev.grandline.definition.RaceDefinition;
 import com.nerodev.grandline.npc.NpcDefinition;
+import com.nerodev.grandline.quest.QuestDefinition;
 import com.nerodev.grandline.ship.ShipDefinition;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -14,7 +15,7 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
  * Registry keys for every Grand Line content type.
  * <p>
  * Content definitions are datapack registries: each entry is one JSON file, so adding a race or faction means
- * adding a file, not editing a switch statement. Ships, islanders and bosses are the same. (Devil Fruits and abilities carry behaviour, so they are code
+ * adding a file, not editing a switch statement. Ships, islanders, bosses and quests are the same. (Devil Fruits and abilities carry behaviour, so they are code
  * registries: see GLFruits and GLAbilities.) Datapacks can add or override entries.
  * Entries are synced to clients so client UIs (guide, creator menu) can read them.
  * <p>
@@ -27,6 +28,7 @@ public final class GLRegistries {
     public static final ResourceKey<Registry<ShipDefinition>> SHIP = key("ship");
     public static final ResourceKey<Registry<NpcDefinition>> NPC = key("npc");
     public static final ResourceKey<Registry<BossDefinition>> BOSS = key("boss");
+    public static final ResourceKey<Registry<QuestDefinition>> QUEST = key("quest");
 
     private GLRegistries() {}
 
@@ -40,5 +42,6 @@ public final class GLRegistries {
         event.dataPackRegistry(SHIP, ShipDefinition.CODEC, ShipDefinition.CODEC);
         event.dataPackRegistry(NPC, NpcDefinition.CODEC, NpcDefinition.CODEC);
         event.dataPackRegistry(BOSS, BossDefinition.CODEC, BossDefinition.CODEC);
+        event.dataPackRegistry(QUEST, QuestDefinition.CODEC, QuestDefinition.CODEC);
     }
 }

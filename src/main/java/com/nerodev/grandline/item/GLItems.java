@@ -4,6 +4,7 @@ import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.ability.GLAbilities;
 import com.nerodev.grandline.fruit.DevilFruit;
 import com.nerodev.grandline.fruit.GLFruits;
+import com.nerodev.grandline.quest.GLQuests;
 import com.nerodev.grandline.style.GLStyles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -74,6 +75,7 @@ public final class GLItems {
             .displayItems((params, output) -> {
                 FRUIT_ITEMS.forEach(item -> output.accept(item.get()));
                 SCROLLS.forEach(item -> output.accept(item.get()));
+                output.accept(GLQuests.LOG_POSE.get());
             })
             .build());
 

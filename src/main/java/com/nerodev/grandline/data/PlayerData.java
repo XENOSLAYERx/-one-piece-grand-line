@@ -3,6 +3,7 @@ package com.nerodev.grandline.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.quest.Journey;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -52,7 +53,8 @@ public final class PlayerData {
             ResourceLocation.CODEC.optionalFieldOf("style").forGetter(d -> d.style),
             Codec.unboundedMap(Codec.STRING, Loadout.CODEC).optionalFieldOf("loadouts", Map.of()).forGetter(d -> d.loadouts),
             Codec.unboundedMap(ResourceLocation.CODEC, Codec.INT).optionalFieldOf("reputation", Map.of()).forGetter(d -> d.reputation),
-            UUIDUtil.CODEC.optionalFieldOf("crew").forGetter(d -> d.crew)
+            UUIDUtil.CODEC.optionalFieldOf("crew").forGetter(d -> d.crew),
+            Journey.CODEC.optionalFieldOf("journey").forGetter(d -> Optional.of(d.journey))
     ).apply(i, PlayerData::new));
 
     /** Owner-only network sync. The profile is small, so the whole object is sent when it changes. */
@@ -72,16 +74,18 @@ public final class PlayerData {
     private final Map<String, Loadout> loadouts = new TreeMap<>();
     private final Map<ResourceLocation, Integer> reputation = new TreeMap<>();
     private Optional<UUID> crew;
+    private final Journey journey;
 
     public PlayerData() {
         this(DEFAULT_RACE, Optional.empty(), 0L, DeathMode.NORMAL, Map.of(), Map.of(), Optional.empty(), false, Map.of(),
-                Optional.empty(), Map.of(), Map.of(), Optional.empty());
+                Optional.empty(), Map.of(), Map.of(), Optional.empty(), Optional.empty());
     }
 
     private PlayerData(ResourceLocation race, Optional<ResourceLocation> faction, long bounty, DeathMode deathMode,
             Map<UnlockCategory, List<ResourceLocation>> unlocks, Map<String, Double> mastery,
             Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style,
-            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation, Optional<UUID> crew) {
+            Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation, Optional<UUID> crew, Optional<Journey> journey) {
+        this.journey = journey.orElseGet(Journey::new);
         this.loadouts.putAll(loadouts);
         this.crew = crew;
         reputation.forEach((key, value) -> this.reputation.put(key, clampReputation(value)));
@@ -300,6 +304,15 @@ public final class PlayerData {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    // Quests and the islands found
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Quests under way and done, islands found and the Log Pose's heading (changed in place, inside an edit). */
+    public Journey journey() {
+        return journey;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
 
     /** Copies every field from {@code other}. Used by respawn copies and full resets. */
     public void copyFrom(PlayerData other) {
@@ -321,6 +334,7 @@ public final class PlayerData {
         this.reputation.clear();
         this.reputation.putAll(other.reputation);
         this.crew = other.crew;
+        this.journey.copyFrom(other.journey);
     }
 
     private Map<UnlockCategory, List<ResourceLocation>> unlocksForCodec() {

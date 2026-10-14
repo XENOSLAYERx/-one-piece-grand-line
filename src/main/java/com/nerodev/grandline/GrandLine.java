@@ -26,6 +26,7 @@ import com.nerodev.grandline.haki.HakiManager;
 import com.nerodev.grandline.item.GLItems;
 import com.nerodev.grandline.network.GLNetwork;
 import com.nerodev.grandline.npc.GLNpcs;
+import com.nerodev.grandline.quest.GLQuests;
 import com.nerodev.grandline.race.RaceAbilities;
 import com.nerodev.grandline.race.RaceManager;
 import com.nerodev.grandline.registry.GLRegistries;
@@ -92,6 +93,7 @@ public final class GrandLine {
         GLWorldgen.register(modBus);
         GLNpcs.register(modBus);
         GLBosses.register(modBus);
+        GLQuests.register(modBus);
         BountyHunts.register();
         Crews.register();
         FruitManager.register();

@@ -1363,6 +1363,35 @@ cmd gamemode survival
 cmd tp @s 0 -60 0
 wait 10
 
+# ---- Quests and the Log Pose: an island discovered, the Log Pose in hand with the quest tracker, then the journal
+camera first
+cmd tp @s 0 -60 0 0 0
+cmd onepiece quest reset
+cmd onepiece logpose forget
+cmd onepiece quest complete grandline:romance_dawn
+cmd onepiece logpose record dawn_island
+wait 10
+cmd tp @s 0 -60 300 180 0
+wait 10
+cmd onepiece logpose record shells_town
+wait 12
+shot 178_island_discovered
+cmd onepiece quest accept grandline:partys_bar_supplies
+cmd give @s minecraft:wheat 5
+cmd item replace entity @s weapon.mainhand with grandline:log_pose
+cmd onepiece logpose set dawn_island
+wait 50
+shot 179_log_pose
+journal
+wait 10
+shot 180_quest_journal
+close
+wait 5
+cmd item replace entity @s weapon.mainhand with minecraft:air
+cmd clear @s minecraft:wheat
+cmd tp @s 0 -60 0
+wait 10
+
 # ---- Creator Menu
 camera first
 cmd onepiece menu

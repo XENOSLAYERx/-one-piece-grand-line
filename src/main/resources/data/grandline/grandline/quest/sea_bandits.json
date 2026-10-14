@@ -1,0 +1,33 @@
+{
+  "display_name": {
+    "translate": "quest.grandline.sea_bandits"
+  },
+  "description": {
+    "translate": "quest.grandline.sea_bandits.desc"
+  },
+  "category": "side",
+  "order": 2,
+  "giver": "grandline:villager",
+  "objectives": [
+    {
+      "type": "defeat_faction",
+      "target": "grandline:pirate",
+      "count": 3
+    }
+  ],
+  "rewards": {
+    "items": [
+      {
+        "id": "minecraft:emerald",
+        "count": 6
+      }
+    ],
+    "reputation": {
+      "grandline:civilians": 8
+    }
+  },
+  "lines": {
+    "offer": "Pirates again, coming ashore at night... Would you teach them a lesson?",
+    "done": "They won't be back soon. Thank you, truly."
+  }
+}
