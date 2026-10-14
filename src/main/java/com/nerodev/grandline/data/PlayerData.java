@@ -79,7 +79,7 @@ public final class PlayerData {
             Optional<ResourceLocation> fruit, boolean awakened, Map<String, Integer> counters, Optional<ResourceLocation> style,
             Map<String, Loadout> loadouts, Map<ResourceLocation, Integer> reputation) {
         this.loadouts.putAll(loadouts);
-        reputation.forEach((faction, value) -> this.reputation.put(faction, clampReputation(value)));
+        reputation.forEach((key, value) -> this.reputation.put(key, clampReputation(value)));
         this.fruit = fruit;
         this.style = style;
         this.awakened = awakened;
