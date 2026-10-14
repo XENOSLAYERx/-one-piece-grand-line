@@ -1343,7 +1343,7 @@ cmd tp @s 800 -60 795 0 0
 wait 10
 cmd onepiece boss spawn grandline:arlong
 wait 20
-cmd tp @s 790 -58 812 -116 10
+cmd tp @s 792 -58 808 -104 8
 wait 5
 cmd onepiece boss move shark_on_darts
 wait 26
@@ -1389,6 +1389,29 @@ close
 wait 5
 cmd item replace entity @s weapon.mainhand with minecraft:air
 cmd clear @s minecraft:wheat
+cmd tp @s 0 -60 0
+wait 10
+
+# ---- Arenas and world events: round one of an arena fight, then a pirate raid closing in with its event bar
+camera first
+cmd gamemode creative
+cmd tp @s 1000 -60 1000 0 0
+wait 10
+cmd onepiece arena create autotest 12
+cmd onepiece arena join autotest
+cmd onepiece arena next
+wait 30
+shot 181_arena_round
+cmd onepiece arena delete autotest
+cmd gamemode survival
+cmd tp @s 1200 -60 1200 0 0
+wait 10
+cmd onepiece event start pirate_raid
+wait 50
+cmd execute as @s at @s facing entity @e[type=grandline:npc,limit=1,sort=nearest] feet run tp @s ~ ~ ~ ~ 4
+wait 5
+shot 182_pirate_raid
+cmd onepiece event stop
 cmd tp @s 0 -60 0
 wait 10
 

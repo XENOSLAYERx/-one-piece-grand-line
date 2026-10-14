@@ -52,6 +52,8 @@ public final class GLServerConfig {
     public static final ModConfigSpec.IntValue MAX_CREW_SIZE;
     public static final ModConfigSpec.IntValue MAX_RECRUITS;
     public static final ModConfigSpec.BooleanValue CREW_FRIENDLY_FIRE;
+    public static final ModConfigSpec.BooleanValue WORLD_EVENTS;
+    public static final ModConfigSpec.DoubleValue WORLD_EVENT_CHANCE;
 
     public static final ModConfigSpec SPEC;
 
@@ -167,6 +169,15 @@ public final class GLServerConfig {
                 .define("crewFriendlyFire", false);
         BUILDER.pop();
 
+        BUILDER.comment("World events: raids that land near players now and then.").push("events");
+        WORLD_EVENTS = BUILDER
+                .comment("If true, raids (pirates, Marines for wanted players, Fish-Men) sometimes land near players by themselves.")
+                .define("worldEvents", true);
+        WORLD_EVENT_CHANCE = BUILDER
+                .comment("Chance each minute that an event befalls a given player (each player has at most one per 20 minutes).")
+                .defineInRange("worldEventChance", 0.04, 0.0, 1.0);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 
@@ -224,6 +235,14 @@ public final class GLServerConfig {
 
     public static boolean crewFriendlyFire() {
         return value(CREW_FRIENDLY_FIRE);
+    }
+
+    public static boolean worldEvents() {
+        return value(WORLD_EVENTS);
+    }
+
+    public static double worldEventChance() {
+        return value(WORLD_EVENT_CHANCE);
     }
 
     public static double cooldownMultiplier() {

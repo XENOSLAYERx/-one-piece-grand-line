@@ -39,6 +39,7 @@ import com.nerodev.grandline.transform.TransformationManager;
 import com.nerodev.grandline.weapon.GLWeapons;
 import com.nerodev.grandline.weapon.WeaponItem;
 import com.nerodev.grandline.world.island.IslandType;
+import com.nerodev.grandline.worldevent.WorldEventType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -118,6 +119,7 @@ public class CreatorMenuScreen extends Screen {
         categories.add(new Category(Component.literal("NPCs"), this::npcs));
         categories.add(new Category(Component.literal("Bosses"), this::bosses));
         categories.add(new Category(Component.literal("Quests"), this::quests));
+        categories.add(new Category(Component.literal("Events"), this::events));
         categories.add(new Category(Component.literal("Crew & Bounty"), this::crewAndBounty));
         categories.add(new Category(Component.literal("Ships"), this::ships));
         categories.add(new Category(Component.literal("Islands"), this::islands));
@@ -641,6 +643,19 @@ public class CreatorMenuScreen extends Screen {
         return out;
     }
 
+    private List<Entry> events() {
+        List<Entry> out = new ArrayList<>();
+        for (WorldEventType type : WorldEventType.values()) {
+            List<String> band = type.band().stream().map(this::npcName).toList();
+            out.add(new Entry(Component.literal(type.title()), List.of(Component.literal(type.warning()).withStyle(ChatFormatting.GRAY),
+                    line("Raiders", Component.literal(String.join(", ", band))), line("Beaten", Component.literal(type.emeralds() + " emeralds, "
+                            + type.renown() + " renown each"))), type.color().getColor() == null ? 0xE0E0E0 : type.color().getColor(),
+                    new ItemStack(Items.GOAT_HORN), () -> false, List.of(Action.of("Start on me", "onepiece event start " + type.getSerializedName()),
+                            Action.of("Events under way", "onepiece event list"), Action.confirmed("Stop all events", "onepiece event stop"))));
+        }
+        return out;
+    }
+
     private List<Entry> crewAndBounty() {
         List<Entry> out = new ArrayList<>();
         out.add(new Entry(Component.literal("Found a crew"), List.of(Component.literal("Founds a crew with you as captain. Invite others with "
@@ -702,11 +717,30 @@ public class CreatorMenuScreen extends Screen {
         return out;
     }
 
+    private String npcName(ResourceLocation id) {
+        if (minecraft == null || minecraft.level == null) {
+            return id.getPath();
+        }
+        return minecraft.level.registryAccess().registry(GLRegistries.NPC).map(r -> r.get(id)).map(npc -> npc.displayName().getString())
+                .orElse(id.getPath());
+    }
+
     private List<Entry> battleTest() {
         List<Entry> out = new ArrayList<>();
+        out.add(new Entry(Component.literal("Arena"), List.of(Component.literal("Mark out an arena where you stand, then fight round after "
+                + "round of ever harder enemies in it, with a boss from round 9. Each cleared round pays emeralds.")), 0xE8A040,
+                new ItemStack(Items.TARGET), () -> false, List.of(Action.of("Mark out \"test\" here", "onepiece arena create test 16"),
+                        Action.of("Join \"test\"", "onepiece arena join test"), Action.of("Next round now", "onepiece arena next"),
+                        Action.of("Leave", "onepiece arena leave"), Action.confirmed("Remove \"test\"", "onepiece arena delete test"))));
+        out.add(new Entry(Component.literal("Random boss"), List.of(Component.literal("Spawns a random boss where you look.")), 0xD04040,
+                new ItemStack(Items.WITHER_SKELETON_SKULL), () -> false, List.of(Action.of("Spawn random boss", "onepiece boss spawn random"),
+                        Action.confirmed("Remove nearby bosses", "onepiece boss remove 32"))));
         for (Battles.Difficulty difficulty : Battles.Difficulty.values()) {
             String name = difficulty.getSerializedName();
-            List<String> wave = difficulty.wave().stream().map(type -> type.getDescription().getString()).toList();
+            List<String> wave = new ArrayList<>(difficulty.wave().stream().map(this::npcName).toList());
+            if (difficulty.boss()) {
+                wave.add("a random boss");
+            }
             out.add(new Entry(Component.literal(title(name) + " wave"),
                     List.of(line("Enemies", Component.literal(String.join(", ", wave)))),
                     0xE86A5A, new ItemStack(Items.IRON_SWORD), () -> false,

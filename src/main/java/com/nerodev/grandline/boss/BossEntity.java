@@ -2,6 +2,7 @@ package com.nerodev.grandline.boss;
 
 import com.nerodev.grandline.bounty.Bounties;
 import com.nerodev.grandline.combat.AbilityDamage;
+import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.data.GLPlayer;
 import com.nerodev.grandline.fx.GLParticles.Kind;
@@ -586,7 +587,7 @@ public class BossEntity extends Monster {
         }
         Entity attacker = source.getEntity();
         if (attacker instanceof LivingEntity living && living != this) {
-            if (living instanceof ServerPlayer player && !hostileTo(player)) {
+            if (living instanceof ServerPlayer player && !hostileTo(player) && !getTags().contains(Battles.TAG)) {
                 provokedBy(player);
             }
             lastCombat = level().getGameTime();
@@ -694,7 +695,7 @@ public class BossEntity extends Monster {
             return;
         }
         shout(def.lines().defeat());
-        if (source.getEntity() instanceof ServerPlayer victor) {
+        if (source.getEntity() instanceof ServerPlayer victor && !getTags().contains(Battles.TAG)) {
             BossDefinition.Rewards rewards = def.rewards();
             if (rewards.bounty() > 0) {
                 Bounties.crime(victor, rewards.bounty(), false, "defeating " + def.displayName().getString());
@@ -711,6 +712,12 @@ public class BossEntity extends Monster {
                         .append(Component.literal("!").withStyle(ChatFormatting.GOLD)), false);
             }
         }
+    }
+
+    /** Battle-test bosses are practice and drop nothing. */
+    @Override
+    protected boolean shouldDropLoot() {
+        return !getTags().contains(Battles.TAG);
     }
 
     @Override

@@ -36,7 +36,7 @@ final class BossCommands {
     static final List<HelpEntry> HELP = List.of(
             new HelpEntry("/onepiece boss list", "Every boss, their title and their phases", PermissionTier.PLAYER),
             new HelpEntry("/onepiece boss info", "The nearest boss: health, phase and the moves it has made", PermissionTier.PLAYER),
-            new HelpEntry("/onepiece boss spawn <boss>", "Spawn a boss where you look; it guards that spot", PermissionTier.CREATOR),
+            new HelpEntry("/onepiece boss spawn <boss|random>", "Spawn a boss where you look; it guards that spot", PermissionTier.CREATOR),
             new HelpEntry("/onepiece boss move <move>", "Make the nearest boss use a move now", PermissionTier.CREATOR),
             new HelpEntry("/onepiece boss phase <phase>", "Drop the nearest boss into a later phase of its fight", PermissionTier.CREATOR),
             new HelpEntry("/onepiece boss remove [radius]", "Remove the bosses around you", PermissionTier.CREATOR));
@@ -49,7 +49,8 @@ final class BossCommands {
         root.then(Commands.literal("boss")
                 .then(Commands.literal("list").executes(ctx -> list(ctx.getSource())))
                 .then(Commands.literal("info").executes(ctx -> info(ctx.getSource())))
-                .then(creator("spawn").then(Commands.argument("boss", ResourceLocationArgument.id())
+                .then(creator("spawn").then(Commands.literal("random").executes(ctx -> spawnRandom(ctx.getSource())))
+                        .then(Commands.argument("boss", ResourceLocationArgument.id())
                         .suggests(RegistryArguments.suggest(DefinitionType.BOSS))
                         .executes(BossCommands::spawn)))
                 .then(creator("move").then(Commands.argument("move", StringArgumentType.word())
@@ -125,6 +126,24 @@ final class BossCommands {
             return 0;
         }
         source.sendSuccess(() -> Component.literal("Spawned ").append(boss.getValue().displayName()), true);
+        return 1;
+    }
+
+    private static int spawnRandom(CommandSourceStack source) {
+        List<ResourceLocation> ids = DefinitionType.BOSS.sortedIds(source.registryAccess());
+        if (ids.isEmpty()) {
+            source.sendFailure(Component.literal("There are no bosses"));
+            return 0;
+        }
+        ResourceLocation id = ids.get(source.getLevel().getRandom().nextInt(ids.size()));
+        Vec3 look = Vec3.directionFromRotation(0, source.getRotation().y);
+        BossEntity spawned = BossEntity.spawn(source.getLevel(), id, BlockPos.containing(source.getPosition().add(look.scale(5))),
+                source.getRotation().y + 180, MobSpawnType.COMMAND);
+        if (spawned == null) {
+            source.sendFailure(Component.literal("Could not spawn " + id));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.literal("Spawned ").append(spawned.bossName()), true);
         return 1;
     }
 

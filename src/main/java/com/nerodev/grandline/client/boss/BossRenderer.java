@@ -110,22 +110,24 @@ public class BossRenderer extends HumanoidMobRenderer<BossEntity, BossRenderer.M
             float r = Mth.clamp((t - move.windup() - move.active()) / Math.max(1, move.recovery()), 0f, 1f);
             float hold = 1f - ease(r);
             float swing = ease(a);
+            // Blows that land on the first active tick are swung through in two ticks, so the pose meets the hit.
+            float strike = ease(Mth.clamp((t - move.windup()) / 2f, 0f, 1f));
             switch (move.id()) {
                 case "cleave", "saw_sweep" -> {
                     // Weapon drawn back over the shoulder, then swept across the body.
-                    float back = ease(w) * (1 - swing);
-                    twist((0.7f * back - 0.8f * swing) * hold);
-                    rightArm.xRot = Mth.lerp(swing, -2.3f * ease(w), -1.2f) * hold;
-                    rightArm.yRot += (0.7f * back - 1.1f * swing) * hold;
+                    float back = ease(w) * (1 - strike);
+                    twist((0.7f * back - 0.8f * strike) * hold);
+                    rightArm.xRot = Mth.lerp(strike, -2.3f * ease(w), -1.2f) * hold;
+                    rightArm.yRot += (0.7f * back - 1.1f * strike) * hold;
                     leftArm.xRot = -0.5f * ease(w) * hold;
                 }
                 case "slam" -> {
                     // Both hands up over the head, then brought down with the whole body behind it.
-                    float up = ease(w) * (1 - swing);
-                    rightArm.xRot = (-3.0f * up - 0.7f * swing) * hold;
-                    leftArm.xRot = (-3.0f * up - 0.7f * swing) * hold;
+                    float up = ease(w) * (1 - strike);
+                    rightArm.xRot = (-3.0f * up - 0.7f * strike) * hold;
+                    leftArm.xRot = (-3.0f * up - 0.7f * strike) * hold;
                     rightArm.yRot = leftArm.yRot = 0f;
-                    lean((0.9f * swing - 0.3f * up) * hold);
+                    lean((0.9f * strike - 0.3f * up) * hold);
                 }
                 case "charge" -> {
                     // Head down and arms back, then a bull's run.
@@ -139,8 +141,8 @@ public class BossRenderer extends HumanoidMobRenderer<BossEntity, BossRenderer.M
                 }
                 case "jaw_bash" -> {
                     // Head reared back, then driven forward like a hammer.
-                    head.xRot = (-0.8f * ease(w) * (1 - swing) + 0.7f * swing) * hold;
-                    lean((-0.25f * ease(w) * (1 - swing) + 0.5f * swing) * hold);
+                    head.xRot = (-0.8f * ease(w) * (1 - strike) + 0.7f * strike) * hold;
+                    lean((-0.25f * ease(w) * (1 - strike) + 0.5f * strike) * hold);
                     rightArm.xRot += 0.4f * hold;
                     leftArm.xRot += 0.4f * hold;
                 }

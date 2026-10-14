@@ -150,7 +150,7 @@ public final class BountyHunts {
 
     /** Solid, dry ground 20 to 30 blocks from the player, near their height, in a loaded chunk. */
     @Nullable
-    static BlockPos footing(ServerLevel level, ServerPlayer player) {
+    public static BlockPos footing(ServerLevel level, ServerPlayer player) {
         RandomSource random = player.getRandom();
         for (int tries = 0; tries < 24; tries++) {
             double angle = random.nextDouble() * Mth.TWO_PI;

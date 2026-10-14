@@ -2,6 +2,7 @@ package com.nerodev.grandline.npc;
 
 import com.nerodev.grandline.GrandLine;
 import com.nerodev.grandline.bounty.Bounties;
+import com.nerodev.grandline.creator.Battles;
 import com.nerodev.grandline.crew.Crews;
 import com.nerodev.grandline.quest.Quests;
 import java.util.function.Supplier;
@@ -66,6 +67,10 @@ public final class GLNpcs {
         if (victim.level().isClientSide || !(event.getSource().getEntity() instanceof LivingEntity attacker) || attacker == victim) {
             return;
         }
+        if (victim.getTags().contains(Battles.TAG)) {
+            // Battle-test enemies are practice: no standing, bounty or alarms ride on them.
+            return;
+        }
         if (victim instanceof NpcEntity npc) {
             if (attacker instanceof ServerPlayer player) {
                 boolean unprovoked = npc.reactionTo(player) != Reaction.HOSTILE;
@@ -85,7 +90,7 @@ public final class GLNpcs {
 
     private static void onDeath(LivingDeathEvent event) {
         LivingEntity victim = event.getEntity();
-        if (victim.level().isClientSide || !(event.getSource().getEntity() instanceof ServerPlayer player)) {
+        if (victim.level().isClientSide || !(event.getSource().getEntity() instanceof ServerPlayer player) || victim.getTags().contains(Battles.TAG)) {
             return;
         }
         Quests.onKill(player, victim);

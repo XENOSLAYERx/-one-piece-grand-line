@@ -1,20 +1,28 @@
 package com.nerodev.grandline.creator;
 
+import com.nerodev.grandline.GrandLine;
+import com.nerodev.grandline.boss.BossEntity;
+import com.nerodev.grandline.npc.NpcEntity;
+import com.nerodev.grandline.registry.GLRegistries;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
@@ -24,7 +32,8 @@ import net.neoforged.neoforge.event.EventHooks;
 
 /**
  * Battle tests: waves of enemies spawned in a ring around a creator, each tagged so they can be cleared again.
- * Waves are drawn from hostile vanilla creatures for now; Grand Line NPCs and bosses join the pools as they arrive.
+ * Random waves are drawn from the islanders who fight (pirates, gunners, Fish-Men, bounty hunters); a legendary wave
+ * brings a boss. Any creature can also be spawned by id.
  */
 public final class Battles {
     /** Entity tag every battle-test enemy carries. */
@@ -33,23 +42,34 @@ public final class Battles {
 
     /** How hard a random wave is. */
     public enum Difficulty implements StringRepresentable {
-        EASY(List.of(EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.ZOMBIE)),
-        NORMAL(List.of(EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SKELETON)),
-        HARD(List.of(EntityType.VINDICATOR, EntityType.VINDICATOR, EntityType.SKELETON, EntityType.SKELETON, EntityType.WITCH,
-                EntityType.HUSK)),
-        EXTREME(List.of(EntityType.VINDICATOR, EntityType.VINDICATOR, EntityType.VINDICATOR, EntityType.EVOKER, EntityType.PILLAGER,
-                EntityType.PILLAGER, EntityType.RAVAGER)),
-        LEGENDARY(List.of(EntityType.RAVAGER, EntityType.EVOKER, EntityType.EVOKER, EntityType.VINDICATOR, EntityType.VINDICATOR,
-                EntityType.VINDICATOR, EntityType.WITHER_SKELETON, EntityType.WITHER_SKELETON, EntityType.BLAZE, EntityType.BLAZE));
+        EASY(false, "pirate_grunt", "pirate_grunt", "pirate_grunt"),
+        NORMAL(false, "pirate_grunt", "pirate_grunt", "pirate_gunner", "pirate_gunner"),
+        HARD(false, "pirate_grunt", "pirate_grunt", "pirate_gunner", "pirate_gunner", "fishman_pirate", "pirate_captain"),
+        EXTREME(false, "fishman_pirate", "fishman_pirate", "bounty_hunter_veteran", "bounty_hunter_veteran", "pirate_gunner",
+                "pirate_gunner", "pirate_captain"),
+        LEGENDARY(true, "fishman_pirate", "fishman_pirate", "bounty_hunter_veteran", "bounty_hunter_veteran");
 
-        private final List<EntityType<?>> wave;
+        private final boolean boss;
+        private final List<ResourceLocation> wave;
 
-        Difficulty(List<EntityType<?>> wave) {
-            this.wave = wave;
+        Difficulty(boolean boss, String... npcs) {
+            this.boss = boss;
+            this.wave = Arrays.stream(npcs).map(GrandLine::id).toList();
         }
 
-        public List<EntityType<?>> wave() {
+        /** The islanders of the wave. */
+        public List<ResourceLocation> wave() {
             return wave;
+        }
+
+        /** Whether a random boss leads the wave. */
+        public boolean boss() {
+            return boss;
+        }
+
+        /** How many enemies the wave brings. */
+        public int size() {
+            return wave.size() + (boss ? 1 : 0);
         }
 
         @Override
@@ -70,16 +90,78 @@ public final class Battles {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    /** Spawns a random wave of {@code difficulty} around the player. @return how many appeared */
+    /** Spawns a wave of {@code difficulty} around the player, every one of them already after the player. @return how many appeared */
     public static int spawnWave(ServerPlayer player, Difficulty difficulty) {
-        List<EntityType<?>> wave = difficulty.wave();
+        List<ResourceLocation> wave = difficulty.wave();
+        int total = difficulty.size();
         int spawned = 0;
         for (int i = 0; i < wave.size(); i++) {
-            if (spawnOne(player, wave.get(i), i, wave.size()) != null) {
+            BlockPos at = ring(player, i, total, 6);
+            NpcEntity npc = NpcEntity.spawn(player.serverLevel(), wave.get(i), at, player.getRandom().nextFloat() * 360f, MobSpawnType.COMMAND);
+            if (npc != null) {
+                npc.addTag(TAG);
+                npc.provoke(player);
                 spawned++;
             }
         }
+        if (difficulty.boss() && spawnBoss(player, total - 1, total) != null) {
+            spawned++;
+        }
         return spawned;
+    }
+
+    /**
+     * Spawns a wave of {@code difficulty} on a ring {@code radius} out from {@code centre} (an arena), each set on one of
+     * {@code targets}. @return those who appeared
+     */
+    public static List<LivingEntity> spawnWaveAt(ServerLevel level, BlockPos centre, double radius, Difficulty difficulty,
+            List<ServerPlayer> targets) {
+        List<LivingEntity> out = new ArrayList<>();
+        if (targets.isEmpty()) {
+            return out;
+        }
+        RandomSource random = level.getRandom();
+        int total = difficulty.size();
+        for (int i = 0; i < difficulty.wave().size(); i++) {
+            BlockPos at = ring(level, centre.getX() + 0.5, centre.getY(), centre.getZ() + 0.5, i, total, radius, random);
+            NpcEntity npc = NpcEntity.spawn(level, difficulty.wave().get(i), at, random.nextFloat() * 360f, MobSpawnType.COMMAND);
+            if (npc != null) {
+                npc.addTag(TAG);
+                npc.clearRestriction();
+                npc.provoke(targets.get(i % targets.size()));
+                out.add(npc);
+            }
+        }
+        if (difficulty.boss()) {
+            List<ResourceLocation> bosses = new ArrayList<>(level.registryAccess().registryOrThrow(GLRegistries.BOSS).keySet());
+            if (!bosses.isEmpty()) {
+                BlockPos at = ring(level, centre.getX() + 0.5, centre.getY(), centre.getZ() + 0.5, total - 1, total, radius, random);
+                BossEntity boss = BossEntity.spawn(level, bosses.get(random.nextInt(bosses.size())), at, random.nextFloat() * 360f,
+                        MobSpawnType.COMMAND);
+                if (boss != null) {
+                    boss.addTag(TAG);
+                    boss.setTarget(targets.get(random.nextInt(targets.size())));
+                    out.add(boss);
+                }
+            }
+        }
+        return out;
+    }
+
+    /** Spawns a random boss near the player, already fighting them. @return the boss, or null if there is none */
+    @Nullable
+    public static BossEntity spawnBoss(ServerPlayer player, int index, int total) {
+        List<ResourceLocation> bosses = new ArrayList<>(player.serverLevel().registryAccess().registryOrThrow(GLRegistries.BOSS).keySet());
+        if (bosses.isEmpty()) {
+            return null;
+        }
+        ResourceLocation id = bosses.get(player.getRandom().nextInt(bosses.size()));
+        BossEntity boss = BossEntity.spawn(player.serverLevel(), id, ring(player, index, total, 9), player.getYRot() + 180f, MobSpawnType.COMMAND);
+        if (boss != null) {
+            boss.addTag(TAG);
+            boss.setTarget(player);
+        }
+        return boss;
     }
 
     /** Spawns {@code count} creatures of type {@code id} around the player. @return how many appeared */
@@ -110,14 +192,7 @@ public final class Battles {
         if (entity == null) {
             return null;
         }
-        double angle = Mth.TWO_PI * index / Math.max(1, total) + player.getRandom().nextDouble() * 0.4;
-        double radius = 6 + player.getRandom().nextDouble() * 2;
-        int x = Mth.floor(player.getX() + Math.cos(angle) * radius);
-        int z = Mth.floor(player.getZ() + Math.sin(angle) * radius);
-        BlockPos ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z));
-        if (Math.abs(ground.getY() - player.getY()) > 12) {
-            ground = player.blockPosition().offset(x - player.getBlockX(), 0, z - player.getBlockZ());
-        }
+        BlockPos ground = ring(player, index, total, 6);
         entity.moveTo(ground.getX() + 0.5, ground.getY(), ground.getZ() + 0.5, player.getRandom().nextFloat() * 360f, 0f);
         entity.addTag(TAG);
         if (entity instanceof Mob mob) {
@@ -127,5 +202,22 @@ public final class Battles {
         }
         level.addFreshEntityWithPassengers(entity);
         return entity;
+    }
+
+    /** Spot {@code index} of {@code total} on a ring {@code radius}-{@code radius + 2} blocks around the player, on the ground. */
+    private static BlockPos ring(ServerPlayer player, int index, int total, double radius) {
+        return ring(player.serverLevel(), player.getX(), player.getY(), player.getZ(), index, total, radius, player.getRandom());
+    }
+
+    private static BlockPos ring(ServerLevel level, double cx, double cy, double cz, int index, int total, double radius, RandomSource random) {
+        double angle = Mth.TWO_PI * index / Math.max(1, total) + random.nextDouble() * 0.4;
+        double r = radius + random.nextDouble() * 2;
+        int x = Mth.floor(cx + Math.cos(angle) * r);
+        int z = Mth.floor(cz + Math.sin(angle) * r);
+        BlockPos ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z));
+        if (Math.abs(ground.getY() - cy) > 12) {
+            ground = new BlockPos(x, Mth.floor(cy), z);
+        }
+        return ground;
     }
 }
