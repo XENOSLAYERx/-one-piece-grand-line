@@ -42,3 +42,4 @@ repo/
 run-autotest/
 
 __pycache__/
+dist/
