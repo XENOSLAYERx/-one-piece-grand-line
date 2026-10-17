@@ -199,11 +199,10 @@ public final class AbilityManager {
         if (cooldown) {
             state.startCooldown(id, now(player), cooldownTicks(player, ability));
         }
+        // Charge-up and channel poses (many loop) must not outlive the ability, however it ends. The stop goes first,
+        // so a release animation that onEnd plays still follows it.
+        Fx.stopAnimation(player);
         ability.onEnd(context(player, ability, ticks), reason);
-        if (reason != Ability.EndReason.RELEASED) {
-            // Charge-up and channel poses must not outlive the ability.
-            Fx.stopAnimation(player);
-        }
         sync(player);
     }
 
